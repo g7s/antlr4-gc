@@ -4,14 +4,14 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-goog.module('org.antlr.v4.runtime.ANTLRInputStream');
+goog.module('org.antlr.v4.runtime.CodePointCharStream');
 
 
 const {assert} = goog.require('goog.asserts');
 const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
 const CharStream = goog.require('org.antlr.v4.runtime.CharStream');
 
-class ANTLRInputStream extends CharStream {
+class CodePointCharStream extends CharStream {
     /**
      *
      * @param {string} input
@@ -31,9 +31,10 @@ class ANTLRInputStream extends CharStream {
          * @private {string}
          */
         this.source = input;
-        for (var i = 0; i < this.source.length; i++) {
-            var codeUnit = this.source.charCodeAt(i);
-            this.data.push(codeUnit);
+        for (var i = 0; i < this.source.length;) {
+            var codePoint = this.source.codePointAt(i);
+            this.data.push(codePoint);
+            i += codePoint <= 0xFFFF ? 1 : 2;
         }
         /**
          * How many characters are actually in the buffer
@@ -44,7 +45,7 @@ class ANTLRInputStream extends CharStream {
          * What is name or source of this char stream?
          * @private {string}
          */
-        this.name = "<utf-16>";
+        this.name = "<unicode>";
     }
 
     /**
@@ -104,20 +105,8 @@ class ANTLRInputStream extends CharStream {
 
     release(marker) {}
 
-    /**
-     * consume() ahead until p==index; can't just set p=index as we must
-     * update line and charPositionInLine. If we seek backwards, just set p
-     */
     seek(index) {
-        if (index <= this.p) {
-            this.p = index; // just jump; don't update stream state (line, ...)
-            return;
-        }
-        // seek forward, consume until p hits index or n (whichever comes first)
-        index = Math.min(index, this.n);
-        while (this.p < index) {
-            this.consume();
-        }
+        this.p = index;
     }
 
     getText(interval) {
@@ -129,7 +118,11 @@ class ANTLRInputStream extends CharStream {
         if (start >= this.n) {
             return "";
         } else {
-            return this.source.slice(start, stop + 1);
+            var result = "";
+            for (var i = start; i <= stop; i++) {
+                result += String.fromCodePoint(this.data[i]);
+            }
+            return result;
         }
     }
 
@@ -146,4 +139,4 @@ class ANTLRInputStream extends CharStream {
 };
 
 
-exports = ANTLRInputStream;
+exports = CodePointCharStream;

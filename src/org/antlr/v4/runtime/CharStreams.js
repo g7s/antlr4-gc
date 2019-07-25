@@ -7,7 +7,7 @@
 goog.module('org.antlr.v4.runtime.CharStreams');
 
 
-const ANTLRInputStream = goog.require('org.antlr.v4.runtime.ANTLRInputStream');
+const CodePointCharStream = goog.require('org.antlr.v4.runtime.CodePointCharStream');
 const fs = require('fs');
 
 /** This module represents the primary interface for creating {@link CharStream}s
@@ -50,16 +50,16 @@ const fs = require('fs');
  */
 
 /**
- * Creates an ANTLRInputStream from a string.
+ * Creates an CodePointCharStream from a string.
  * @params {string} str
- * @return {ANTLRInputStream}
+ * @return {CodePointCharStream}
  */
 exports.fromString = function (str) {
-    return new ANTLRInputStream(str, true);
+    return new CodePointCharStream(str, true);
 };
 
 /**
- * Asynchronously creates an ANTLRInputStream from a blob given the
+ * Asynchronously creates an CodePointCharStream from a blob given the
  * encoding of the bytes in that blob (defaults to 'utf8' if encoding is null).
  * Invokes onLoad(result) on success, onError(error) on failure.
  *
@@ -72,26 +72,26 @@ exports.fromString = function (str) {
 exports.fromBlob = function (blob, encoding, onLoad, onError) {
   var reader = FileReader();
   reader.onload = function (e) {
-    onLoad(new ANTLRInputStream(e.target.result, true));
+    onLoad(new CodePointCharStream(e.target.result));
   };
   reader.onerror = onError || function () {};
   reader.readAsText(blob, encoding);
 };
 
 /**
- * Creates an ANTLRInputStream from a Buffer given the
+ * Creates an CodePointCharStream from a Buffer given the
  * encoding of the bytes in that buffer (defaults to 'utf8' if encoding is null).
  *
  * @param {Buffer} buffer
  * @param {?string} encoding
- * @return {ANTLRInputStream}
+ * @return {CodePointCharStream}
  */
 exports.fromBuffer = function (buffer, encoding) {
-  return new ANTLRInputStream(buffer.toString(encoding), true);
+  return new CodePointCharStream(buffer.toString(encoding));
 };
 
 /**
- * Asynchronously creates an ANTLRInputStream from a file on disk given
+ * Asynchronously creates an CodePointCharStream from a file on disk given
  * the encoding of the bytes in that file (defaults to 'utf8' if
  * encoding is null).
  * Invokes callback(error, result) on completion.
@@ -103,20 +103,20 @@ exports.fromBuffer = function (buffer, encoding) {
  */
 exports.fromPath = function (path, encoding, callback) {
   fs.readFile(path, encoding, function (err, data) {
-    callback(err, data !== null ? null : new ANTLRInputStream(data, true));
+    callback(err, data !== null ? null : new CodePointCharStream(data));
   });
 };
 
 /**
- * Synchronously creates an ANTLRInputStream given a path to a file
+ * Synchronously creates an CodePointCharStream given a path to a file
  * on disk and the encoding of the bytes in that file (defaults to
  * 'utf8' if encoding is null).
  *
  * @param {string} path
  * @param {?string} encoding
- * @return {ANTLRInputStream}
+ * @return {CodePointCharStream}
  */
 exports.fromPathSync = function (path, encoding) {
   var data = fs.readFileSync(path, encoding);
-  return new ANTLRInputStream(data, true);
+  return new CodePointCharStream(data);
 };
