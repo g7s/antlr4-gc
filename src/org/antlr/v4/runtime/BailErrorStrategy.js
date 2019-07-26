@@ -42,9 +42,9 @@ const InputMismatchException = goog.require('org.antlr.v4.runtime.InputMismatchE
 class BailErrorStrategy extends DefaultErrorStrategy {
     /**
      * Instead of recovering from exception {@code e}, re-throw it wrapped
-     *  in a {@link ParseCancellationException} so it is not caught by the
-     *  rule function catches.  Use {@link Exception#getCause()} to get the
-     *  original {@link RecognitionException}.
+     * in a {@link ParseCancellationException} so it is not caught by the
+     * rule function catches.  Use {@link Exception#getCause()} to get the
+     * original {@link RecognitionException}.
      */
     recover(recognizer, e) {
         for (context = recognizer.getContext(); context !== null; context = context.getParent()) {
@@ -55,7 +55,7 @@ class BailErrorStrategy extends DefaultErrorStrategy {
 
     /**
      * Make sure we don't attempt to recover inline; if the parser
-     *  successfully recovers, it won't throw an exception.
+     * successfully recovers, it won't throw an exception.
      */
     recoverInline(recognizer) {
         let e = new InputMismatchException(recognizer);

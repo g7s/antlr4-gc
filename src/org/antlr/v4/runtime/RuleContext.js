@@ -97,7 +97,7 @@ class RuleContext extends RuleNode {
      * @param {number=} invokingState
      */
     constructor(parent, invokingState) {
-        RuleNode.call(this);
+        super();
         /**
          * What context invoked this rule?
          * @type {RuleContext}
