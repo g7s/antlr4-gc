@@ -197,7 +197,7 @@ class IntStream {
      * symbol.
      *
      * @return {number}
-     * @throws UnsupportedOperationException if the size of the stream is
+     * @throws {Error} UnsupportedOperationException if the size of the stream is
      * unknown.
      */
     size() {}
