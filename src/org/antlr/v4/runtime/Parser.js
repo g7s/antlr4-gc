@@ -6,35 +6,6 @@
 
 goog.module('org.antlr.v4.runtime.Parser');
 
-/**
- import org.antlr.v4.runtime.atn.ATN;
- import org.antlr.v4.runtime.atn.ATNDeserializationOptions;
- import org.antlr.v4.runtime.atn.ATNDeserializer;
- import org.antlr.v4.runtime.atn.ATNSimulator;
- import org.antlr.v4.runtime.atn.ATNState;
- import org.antlr.v4.runtime.atn.ParseInfo;
- import org.antlr.v4.runtime.atn.ParserATNSimulator;
- import org.antlr.v4.runtime.atn.PredictionMode;
- import org.antlr.v4.runtime.atn.ProfilingATNSimulator;
- import org.antlr.v4.runtime.atn.RuleTransition;
- import org.antlr.v4.runtime.dfa.DFA;
- import org.antlr.v4.runtime.misc.IntegerStack;
- import org.antlr.v4.runtime.misc.IntervalSet;
- import org.antlr.v4.runtime.tree.ErrorNode;
- import org.antlr.v4.runtime.tree.ErrorNodeImpl;
- import org.antlr.v4.runtime.tree.ParseTreeListener;
- import org.antlr.v4.runtime.tree.ParseTreeWalker;
- import org.antlr.v4.runtime.tree.TerminalNode;
- import org.antlr.v4.runtime.tree.TerminalNodeImpl;
- import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
- import org.antlr.v4.runtime.tree.pattern.ParseTreePatternMatcher;
-
- import java.util.ArrayList;
- import java.util.Collections;
- import java.util.List;
- import java.util.Map;
- import java.util.WeakHashMap;
- */
 
 const Token = goog.require('org.antlr.v4.runtime.Token');
 const Recognizer = goog.require('org.antlr.v4.runtime.Recognizer');
@@ -361,7 +332,7 @@ class Parser extends Recognizer {
         if (listener === null) {
             throw new Error("listener");
         }
-        if (this._parseListeners === null) {
+        if (this._parseListeners == null) {
             this._parseListeners = [];
         }
         this._parseListeners.push(listener);
@@ -379,7 +350,7 @@ class Parser extends Recognizer {
      * @return {void}
      */
     removeParseListener(listener) {
-        if (this._parseListeners !== null) {
+        if (this._parseListeners != null) {
             /**
              * @type {number}
              */
@@ -388,7 +359,7 @@ class Parser extends Recognizer {
                 this._parseListeners.splice(idx, 1);
             }
             if (this._parseListeners.length === 0) {
-                this._parseListeners = null;
+                this.removeParseListeners();
             }
         }
     }
@@ -605,7 +576,7 @@ class Parser extends Recognizer {
         if (o.type !== Token.EOF) {
             this.getInputStream().consume();
         }
-        var hasListener = this._parseListeners !== null && this._parseListeners.length > 0;
+        var hasListener = this._parseListeners != null && this._parseListeners.length > 0;
         if (this._buildParseTrees || hasListener) {
             if (this._errHandler.inErrorRecoveryMode(this)) {
                 /**
@@ -682,7 +653,7 @@ class Parser extends Recognizer {
         if (this._buildParseTrees) {
             this.addContextToParseTree();
         }
-        if (this._parseListeners !== null) {
+        if (this._parseListeners != null) {
             this.triggerEnterRuleEvent();
         }
     }
@@ -693,11 +664,358 @@ class Parser extends Recognizer {
     exitRule() {
         this._ctx.stop = this._input.LT(-1);
         // trigger event on _ctx, before it reverts to parent
-        if (this._parseListeners !== null) {
+        if (this._parseListeners != null) {
             this.triggerExitRuleEvent();
         }
         this.setState(this._ctx.invokingState);
         this._ctx = this._ctx.parent;
+    }
+
+    /**
+     * @param {org.antlr.v4.runtime.ParserRuleContext} localctx
+     * @param {number} altNum
+     * @return {void}
+     */
+    enterOuterAlt(localctx, altNum) {
+        localctx.setAltNumber(altNum);
+        // if we have new localctx, make sure we replace existing ctx
+        // that is previous child of parse tree
+        if (this._buildParseTrees && this._ctx !== localctx) {
+            var parent = this._ctx.parent;
+            if (parent != null)	{
+                parent.removeLastChild();
+                parent.addChild(localctx);
+            }
+        }
+        this._ctx = localctx;
+    }
+
+    /**
+     * Get the precedence level for the top-most precedence rule.
+     *
+     * @final
+     * @return {number} The precedence level for the top-most precedence rule, or -1 if
+     * the parser context is not nested within a precedence rule.
+     */
+    getPrecedence() {
+        if (this._precedenceStack.length === 0) {
+            return -1;
+        }
+        return this._precedenceStack[this._precedenceStack.length - 1];
+    }
+
+    /**
+     * @param {org.antlr.v4.runtime.ParserRuleContext} localctx
+     * @param {number} state
+     * @param {number} ruleIndex
+     * @param {number} precedence
+     * @return {void}
+     */
+    enterRecursionRule(localctx, state, ruleIndex, precedence) {
+        this.setState(state);
+        this._precedenceStack.push(precedence);
+        this._ctx = localctx;
+        this._ctx.start = this._input.LT(1);
+        if (this._parseListeners != null) {
+            this.triggerEnterRuleEvent(); // simulates rule entry for
+                                            // left-recursive rules
+        }
+    }
+
+    /**
+     * Like {@link #enterRule} but for recursive rules.
+	 * Make the current context the child of the incoming localctx.
+     *
+     * @param {org.antlr.v4.runtime.ParserRuleContext} localctx
+     * @param {number} state
+     * @param {number} ruleIndex
+	 */
+    pushNewRecursionContext(localctx, state, ruleIndex) {
+        var previous = this._ctx;
+        previous.parent = localctx;
+        previous.invokingState = state;
+        previous.stop = this._input.LT(-1);
+
+        this._ctx = localctx;
+        this._ctx.start = previous.start;
+        if (this.getBuildParseTree()) {
+            this._ctx.addChild(previous);
+        }
+        if (this._parseListeners != null) {
+            this.triggerEnterRuleEvent(); // simulates rule entry for
+                                            // left-recursive rules
+        }
+    }
+
+    /**
+     * @param {org.antlr.v4.runtime.ParserRuleContext} _parentctx
+     * @return {void}
+     */
+    unrollRecursionContexts(_parentctx) {
+        this._precedenceStack.pop();
+        this._ctx.stop = this._input.LT(-1);
+        var retCtx = this._ctx; // save current ctx (return value)
+        // unroll so _ctx is as it was before call to recursive method
+        if (this._parseListeners != null) {
+            while (this._ctx !== _parentctx) {
+                this.triggerExitRuleEvent();
+                this._ctx = this._ctx.parent;
+            }
+        } else {
+            this._ctx = _parentctx;
+        }
+        // hook into tree
+        retCtx.parent = _parentctx;
+        if (this.getBuildParseTree() && _parentctx !== null) {
+            // add return ctx into invoking rule's tree
+            _parentctx.addChild(retCtx);
+        }
+    }
+
+    /**
+     * @param {number} ruleIndex
+     * @return {org.antlr.v4.runtime.ParserRuleContext}
+     */
+    getInvokingContext(ruleIndex) {
+        var p = this._ctx;
+        while (p != null) {
+            if (p.getRuleIndex() === ruleIndex) return p;
+            p = p.parent;
+        }
+        return null;
+    }
+
+    /**
+     * @return {org.antlr.v4.runtime.ParserRuleContext}
+     */
+    getContext() {
+        return this._ctx;
+    }
+
+    /**
+     *
+     * @param {org.antlr.v4.runtime.ParserRuleContext} ctx
+     */
+    setContext(ctx) {
+        this._ctx = ctx;
+    }
+
+    /**
+     * @param {org.antlr.v4.runtime.ParserRuleContext} localctx
+     * @param {number} precedence
+     * @return {boolean}
+     */
+    precpred(localctx, precedence) {
+        return precedence >= this._precedenceStack[this._precedenceStack.length - 1];
+    }
+
+    /**
+     * @param {string} context
+     * @return {boolean}
+     */
+    inContext(context) {
+        // TODO: useful in parser?
+        return false;
+    }
+
+    /**
+	 * Checks whether or not {@code symbol} can follow the current state in the
+	 * ATN. The behavior of this method is equivalent to the following, but is
+	 * implemented such that the complete context-sensitive follow set does not
+	 * need to be explicitly constructed.
+	 *
+	 * <pre>
+	 * return getExpectedTokens().contains(symbol);
+	 * </pre>
+	 *
+	 * @param {number} symbol the symbol type to check
+	 * @return {boolean} {@code true} if {@code symbol} can follow the current state in
+	 * the ATN, otherwise {@code false}.
+	 */
+    isExpectedToken(symbol) {
+        var atn = this._interp.atn;
+        var ctx = this._ctx;
+        var s = atn.states[this.getState()];
+        var following = atn.nextTokens(s);
+        if (following.contains(symbol)) {
+            return true;
+        }
+        if (!following.contains(Token.EPSILON)) {
+            return false;
+        }
+        while (ctx != null && ctx.invokingState >= 0 && following.contains(Token.EPSILON)) {
+            var invokingState = atn.states[ctx.invokingState];
+            var rt = invokingState.transitions[0];
+            following = atn.nextTokens(rt.followState);
+            if (following.contains(symbol)) {
+                return true;
+            }
+            ctx = ctx.parent;
+        }
+        if (following.contains(Token.EPSILON) && symbol === Token.EOF) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @return {boolean}
+     */
+    isMatchedEOF() {
+        return this.matchedEOF;
+    }
+
+    /**
+     * @return {IntervalSet}
+     */
+    getExpectedTokens() {
+        return this.getInterpreter().atn.getExpectedTokens(this.getState(), this.getContext());
+    }
+
+    /**
+     * @return {IntervalSet}
+     */
+    getExpectedTokensWithinCurrentRule() {
+        var atn = this.getInterpreter().atn;
+        var s = atn.states[this.getState()];
+        return atn.nextTokens(s);
+    }
+
+    /**
+     * @param {string} ruleName
+     * @return {number}
+     */
+    getRuleIndex(ruleName) {
+        var ruleIndex = this.getRuleIndexMap()[ruleName];
+        if (ruleIndex != null) {
+            return ruleIndex;
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * @return {org.antlr.v4.runtime.ParserRuleContext}
+     */
+    getRuleContext() {
+        return this._ctx;
+    }
+
+    /**
+     * @param {org.antlr.v4.runtime.RuleContext} p
+     * @return {Array.<string>}
+     */
+    getRuleInvocationStack(p) {
+        p = p || this._ctx;
+        var stack = [];
+        while (p !== null) {
+            // compute what follows who invoked us
+            var ruleIndex = p.ruleIndex;
+            if (ruleIndex < 0) {
+                stack.push("n/a");
+            } else {
+                stack.push(this.ruleNames[ruleIndex]);
+            }
+            p = p.parent;
+        }
+        return stack;
+    }
+
+    /**
+     * @return {Array.<string>}
+     */
+    getDFAStrings() {
+        return this._interp.decisionToDFA.map((dfa) => {
+            return dfa.toString(this.getVocabulary());
+        });
+    }
+
+    /**
+     * @reutrn {void}
+     */
+    dumpDFA = function() {
+        var seenOne = false;
+        for (var i = 0; i < this._interp.decisionToDFA.length; i++) {
+            var dfa = this._interp.decisionToDFA[i];
+            if (dfa.states.length > 0) {
+                if (seenOne) {
+                    console.log();
+                }
+                console.log("Decision " + dfa.decision + ":");
+                console.log(dfa.toString(this.literalNames, this.symbolicNames));
+                seenOne = true;
+            }
+        }
+    }
+
+    /**
+     * @return {string}
+     */
+    getSourceName() {
+        return this._input.sourceName;
+    }
+
+    /**
+     * @return {ParseInfo}
+     */
+    getParseInfo() {
+        interp = this.getInterpreter();
+        if (interp instanceof ProfilingATNSimulator) {
+            return new ParseInfo(interp);
+        }
+        return null;
+    }
+
+    /**
+     * @since 4.3
+     *
+     * @param {boolean} profile
+     * @return {void}
+     */
+    setProfile(profile) {
+        interp = this.getInterpreter();
+        saveMode = interp.getPredictionMode();
+        if (profile) {
+            if (!(interp instanceof ProfilingATNSimulator) ) {
+                this.setInterpreter(new ProfilingATNSimulator(this));
+            }
+        }
+        else if (interp instanceof ProfilingATNSimulator) {
+            var sim =
+                new ParserATNSimulator(this, this.getATN(), interp.decisionToDFA, interp.getSharedContextCache());
+            this.setInterpreter(sim);
+        }
+        this.getInterpreter().setPredictionMode(saveMode);
+    }
+
+    /**
+     * @param {boolean} trace
+     * @return {void}
+     */
+    setTrace(trace) {
+        if (!trace) {
+            this.removeParseListener(this._tracer);
+            this._tracer = null;
+        } else {
+            if (this._tracer !== null) {
+                this.removeParseListener(this._tracer);
+            }
+            this._tracer = new TraceListener(this);
+            this.addParseListener(this._tracer);
+        }
+    }
+
+    /**
+     * Gets whether a {@link TraceListener} is registered as a parse listener
+     * for the parser.
+     *
+     * @see #setTrace(boolean)
+     *
+     * @return {boolean}
+     */
+    isTrace() {
+        return this._tracer != null;
     }
 };
 
