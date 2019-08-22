@@ -60,6 +60,7 @@ class TokenStream extends IntStream {
 	getTokenSource() {}
 
 	/**
+	 * Interval:
 	 * Return the text of all tokens within the specified {@code interval}. This
 	 * method behaves like the following code (including potential exceptions
 	 * for violating preconditions of {@link #get}, but may be optimized by the
@@ -73,29 +74,7 @@ class TokenStream extends IntStream {
 	 * }
 	 * </pre>
 	 *
-	 * @param {!org.antlr.v4.runtime.misc.Interval} interval The interval of
-     * tokens within this stream to get text for.
-	 * @return {string} The text of all tokens within the specified interval in this
-	 * stream.
-	 */
-	getText(interval) {}
-
-	/**
-	 * Return the text of all tokens in the stream. This method behaves like the
-	 * following code, including potential exceptions from the calls to
-	 * {@link IntStream#size} and {@link #getText(Interval)}, but may be
-	 * optimized by the specific implementation.
-	 *
-	 * <pre>
-	 * TokenStream stream = ...;
-	 * String text = stream.getText(new Interval(0, stream.size()));
-	 * </pre>
-	 *
-	 * @return {string} The text of all tokens in the stream.
-	 */
-	getText() {}
-
-	/**
+	 * RuleContext:
 	 * Return the text of all tokens in the source interval of the specified
 	 * context. This method behaves like the following code, including potential
 	 * exceptions from the call to {@link #getText(Interval)}, but may be
@@ -109,13 +88,7 @@ class TokenStream extends IntStream {
 	 * String text = stream.getText(ctx.getSourceInterval());
 	 * </pre>
 	 *
-	 * @param {org.antlr.v4.runtime.RuleContext} ctx The context providing the
-     * source interval of tokens to get text for.
-	 * @return {string} The text of all tokens within the source interval of {@code ctx}.
-	 */
-	getText(ctx) {}
-
-	/**
+	 * Token, Token:
 	 * Return the text of all tokens in this stream between {@code start} and
 	 * {@code stop} (inclusive).
 	 *
@@ -136,17 +109,11 @@ class TokenStream extends IntStream {
 	 * }
 	 * </pre>
 	 *
-	 * @param {org.antlr.v4.runtime.Token} start The first token in the interval
-     * to get text for.
-	 * @param {org.antlr.v4.runtime.Token} stop The last token in the interval
-     * to get text for (inclusive).
-	 * @return {string} The text of all tokens lying between the specified
-     * {@code start} and {@code stop} tokens.
-	 *
-	 * @throws {Error} UnsupportedOperationException if this stream does not support
-	 * this method for the specified tokens
+	 * @param {(org.antlr.v4.runtime.misc.Interval|org.antlr.v4.runtime.RuleContext|org.antlr.v4.runtime.Token)=} a
+	 * @param {org.antlr.v4.runtime.Token=} b
+	 * @return {string}
 	 */
-	getText(start, stop) {}
+	getText(a, b) {}
 };
 
 
