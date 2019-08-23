@@ -105,6 +105,9 @@ class Recognizer {
         if (ruleNames === null) {
             throw new Error("The current recognizer does not provide a list of rule names.");
         }
+        /**
+         * @type {Object.<number>}
+         */
         let result = Recognizer.ruleIndexMapCache.get(ruleNames);
         if (result === null) {
             Recognizer.ruleIndexMapCache.put(ruleNames, toMap(ruleNames));

@@ -21,7 +21,6 @@ const PredictionMode = goog.require('org.antlr.v4.runtime.atn.PredictionMode');
 const ProfilingATNSimulator = goog.require('org.antlr.v4.runtime.atn.ProfilingATNSimulator');
 const RuleTransition = goog.require('org.antlr.v4.runtime.atn.RuleTransition');
 const DFA = goog.require('org.antlr.v4.runtime.dfa.DFA');
-const IntegerStack = goog.require('org.antlr.v4.runtime.misc.IntegerStack');
 const IntervalSet = goog.require('org.antlr.v4.runtime.misc.IntervalSet');
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
 const ErrorNodeImpl = goog.require('org.antlr.v4.runtime.tree.ErrorNodeImpl');
