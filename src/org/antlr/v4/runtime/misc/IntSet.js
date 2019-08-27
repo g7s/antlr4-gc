@@ -156,3 +156,6 @@ class IntSet {
 	 */
 	toString() {}
 }
+
+
+exports = IntSet;
