@@ -40,5 +40,5 @@ function toMap(as) {
 
 exports = {
     escapeWhitespace,
-    toMap
+    toMap,
 };
