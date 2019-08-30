@@ -678,7 +678,7 @@ BitSet.prototype = {
                 return (j * WORD_LENGTH) + popCount(v);
             }
         }
-        return Infinity;
+        return -1;
     },
     /**
      * Calculates the Least Significant Bit
