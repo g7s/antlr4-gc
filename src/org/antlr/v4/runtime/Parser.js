@@ -438,12 +438,12 @@ class Parser extends Recognizer {
         if (serializedAtn === null) {
             throw new Error("The current parser does not support an ATN with bypass alternatives.");
         }
-        var result = this.bypassAltsAtnCache[serializedAtn];
+        var result = this.bypassAltsAtnCache.get(serializedAtn);
         if (result == null) { // may be also undefined and undefined == null
             var deserializationOptions = new ATNDeserializationOptions();
             deserializationOptions.setGenerateRuleBypassTransitions(true);
             result = new ATNDeserializer(deserializationOptions).deserialize(serializedAtn);
-            this.bypassAltsAtnCache[serializedAtn] = result;
+            this.bypassAltsAtnCache.get(serializedAtn) = result;
         }
         return result;
     }
