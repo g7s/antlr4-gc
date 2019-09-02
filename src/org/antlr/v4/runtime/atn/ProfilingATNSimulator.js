@@ -234,3 +234,6 @@ class ProfilingATNSimulator extends ParserATNSimulator {
 		return this.currentState;
     }
 }
+
+
+exports = ProfilingATNSimulator;

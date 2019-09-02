@@ -7,7 +7,15 @@
 goog.module('org.antlr.v4.runtime.misc.Pair');
 
 
+const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
 const {format} = goog.require('goog.string');
+
+/**
+ * @type {function(Object: o1, Object: o2): boolean}
+ */
+const objectEquals = (o1, o2) => {
+    return o1 === null ? o2 === null : o1.equals(o2);
+};
 
 /**
  * @template A, B
@@ -27,6 +35,30 @@ class Pair {
          */
 		this.b = b;
 	}
+
+    /**
+     * @param {Object} obj
+     * @return {boolean}
+     */
+    equals(obj) {
+        if (obj === this) {
+            return true;
+        }
+        else if (!(obj instanceof Pair)) {
+            return false;
+        }
+        return objectEquals(a, other.a) && objectEquals(b, other.b);
+    }
+
+    /**
+     * @return {number}
+     */
+    hashCode() {
+        var hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, this.a);
+        hash = MurmurHash.update(hash, this.b);
+        return MurmurHash.finish(hash, 2);
+    }
 
     /**
      * @return {string}

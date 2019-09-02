@@ -36,7 +36,17 @@ class Map {
         this.eqFn = eqFn || ((k1, k2) => k1.equals(k2));
     }
 
+    /**
+     * @return {number}
+     */
     get length() {
+        return this.len;
+    }
+
+    /**
+     * @return {number}
+     */
+    size() {
         return this.len;
     }
 
