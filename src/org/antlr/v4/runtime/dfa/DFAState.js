@@ -195,5 +195,6 @@ class DFAState {
 	}
 }
 
+DFAState.PredPrediction = PredPrediction;
 
 exports = DFAState;
