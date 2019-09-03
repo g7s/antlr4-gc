@@ -127,7 +127,7 @@ class SemanticContext$Predicate extends SemanticContext {
     }
 };
 
-SemanticContext.PrecedencePredicate = class SemanticContext$PrecedencePredicate extends SemanticContext {
+class SemanticContext$PrecedencePredicate extends SemanticContext {
     /**
      * @param {number=} precedence
      */
@@ -419,6 +419,7 @@ class SemanticContext$OR extends SemanticContext$Operator {
 };
 
 SemanticContext.Predicate = SemanticContext$Predicate;
+SemanticContext.PrecedencePredicate = SemanticContext$PrecedencePredicate;
 SemanticContext.Operator = SemanticContext$Operator;
 SemanticContext.AND = SemanticContext$AND;
 SemanticContext.OR = SemanticContext$OR;
