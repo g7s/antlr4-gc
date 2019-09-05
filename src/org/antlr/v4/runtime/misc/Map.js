@@ -51,6 +51,13 @@ class Map {
     }
 
     /**
+     * @return {boolean}
+     */
+    isEmpty() {
+        return this.len === 0;
+    }
+
+    /**
      * @param {K} key
      * @param {V} value
      * @return {V}

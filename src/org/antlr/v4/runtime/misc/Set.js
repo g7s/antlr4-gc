@@ -51,6 +51,13 @@ class Set {
     }
 
     /**
+     * @return {boolean}
+     */
+    isEmpty() {
+        return this.len === 0;
+    }
+
+    /**
      * @param {T} value
      * @return {boolean}
      */
