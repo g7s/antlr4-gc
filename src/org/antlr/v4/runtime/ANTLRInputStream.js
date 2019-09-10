@@ -7,9 +7,9 @@
 goog.module('org.antlr.v4.runtime.ANTLRInputStream');
 
 
-const {assert} = goog.require('goog.asserts');
 const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
 const CharStream = goog.require('org.antlr.v4.runtime.CharStream');
+const {assert} = goog.require('goog.asserts');
 
 class ANTLRInputStream extends CharStream {
     /**
@@ -59,7 +59,7 @@ class ANTLRInputStream extends CharStream {
 
     consume() {
         if (this.p >= this.n) {
-            assert(this.LA(1) == IntStream.EOF);
+            assert(this.LA(1) === IntStream.EOF);
             throw new Error("cannot consume EOF");
         }
         this.p++;

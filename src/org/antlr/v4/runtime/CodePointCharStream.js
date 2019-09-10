@@ -7,9 +7,9 @@
 goog.module('org.antlr.v4.runtime.CodePointCharStream');
 
 
-const {assert} = goog.require('goog.asserts');
 const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
 const CharStream = goog.require('org.antlr.v4.runtime.CharStream');
+const {assert} = goog.require('goog.asserts');
 
 class CodePointCharStream extends CharStream {
     /**
@@ -21,7 +21,7 @@ class CodePointCharStream extends CharStream {
          * 0..n-1 index into string of next char
          * @private {number}
          */
-        this.p = 0;
+        this.position = 0;
         /**
          * The data being scanned
          * @private {Array.<number>}
@@ -55,15 +55,15 @@ class CodePointCharStream extends CharStream {
      * @return {void}
      */
     reset() {
-        this.p = 0;
+        this.position = 0;
     }
 
     consume() {
-        if (this.p >= this.n) {
-            assert(this.LA(1) == IntStream.EOF);
+        if (this.position >= this.n) {
+            assert(this.LA(1) === IntStream.EOF);
             throw new Error("cannot consume EOF");
         }
-        this.p++;
+        this.position++;
     }
 
     LA(i) {
@@ -72,14 +72,14 @@ class CodePointCharStream extends CharStream {
         }
         if (i < 0) {
             i++; // e.g., translate LA(-1) to use offset i=0; then data[p+0-1]
-            if ((this.p + i - 1) < 0) {
+            if ((this.position + i - 1) < 0) {
                 return IntStream.EOF; // invalid; no char before first char
             }
         }
-        if ((this.p + i - 1) >= this.n ) {
+        if ((this.position + i - 1) >= this.n ) {
             return IntStream.EOF;
         }
-        return this.data[this.p + i - 1];
+        return this.data[this.position + i - 1];
     }
 
     LT(i) {
@@ -92,7 +92,7 @@ class CodePointCharStream extends CharStream {
      * be returned from LA(1).
      */
     index() {
-        return this.p;
+        return this.position;
     }
 
     size() {
@@ -106,7 +106,7 @@ class CodePointCharStream extends CharStream {
     release(marker) {}
 
     seek(index) {
-        this.p = index;
+        this.position = index;
     }
 
     getText(interval) {

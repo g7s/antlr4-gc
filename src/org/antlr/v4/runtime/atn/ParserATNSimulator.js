@@ -31,14 +31,7 @@ const Map = goog.require('org.antlr.v4.runtime.misc.Map');
 const IntervalSet = goog.require('org.antlr.v4.runtime.misc.IntervalSet');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const VocabularyImpl = goog.require('org.antlr.v4.runtime.VocabularyImpl');
-
-const BailErrorStrategy = goog.require('org.antlr.v4.runtime.BailErrorStrategy');
-const FailedPredicateException = goog.require('org.antlr.v4.runtime.FailedPredicateException');
-const Parser = goog.require('org.antlr.v4.runtime.Parser');
-const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
-const TokenStream = goog.require('org.antlr.v4.runtime.TokenStream');
-const Vocabulary = goog.require('org.antlr.v4.runtime.Vocabulary');
-const DFA = goog.require('org.antlr.v4.runtime.dfa.DFA');
+const {assert} = goog.require('goog.asserts');
 
 /**
  * The embodiment of the adaptive LL(*), ALL(*), parsing strategy.
@@ -868,7 +861,7 @@ class ParserATNSimulator extends ATNSimulator {
 			if (ParserATNSimulator.debug) console.log("testing "+this.getTokenName(t)+" at "+c.toString());
 
 			if (c.state instanceof RuleStopState) {
-				if (!c.context.isEmpty()) throw new Error("context should be empty");
+				assert(c.context.isEmpty());
 				if (fullCtx || t === IntStream.EOF) {
 					if (skippedStopStates == null) {
 						skippedStopStates = [];
@@ -967,7 +960,7 @@ class ParserATNSimulator extends ATNSimulator {
 		 * multiple alternatives are viable.
 		 */
 		if (skippedStopStates != null && (!fullCtx || !PredictionMode.hasConfigInRuleStopState(reach))) {
-			if (skippedStopStates.isEmpty()) throw new Error("skippedStopStates should not be empty");
+            assert(!skippedStopStates.isEmpty());
 			for (const c of skippedStopStates) {
 				reach.add(c, mergeCache);
 			}
@@ -1027,7 +1020,7 @@ class ParserATNSimulator extends ATNSimulator {
 
     /**
      * @param {ATNState} p
-     * @param {RuleContext} ctx
+     * @param {org.antlr.v4.runtime.RuleContext} ctx
      * @param {boolean} fullCtx
      * @return {ATNConfigSet}
      */
@@ -1330,7 +1323,7 @@ class ParserATNSimulator extends ATNSimulator {
 			var pred = altToPred[i];
 
 			// unpredicated is indicated by SemanticContext.NONE
-			if (pred == null) throw new Error("pred should not be null");
+			assert(pred != null);
 
 			if (ambigAlts != null && ambigAlts.get(i)) {
 				pairs.push(new DFAState.PredPrediction(pred, i));
@@ -1556,7 +1549,7 @@ class ParserATNSimulator extends ATNSimulator {
     closure(config, configs, closureBusy, collectPredicates, fullCtx, treatEofAsEpsilon) {
         var initialDepth = 0;
         this.closureCheckingStopState(config, configs, closureBusy, collectPredicates, fullCtx, initialDepth, treatEofAsEpsilon);
-        if (fullCtx && configs.dipsIntoOuterContext) throw new Error("assert");
+        assert(!fullCtx || !configs.dipsIntoOuterContext);
     }
 
     /**
@@ -1602,7 +1595,7 @@ class ParserATNSimulator extends ATNSimulator {
 					// isPrecedenceFilterSuppressed() value to the new
 					// configuration.
 					c.reachesIntoOuterContext = config.reachesIntoOuterContext;
-					if (depth <= Number.MIN_VALUE) throw new Error("assert");
+					assert(depth > Number.MIN_VALUE);
 					this.closureCheckingStopState(c, configs, closureBusy, collectPredicates, fullCtx, depth - 1, treatEofAsEpsilon);
 				}
 				return;
@@ -1654,7 +1647,7 @@ class ParserATNSimulator extends ATNSimulator {
 			if (c != null) {
 				var newDepth = depth;
 				if (config.state instanceof RuleStopState) {
-					if (fullCtx) throw new Error("assert");
+					assert(!fullCtx);
 					// target fell off end of rule; mark resulting c as having dipped into outer context
 					// We can't get here if incoming config was rule stop and we had context
 					// track how far we dip into outer context.  Might
@@ -1676,7 +1669,7 @@ class ParserATNSimulator extends ATNSimulator {
 					}
 
 					configs.dipsIntoOuterContext = true; // TODO: can remove? only care when we add to set per middle of this method
-					if (newDepth <= Number.MIN_VALUE) throw new Error("assert");
+					assert(newDepth > Number.MIN_VALUE);
 					newDepth--;
 					if (ParserATNSimulator.debug) console.log("dips into outer ctx: "+c);
 				}

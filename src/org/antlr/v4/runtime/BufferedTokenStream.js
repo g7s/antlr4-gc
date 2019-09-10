@@ -14,6 +14,7 @@ const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const TokenStream = goog.require('org.antlr.v4.runtime.TokenStream');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const {contains} = goog.require('goog.array');
+const {assert} = goog.require('goog.asserts');
 
 /**
  * This implementation of {@link TokenStream} loads tokens from a
@@ -150,7 +151,7 @@ class BufferedTokenStream extends TokenStream {
      * @see #get(int i)
      */
     sync(i) {
-        if (i < 0) throw new Error('Index should be >= 0');
+        assert(i >= 0);
         var n = i - this.size() + 1; // how many more elements we need?
         //System.out.println("sync("+i+") needs "+n);
         if (n > 0) {

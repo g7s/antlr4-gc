@@ -15,6 +15,7 @@ const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const Map = goog.require('org.antlr.v4.runtime.misc.Map');
 const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
 const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
+const {assert} = goog.require('goog.asserts');
 
 /**
  * @abstract
@@ -195,6 +196,8 @@ PredictionContext.calculateHashCode = function (parents, returnStates) {
  * @return {PredictionContext}
  */
 PredictionContext.merge = function (a, b, rootIsWildcard, mergeCache) {
+    assert(a != null && b != null);
+
     // share same graph if both same
     if (a === b || a.equals(b)) return a;
 

@@ -24,6 +24,7 @@ const CharStream = goog.require('org.antlr.v4.runtime.CharStream');
 const LexerNoViableAltException = goog.require('org.antlr.v4.runtime.LexerNoViableAltException');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const {format} = goog.require('goog.string');
+const {assert} = goog.require('goog.asserts');
 
 /** When we hit an accept state in either the DFA or the ATN, we
  *  have to notify the character stream to start buffering characters
@@ -780,7 +781,7 @@ class LexerATNSimulator extends ATNSimulator {
         /* the lexer evaluates predicates on-the-fly; by this point configs
          * should not contain any configurations with unevaluated predicates.
          */
-        if (configs.hasSemanticContext) throw new Error("assert");
+        assert(!configs.hasSemanticContext);
         var proposed = new DFAState(configs);
         /**
          * @type {org.antlr.v4.runtime.atn.ATNConfig}

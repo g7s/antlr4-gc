@@ -9,6 +9,7 @@ goog.module('org.antlr.v4.runtime.atn.SingletonPredictionContext');
 
 const PredictionContext = goog.require('org.antlr.v4.runtime.atn.PredictionContext');
 const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
+const {assert} = goog.require('goog.asserts');
 
 class SingletonPredictionContext extends PredictionContext {
     /**
@@ -17,9 +18,7 @@ class SingletonPredictionContext extends PredictionContext {
      */
 	constructor(parent, returnState) {
 		super(parent != null ? this.calculateHashCode(parent, returnState) : this.calculateEmptyHashCode());
-		if (returnState === ATNState.INVALID_STATE_NUMBER) {
-            throw new Error('wrong argument');
-        }
+		assert(returnState !== ATNState.INVALID_STATE_NUMBER);
         /**
          * @type {PredictionContext}
          */
