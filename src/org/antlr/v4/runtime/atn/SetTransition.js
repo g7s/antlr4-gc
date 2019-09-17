@@ -7,7 +7,7 @@
 goog.module('org.antlr.v4.runtime.atn.SetTransition');
 
 
-const Transition = goog.module('org.antlr.v4.runtime.atn.Transition');
+const Transition = goog.require('org.antlr.v4.runtime.atn.Transition');
 const Token = goog.require('org.antlr.v4.runtime.Token');
 const IntervalSet = goog.require('org.antlr.v4.runtime.misc.IntervalSet');
 

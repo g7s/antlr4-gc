@@ -8,7 +8,7 @@ goog.module('org.antlr.v4.runtime.ListTokenSource');
 
 
 const TokenSource = goog.require('org.antlr.v4.runtime.TokenSource');
-const CommonTokenFactory = goog.require('org.antlr.v4.runtimr.CommonTokenFactory');
+const CommonTokenFactory = goog.require('org.antlr.v4.runtime.CommonTokenFactory');
 const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
 
 /**

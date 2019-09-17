@@ -423,7 +423,7 @@ class IntervalSet extends IntSet {
     toSet() {
         var s = new Set();
         for (const v of s) {
-            for (var j = v.a; j <= v.b; v++) {
+            for (var j = v.a; j <= v.b; j++) {
                 s.add(j);
             }
         }

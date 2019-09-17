@@ -89,29 +89,21 @@ class ATN {
 	 * restricted to tokens reachable staying within {@code s}'s rule.
      *
      * @param {org.antlr.v4.runtime.atn.ATNState} s
-     * @param {org.antlr.v4.runtime.RuleContext} ctx
+     * @param {org.antlr.v4.runtime.RuleContext=} ctx
      * @return {IntervalSet}
 	 */
 	nextTokens(s, ctx) {
-		var anal = new LL1Analyzer(this);
-		var next = anal.LOOK(s, ctx);
-		return next;
+        if (goog.isDef(ctx)) {
+            var anal = new LL1Analyzer(this);
+            var next = anal.LOOK(s, ctx);
+            return next;
+        } else {
+            if (s.nextTokenWithinRule != null) return s.nextTokenWithinRule;
+            s.nextTokenWithinRule = this.nextTokens(s, null);
+            s.nextTokenWithinRule.setReadonly(true);
+            return s.nextTokenWithinRule;
+        }
 	}
-
-    /**
-	 * Compute the set of valid tokens that can occur starting in {@code s} and
-	 * staying in same rule. {@link Token#EPSILON} is in set if we reach end of
-	 * rule.
-     *
-     * @param {org.antlr.v4.runtime.atn.ATNState} s
-     * @return {IntervalSet}
-     */
-    nextTokens(s) {
-        if (s.nextTokenWithinRule != null) return s.nextTokenWithinRule;
-        s.nextTokenWithinRule = this.nextTokens(s, null);
-        s.nextTokenWithinRule.setReadonly(true);
-        return s.nextTokenWithinRule;
-    }
 
     /**
      * @param {org.antlr.v4.runtime.atn.ATNState} state

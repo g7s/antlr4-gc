@@ -7,8 +7,8 @@
 goog.module('org.antlr.v4.runtime.atn.EmptyPredictionContext');
 
 
-const PredictionContext = goog.module('org.antlr.v4.runtime.atn.PredictionContext');
-const SingletonPredictionContext = goog.module('org.antlr.v4.runtime.atn.SingletonPredictionContext');
+const PredictionContext = goog.require('org.antlr.v4.runtime.atn.PredictionContext');
+const SingletonPredictionContext = goog.require('org.antlr.v4.runtime.atn.SingletonPredictionContext');
 
 class EmptyPredictionContext extends SingletonPredictionContext {
 	constructor() {

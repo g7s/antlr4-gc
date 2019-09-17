@@ -4,19 +4,18 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-goog.module('org.antlr.v4.runtime.NoViableException');
+goog.module('org.antlr.v4.runtime.NoViableAltException');
 
 
 const RecognitionException = goog.require('org.antlr.v4.runtime.RecognitionException');
-const ATNConfigSet = goog.require('org.antlr.v4.runtime.atn.ATNConfigSet');
 
-class NoViableException extends RecognitionException {
+class NoViableAltException extends RecognitionException {
     /**
      * @param {org.antlr.v4.runtime.Parser} recognizer
      * @param {org.antlr.v4.runtime.TokenStream} input
      * @param {org.antlr.v4.runtime.Token} startToken
      * @param {org.antlr.v4.runtime.Token} offendingToken
-     * @param {ATNConfigSet} deadEndConfigs
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} deadEndConfigs
      * @param {org.antlr.v4.runtime.ParserRuleContext} ctx
      */
     constructor(recognizer, input, startToken, offendingToken, deadEndConfigs, ctx) {
@@ -28,7 +27,7 @@ class NoViableException extends RecognitionException {
         super(recognizer, input, ctx);
         /**
          * Which configurations did we try at input.index() that couldn't match input.LT(1)?
-         * @private {ATNConfigSet}
+         * @private {org.antlr.v4.runtime.atn.ATNConfigSet}
          */
         this.deadEndConfigs = deadEndConfigs;
         /**
@@ -51,7 +50,7 @@ class NoViableException extends RecognitionException {
     }
 
     /**
-     * @return {ATNConfigSet}
+     * @return {org.antlr.v4.runtime.atn.ATNConfigSet}
      */
     getDeadEndConfigs() {
         return this.deadEndConfigs;
@@ -59,4 +58,4 @@ class NoViableException extends RecognitionException {
 };
 
 
-exports = NoViableException;
+exports = NoViableAltException;

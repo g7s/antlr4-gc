@@ -81,7 +81,7 @@ class TokenSource {
      * to use for creating tokens.
      * @return {void}
 	 */
-	setTokenFactory(factory);
+	setTokenFactory(factory) {}
 
 	/**
 	 * Gets the {@link TokenFactory} this token source is currently using for

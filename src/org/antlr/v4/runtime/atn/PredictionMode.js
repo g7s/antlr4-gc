@@ -24,7 +24,7 @@ const {find} = goog.require('goog.array');
  *
  * @type {Object}
  */
-PredictionMode = {};
+const PredictionMode = {};
 
 /**
  * The SLL(*) prediction mode. This prediction mode ignores the current

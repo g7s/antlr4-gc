@@ -4,7 +4,7 @@
  * can be found in the LICENSE.txt file in the project root.
  */
 
-goog.module('org.antlr.v4.runtime.atn');
+goog.module('org.antlr.v4.runtime.atn.LexerAction');
 
 
 /**

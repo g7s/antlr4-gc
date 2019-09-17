@@ -257,9 +257,6 @@ PredictionContext.mergeSingletons = function (a, b, rootIsWildcard, mergeCache) 
          */
         var previous = mergeCache.get(new Pair(a, b));
         if (previous != null) return previous;
-        /**
-         * @type {PredictionContext}
-         */
         previous = mergeCache.get(new Pair(b, a));
         if (previous != null) return previous;
     }
@@ -433,9 +430,6 @@ PredictionContext.mergeArrays = function (a, b, rootIsWildcard, mergeCache) {
          */
         var previous = mergeCache.get(new Pair(a, b));
         if (previous != null) return previous;
-        /**
-         * @type {PredictionContext}
-         */
         previous = mergeCache.get(new Pair(b, a));
         if (previous != null) return previous;
     }

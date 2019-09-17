@@ -31,16 +31,7 @@ class TokenFactory {
      * @param {number} charPositionInLine
      * @return {T}
 	 */
-	create(source, type, text, channel, start, stop, line, charPositionInLine);
-
-	/**
-     * Generically useful
-     *
-     * @param {number} type
-     * @param {string} text
-     * @return {T}
-     */
-	create(type, text);
+	create(source, type, text, channel, start, stop, line, charPositionInLine) {}
 };
 
 

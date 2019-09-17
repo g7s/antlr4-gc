@@ -13,7 +13,6 @@ const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
 const LexerNoViableAltException = goog.require('org.antlr.v4.runtime.LexerNoViableAltException');
 const CommonTokenFactory = goog.require('org.antlr.v4.runtime.CommonTokenFactory');
 const LexerATNSimulator = goog.require('org.antlr.v4.runtime.atn.LexerATNSimulator');
-const IntegerStack = goog.require('org.antlr.v4.runtime.misc.IntegerStack');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
 
@@ -443,13 +442,17 @@ class Lexer extends Recognizer {
     }
 
     /**
-     * @param {LexerNoViableAltException} e
+     * @param {LexerNoViableAltException|org.antlr.v4.runtime.RecognitionException} e
      * @return {void}
      */
     recover(e) {
-        if (this._input.LA(1) !== IntStream.EOF) {
-            // skip a char and try again
-            this.getInterpreter().consume(this._input);
+        if (e instanceof LexerNoViableAltException) {
+            if (this._input.LA(1) !== IntStream.EOF) {
+                // skip a char and try again
+                this.getInterpreter().consume(this._input);
+            }
+        } else {
+            this._input.consume();
         }
     }
 
@@ -501,22 +504,6 @@ class Lexer extends Recognizer {
      */
     getCharErrorDisplay(c) {
         return "'" + this.getErrorDisplayForChar(c) + "'";
-    }
-
-    /**
-     * Lexers can normally match any char in it's vocabulary after matching
-     * a token, so do the easy thing and just kill a character and hope
-     * it all works out.  You can instead use the rule invocation stack
-     * to do sophisticated error recovery if you are in a fragment rule.
-     *
-     * @param {org.antlr.v4.runtime.RecognitionException} re
-     * @return {void}
-     */
-    recover(re) {
-        //System.out.println("consuming char "+(char)input.LA(1)+" during recovery");
-        //re.printStackTrace();
-        // TODO: Do we lose character or line position information?
-        this._input.consume();
     }
 };
 

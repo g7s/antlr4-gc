@@ -14,249 +14,6 @@ const InputMismatchException = goog.require('org.antlr.v4.runtime.InputMismatchE
 const FailedPredicateException = goog.require('org.antlr.v4.runtime.FailedPredicateException');
 
 /**
- * @param {string} s
- * @return {string}
- */
-function escapeWSAndQuote(s) {
-    s = s.replace("\n","\\n");
-    s = s.replace("\r","\\r");
-    s = s.replace("\t","\\t");
-    return "'"+s+"'";
-}
-
-/**
- * @param {Token} symbol
- * @return {string}
- */
-function getSymbolText(symbol) {
-    return symbol.getText();
-}
-
-/**
- * @param {Token} symbol
- * @return {number}
- */
-function getSymbolType(symbol) {
-    return symbol.getType();
-}
-
-/** How should a token be displayed in an error message? The default
- *  is to display just the text, but during development you might
- *  want to have a lot of information spit out.  Override in that case
- *  to use t.toString() (which, for CommonToken, dumps everything about
- *  the token). This is better than forcing you to override a method in
- *  your token objects because you don't have to go modify your lexer
- *  so that it creates a new Java type.
- *
- * @param {Token} t
- * @return {string}
- */
-function getTokenErrorDisplay(t) {
-    if (t === null) return "<no token>";
-    let s = getSymbolText(t);
-    if (s === null) {
-        if (getSymbolType(t)==Token.EOF ) {
-            s = "<EOF>";
-        }
-        else {
-            s = "<"+getSymbolType(t)+">";
-        }
-    }
-    return escapeWSAndQuote(s);
-}
-
-/**
- *  Compute the error recovery set for the current rule.  During
- *  rule invocation, the parser pushes the set of tokens that can
- *  follow that rule reference on the stack; this amounts to
- *  computing FIRST of what follows the rule reference in the
- *  enclosing rule. See LinearApproximator.FIRST().
- *  This local follow set only includes tokens
- *  from within the rule; i.e., the FIRST computation done by
- *  ANTLR stops at the end of a rule.
- *
- *  EXAMPLE
- *
- *  When you find a "no viable alt exception", the input is not
- *  consistent with any of the alternatives for rule r.  The best
- *  thing to do is to consume tokens until you see something that
- *  can legally follow a call to r *or* any rule that called r.
- *  You don't want the exact set of viable next tokens because the
- *  input might just be missing a token--you might consume the
- *  rest of the input looking for one of the missing tokens.
- *
- *  Consider grammar:
- *
- *  a : '[' b ']'
- *    | '(' b ')'
- *    ;
- *  b : c '^' INT ;
- *  c : ID
- *    | INT
- *    ;
- *
- *  At each rule invocation, the set of tokens that could follow
- *  that rule is pushed on a stack.  Here are the various
- *  context-sensitive follow sets:
- *
- *  FOLLOW(b1_in_a) = FIRST(']') = ']'
- *  FOLLOW(b2_in_a) = FIRST(')') = ')'
- *  FOLLOW(c_in_b) = FIRST('^') = '^'
- *
- *  Upon erroneous input "[]", the call chain is
- *
- *  a -> b -> c
- *
- *  and, hence, the follow context stack is:
- *
- *  depth     follow set       start of rule execution
- *    0         <EOF>                    a (from main())
- *    1          ']'                     b
- *    2          '^'                     c
- *
- *  Notice that ')' is not included, because b would have to have
- *  been called from a different context in rule a for ')' to be
- *  included.
- *
- *  For error recovery, we cannot consider FOLLOW(c)
- *  (context-sensitive or otherwise).  We need the combined set of
- *  all context-sensitive FOLLOW sets--the set of all tokens that
- *  could follow any reference in the call chain.  We need to
- *  resync to one of those tokens.  Note that FOLLOW(c)='^' and if
- *  we resync'd to that token, we'd consume until EOF.  We need to
- *  sync to context-sensitive FOLLOWs for a, b, and c: {']','^'}.
- *  In this case, for input "[]", LA(1) is ']' and in the set, so we would
- *  not consume anything. After printing an error, rule c would
- *  return normally.  Rule b would not find the required '^' though.
- *  At this point, it gets a mismatched token error and throws an
- *  exception (since LA(1) is not in the viable following token
- *  set).  The rule exception handler tries to recover, but finds
- *  the same recovery set and doesn't consume anything.  Rule b
- *  exits normally returning to rule a.  Now it finds the ']' (and
- *  with the successful match exits errorRecovery mode).
- *
- *  So, you can see that the parser walks up the call chain looking
- *  for the token that was a member of the recovery set.
- *
- *  Errors are not generated in errorRecovery mode.
- *
- *  ANTLR's error recovery mechanism is based upon original ideas:
- *
- *  "Algorithms + Data Structures = Programs" by Niklaus Wirth
- *
- *  and
- *
- *  "A note on error recovery in recursive descent parsers":
- *  http://portal.acm.org/citation.cfm?id=947902.947905
- *
- *  Later, Josef Grosch had some good ideas:
- *
- *  "Efficient and Comfortable Error Recovery in Recursive Descent
- *  Parsers":
- *  ftp://www.cocolab.com/products/cocktail/doca4.ps/ell.ps.zip
- *
- *  Like Grosch I implement context-sensitive FOLLOW sets that are combined
- *  at run-time upon error to avoid overhead during parsing.
- *
- * @param {org.antlr.v4.runtime.Parser} recognizer
- * @return {org.antlr.v4.runtime.misc.IntervalSet}
- */
-function getErrorRecoverySet(recognizer) {
-    /**
-     * @type {org.antlr.v4.runtime.atn.ATN}
-     */
-    let atn = recognizer.getInterpreter().atn;
-    let ctx = recognizer._ctx;
-    let recoverSet = new IntervalSet();
-    while (ctx !== null && ctx.invokingState >= 0) {
-        // compute what follows who invoked us
-        /**
-         * @type {org.antlr.v4.runtime.atn.ATNState}
-         */
-        let invokingState = atn.states.get(ctx.invokingState);
-        /**
-         * @type {org.antlr.v4.runtime.atn.RuleTransition}
-         */
-        let rt = invokingState.transition(0);
-        /**
-         * @type {org.antlr.v4.runtime.misc.IntervalSet}
-         */
-        let follow = atn.nextTokens(rt.followState);
-        recoverSet.addAll(follow);
-        ctx = ctx.parent;
-    }
-    recoverSet.remove(Token.EPSILON);
-    return recoverSet;
-}
-
-/**
- * Consume tokens until one matches the given token set.
- *
- * @param {org.antlr.v4.runtime.Parser} recognizer
- * @param {org.antlr.v4.runtime.misc.IntervalSet} set
- */
-function consumeUntil(recognizer, set) {
-    /**
-     * @type {number}
-     */
-    let ttype = recognizer.getInputStream().LA(1);
-    while (ttype !== Token.EOF && !set.contains(ttype)) {
-        recognizer.consume();
-        ttype = recognizer.getInputStream().LA(1);
-    }
-}
-
-/**
- *  Conjure up a missing token during error recovery.
- *
- *  The recognizer attempts to recover from single missing
- *  symbols. But, actions might refer to that missing symbol.
- *  For example, x=ID {f($x);}. The action clearly assumes
- *  that there has been an identifier matched previously and that
- *  $x points at that token. If that token is missing, but
- *  the next token in the stream is what we want we assume that
- *  this token is missing and we keep going. Because we
- *  have to return some token to replace the missing token,
- *  we have to conjure one up. This method gives the user control
- *  over the tokens returned for missing tokens. Mostly,
- *  you will want to create something special for identifier
- *  tokens. For literals such as '{' and ',', the default
- *  action in the parser or tree parser works. It simply creates
- *  a CommonToken of the appropriate type. The text will be the token.
- *  If you change what tokens must be created by the lexer,
- *  override this method to create the appropriate tokens.
- *
- * @param {org.antlr.v4.runtime.Parser} recognizer
- * @return {Token}
- */
-function getMissingSymbol(recognizer) {
-    let current = recognizer.getCurrentToken();
-    let expecting = recognizer.getExpectedTokens();
-    let expectedTokenType = Token.INVALID_TYPE;
-    if (!expecting.isNil()) {
-        expectedTokenType = expecting.getMinElement(); // get any element
-    }
-    let tokenText = "";
-    if (expectedTokenType === Token.EOF ) {
-        tokenText = "<missing EOF>";
-    } else {
-        tokenText = "<missing "+recognizer.getVocabulary().getDisplayName(expectedTokenType)+">";
-    }
-    let lookback = recognizer.getInputStream().LT(-1);
-    if (current.getType() === Token.EOF && lookback !== null) {
-        current = lookback;
-    }
-    /**
-     * @type {Pair<TokenSource, org.antlr.v4.runtime.CharStream>}
-     */
-    let p = new Pair(current.getTokenSource(), current.getTokenSource().getInputStream())
-    return recognizer.getTokenFactory().create(p, expectedTokenType, tokenText,
-                        Token.DEFAULT_CHANNEL,
-                        -1, -1,
-                        current.getLine(), current.getCharPositionInLine());
-}
-
-/**
  * This is the default implementation of {@link ANTLRErrorStrategy} used for
  * error reporting and recovery in ANTLR parsers.
  */
@@ -308,6 +65,250 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
          * @type {number}
          */
         this.nextTokensState = 0;
+    }
+
+
+    /**
+     * @param {string} s
+     * @return {string}
+     */
+    escapeWSAndQuote(s) {
+        s = s.replace("\n","\\n");
+        s = s.replace("\r","\\r");
+        s = s.replace("\t","\\t");
+        return "'"+s+"'";
+    }
+
+    /**
+     * @param {Token} symbol
+     * @return {string}
+     */
+    getSymbolText(symbol) {
+        return symbol.getText();
+    }
+
+    /**
+     * @param {Token} symbol
+     * @return {number}
+     */
+    getSymbolType(symbol) {
+        return symbol.getType();
+    }
+
+    /** How should a token be displayed in an error message? The default
+     *  is to display just the text, but during development you might
+     *  want to have a lot of information spit out.  Override in that case
+     *  to use t.toString() (which, for CommonToken, dumps everything about
+     *  the token). This is better than forcing you to override a method in
+     *  your token objects because you don't have to go modify your lexer
+     *  so that it creates a new Java type.
+     *
+     * @param {Token} t
+     * @return {string}
+     */
+    getTokenErrorDisplay(t) {
+        if (t === null) return "<no token>";
+        let s = this.getSymbolText(t);
+        if (s === null) {
+            if (this.getSymbolType(t) === Token.EOF ) {
+                s = "<EOF>";
+            }
+            else {
+                s = "<"+this.getSymbolType(t)+">";
+            }
+        }
+        return this.escapeWSAndQuote(s);
+    }
+
+    /**
+     *  Compute the error recovery set for the current rule.  During
+     *  rule invocation, the parser pushes the set of tokens that can
+     *  follow that rule reference on the stack; this amounts to
+     *  computing FIRST of what follows the rule reference in the
+     *  enclosing rule. See LinearApproximator.FIRST().
+     *  This local follow set only includes tokens
+     *  from within the rule; i.e., the FIRST computation done by
+     *  ANTLR stops at the end of a rule.
+     *
+     *  EXAMPLE
+     *
+     *  When you find a "no viable alt exception", the input is not
+     *  consistent with any of the alternatives for rule r.  The best
+     *  thing to do is to consume tokens until you see something that
+     *  can legally follow a call to r *or* any rule that called r.
+     *  You don't want the exact set of viable next tokens because the
+     *  input might just be missing a token--you might consume the
+     *  rest of the input looking for one of the missing tokens.
+     *
+     *  Consider grammar:
+     *
+     *  a : '[' b ']'
+     *    | '(' b ')'
+     *    ;
+     *  b : c '^' INT ;
+     *  c : ID
+     *    | INT
+     *    ;
+     *
+     *  At each rule invocation, the set of tokens that could follow
+     *  that rule is pushed on a stack.  Here are the various
+     *  context-sensitive follow sets:
+     *
+     *  FOLLOW(b1_in_a) = FIRST(']') = ']'
+     *  FOLLOW(b2_in_a) = FIRST(')') = ')'
+     *  FOLLOW(c_in_b) = FIRST('^') = '^'
+     *
+     *  Upon erroneous input "[]", the call chain is
+     *
+     *  a -> b -> c
+     *
+     *  and, hence, the follow context stack is:
+     *
+     *  depth     follow set       start of rule execution
+     *    0         <EOF>                    a (from main())
+     *    1          ']'                     b
+     *    2          '^'                     c
+     *
+     *  Notice that ')' is not included, because b would have to have
+     *  been called from a different context in rule a for ')' to be
+     *  included.
+     *
+     *  For error recovery, we cannot consider FOLLOW(c)
+     *  (context-sensitive or otherwise).  We need the combined set of
+     *  all context-sensitive FOLLOW sets--the set of all tokens that
+     *  could follow any reference in the call chain.  We need to
+     *  resync to one of those tokens.  Note that FOLLOW(c)='^' and if
+     *  we resync'd to that token, we'd consume until EOF.  We need to
+     *  sync to context-sensitive FOLLOWs for a, b, and c: {']','^'}.
+     *  In this case, for input "[]", LA(1) is ']' and in the set, so we would
+     *  not consume anything. After printing an error, rule c would
+     *  return normally.  Rule b would not find the required '^' though.
+     *  At this point, it gets a mismatched token error and throws an
+     *  exception (since LA(1) is not in the viable following token
+     *  set).  The rule exception handler tries to recover, but finds
+     *  the same recovery set and doesn't consume anything.  Rule b
+     *  exits normally returning to rule a.  Now it finds the ']' (and
+     *  with the successful match exits errorRecovery mode).
+     *
+     *  So, you can see that the parser walks up the call chain looking
+     *  for the token that was a member of the recovery set.
+     *
+     *  Errors are not generated in errorRecovery mode.
+     *
+     *  ANTLR's error recovery mechanism is based upon original ideas:
+     *
+     *  "Algorithms + Data Structures = Programs" by Niklaus Wirth
+     *
+     *  and
+     *
+     *  "A note on error recovery in recursive descent parsers":
+     *  http://portal.acm.org/citation.cfm?id=947902.947905
+     *
+     *  Later, Josef Grosch had some good ideas:
+     *
+     *  "Efficient and Comfortable Error Recovery in Recursive Descent
+     *  Parsers":
+     *  ftp://www.cocolab.com/products/cocktail/doca4.ps/ell.ps.zip
+     *
+     *  Like Grosch I implement context-sensitive FOLLOW sets that are combined
+     *  at run-time upon error to avoid overhead during parsing.
+     *
+     * @param {org.antlr.v4.runtime.Parser} recognizer
+     * @return {org.antlr.v4.runtime.misc.IntervalSet}
+     */
+    getErrorRecoverySet(recognizer) {
+        /**
+         * @type {org.antlr.v4.runtime.atn.ATN}
+         */
+        let atn = recognizer.getInterpreter().atn;
+        let ctx = recognizer._ctx;
+        let recoverSet = new IntervalSet();
+        while (ctx !== null && ctx.invokingState >= 0) {
+            // compute what follows who invoked us
+            /**
+             * @type {org.antlr.v4.runtime.atn.ATNState}
+             */
+            let invokingState = atn.states.get(ctx.invokingState);
+            /**
+             * @type {org.antlr.v4.runtime.atn.RuleTransition}
+             */
+            let rt = invokingState.transition(0);
+            /**
+             * @type {org.antlr.v4.runtime.misc.IntervalSet}
+             */
+            let follow = atn.nextTokens(rt.followState);
+            recoverSet.addAll(follow);
+            ctx = ctx.parent;
+        }
+        recoverSet.remove(Token.EPSILON);
+        return recoverSet;
+    }
+
+    /**
+     * Consume tokens until one matches the given token set.
+     *
+     * @param {org.antlr.v4.runtime.Parser} recognizer
+     * @param {org.antlr.v4.runtime.misc.IntervalSet} set
+     */
+    consumeUntil(recognizer, set) {
+        /**
+         * @type {number}
+         */
+        let ttype = recognizer.getInputStream().LA(1);
+        while (ttype !== Token.EOF && !set.contains(ttype)) {
+            recognizer.consume();
+            ttype = recognizer.getInputStream().LA(1);
+        }
+    }
+
+    /**
+     *  Conjure up a missing token during error recovery.
+     *
+     *  The recognizer attempts to recover from single missing
+     *  symbols. But, actions might refer to that missing symbol.
+     *  For example, x=ID {f($x);}. The action clearly assumes
+     *  that there has been an identifier matched previously and that
+     *  $x points at that token. If that token is missing, but
+     *  the next token in the stream is what we want we assume that
+     *  this token is missing and we keep going. Because we
+     *  have to return some token to replace the missing token,
+     *  we have to conjure one up. This method gives the user control
+     *  over the tokens returned for missing tokens. Mostly,
+     *  you will want to create something special for identifier
+     *  tokens. For literals such as '{' and ',', the default
+     *  action in the parser or tree parser works. It simply creates
+     *  a CommonToken of the appropriate type. The text will be the token.
+     *  If you change what tokens must be created by the lexer,
+     *  override this method to create the appropriate tokens.
+     *
+     * @param {org.antlr.v4.runtime.Parser} recognizer
+     * @return {Token}
+     */
+    getMissingSymbol(recognizer) {
+        let current = recognizer.getCurrentToken();
+        let expecting = recognizer.getExpectedTokens();
+        let expectedTokenType = Token.INVALID_TYPE;
+        if (!expecting.isNil()) {
+            expectedTokenType = expecting.getMinElement(); // get any element
+        }
+        let tokenText = "";
+        if (expectedTokenType === Token.EOF ) {
+            tokenText = "<missing EOF>";
+        } else {
+            tokenText = "<missing "+recognizer.getVocabulary().getDisplayName(expectedTokenType)+">";
+        }
+        let lookback = recognizer.getInputStream().LT(-1);
+        if (current.getType() === Token.EOF && lookback !== null) {
+            current = lookback;
+        }
+        /**
+         * @type {Pair<TokenSource, org.antlr.v4.runtime.CharStream>}
+         */
+        let p = new Pair(current.getTokenSource(), current.getTokenSource().getInputStream())
+        return recognizer.getTokenFactory().create(p, expectedTokenType, tokenText,
+                            Token.DEFAULT_CHANNEL,
+                            -1, -1,
+                            current.getLine(), current.getCharPositionInLine());
     }
 
     /**
@@ -389,7 +390,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
         else {
             input = "<unknown input>";
         }
-        let msg = "no viable alternative at input " + escapeWSAndQuote(input);
+        let msg = "no viable alternative at input " + this.escapeWSAndQuote(input);
         recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
     }
 
@@ -404,7 +405,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 	 */
 	reportInputMismatch(recognizer, e) {
         let msg = "mismatched input " +
-            getTokenErrorDisplay(e.getOffendingToken()) +
+            this.getTokenErrorDisplay(e.getOffendingToken()) +
             " expecting " +
             e.getExpectedTokens().toString(recognizer.getVocabulary());
 		recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
@@ -451,7 +452,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
         }
         this.beginErrorCondition(recognizer);
         let t = recognizer.getCurrentToken();
-        let tokenName = getTokenErrorDisplay(t);
+        let tokenName = this.getTokenErrorDisplay(t);
         let expecting = recognizer.getExpectedTokens();
         let msg = "extraneous input " + tokenName + " expecting " +
             expecting.toString(recognizer.getVocabulary());
@@ -484,7 +485,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
         let t = recognizer.getCurrentToken();
         let expecting = getExpectedTokens(recognizer);
         let msg = "missing " + expecting.toString(recognizer.getVocabulary()) +
-            " at " + getTokenErrorDisplay(t);
+            " at " + this.getTokenErrorDisplay(t);
         recognizer.notifyErrorListeners(t, msg, null);
     }
 
@@ -533,40 +534,6 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 		}
 		return false;
 	}
-
-    /**
-     * This method implements the single-token deletion inline error recovery
-     * strategy. It is called by {@link #recoverInline} to attempt to recover
-     * from mismatched input. If this method returns null, the parser and error
-     * handler state will not have changed. If this method returns non-null,
-     * {@code recognizer} will <em>not</em> be in error recovery mode since the
-     * returned token was a successful match.
-     *
-     * <p>If the single-token deletion is successful, this method calls
-     * {@link #reportUnwantedToken} to report the error, followed by
-     * {@link Parser#consume} to actually "delete" the extraneous token. Then,
-     * before returning {@link #reportMatch} is called to signal a successful
-     * match.</p>
-     *
-     * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
-     * @return {?Token} the successfully matched
-     * {@link Token} instance if single-token deletion successfully recovers
-     * from the mismatched input, otherwise {@code null}
-     * @protected
-     */
-    singleTokenDeletion(recognizer) {
-        let nextTokenType = recognizer.getInputStream().LA(2);
-        let expecting = getExpectedTokens(recognizer);
-        if (expecting.contains(nextTokenType)) {
-            this.reportUnwantedToken(recognizer);
-            recognizer.consume(); // simply delete extra token
-            // we want to return the token we're actually matching
-            let matchedSymbol = recognizer.getCurrentToken();
-            this.reportMatch(recognizer);  // we know current token is correct
-            return matchedSymbol;
-        }
-        return null;
-    }
 
     /**
      * <p>The default implementation simply calls {@link #endErrorCondition} to
@@ -649,8 +616,8 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
             this.lastErrorStates = new IntervalSet();
         }
 		this.lastErrorStates.add(recognizer.getState());
-		let followSet = getErrorRecoverySet(recognizer);
-		consumeUntil(recognizer, followSet);
+		let followSet = this.getErrorRecoverySet(recognizer);
+		this.consumeUntil(recognizer, followSet);
     }
 
     /**
@@ -758,8 +725,8 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
                 /**
                  * @type {org.antlr.v4.runtime.misc.IntervalSet}
                  */
-			    let whatFollowsLoopIterationOrRule = expecting.or(getErrorRecoverySet(recognizer));
-			    consumeUntil(recognizer, whatFollowsLoopIterationOrRule);
+			    let whatFollowsLoopIterationOrRule = expecting.or(this.getErrorRecoverySet(recognizer));
+			    this.consumeUntil(recognizer, whatFollowsLoopIterationOrRule);
 			    break;
 		    default:
 			    // do nothing if we can't identify the exact kind of ATN state
@@ -827,7 +794,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 
         // SINGLE TOKEN INSERTION
         if (this.singleTokenInsertion(recognizer)) {
-            return getMissingSymbol(recognizer);
+            return this.getMissingSymbol(recognizer);
         }
 
         // even that didn't work; must throw the exception

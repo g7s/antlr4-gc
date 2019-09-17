@@ -293,13 +293,6 @@ class BufferedTokenStream extends TokenStream {
     }
 
     /**
-     * @return {Array.<Token>}
-     */
-    getTokens() {
-        return this.tokens;
-    }
-
-    /**
      * @param {number=} start
      * @param {number=} stop
      * @param {Array.<number>=} types

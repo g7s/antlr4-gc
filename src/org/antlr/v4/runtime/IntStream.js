@@ -148,7 +148,7 @@ class IntStream {
      * @param {number} marker A marker returned by a call to {@code mark()}.
      * @see #mark
      */
-    release(marker);
+    release(marker) {}
 
     /**
      * Return the index into the stream of the input symbol referred to by

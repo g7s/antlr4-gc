@@ -132,7 +132,7 @@ class LexerActionExecutor {
 		var requiresSeek = false;
 		var stopIndex = input.index();
 		try {
-			for (const lexerAction of this.lexerActions) {
+			for (var lexerAction of this.lexerActions) {
 				if (lexerAction instanceof LexerIndexedCustomAction) {
                     /**
                      * @type {number}

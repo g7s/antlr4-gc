@@ -16,7 +16,7 @@ class TerminalNode extends ParseTree {
     /**
      * @return {org.antlr.v4.runtime.Token}
      */
-	getSymbol();
+	getSymbol() {}
 }
 
 

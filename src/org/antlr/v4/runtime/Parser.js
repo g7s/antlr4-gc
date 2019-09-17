@@ -28,8 +28,8 @@ const ParseTreeListener = goog.require('org.antlr.v4.runtime.tree.ParseTreeListe
 const ParseTreeWalker = goog.require('org.antlr.v4.runtime.tree.ParseTreeWalker');
 const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
-const ParseTreePattern = goog.require('org.antlr.v4.runtime.tree.pattern.ParseTreePattern');
-const ParseTreePatternMatcher = goog.require('org.antlr.v4.runtime.tree.pattern.ParseTreePatternMatcher');
+// const ParseTreePattern = goog.require('org.antlr.v4.runtime.tree.pattern.ParseTreePattern');
+// const ParseTreePatternMatcher = goog.require('org.antlr.v4.runtime.tree.pattern.ParseTreePatternMatcher');
 
 
 class TraceListener extends ParseTreeListener {
@@ -443,7 +443,7 @@ class Parser extends Recognizer {
             var deserializationOptions = new ATNDeserializationOptions();
             deserializationOptions.setGenerateRuleBypassTransitions(true);
             result = new ATNDeserializer(deserializationOptions).deserialize(serializedAtn);
-            this.bypassAltsAtnCache.get(serializedAtn) = result;
+            this.bypassAltsAtnCache.set(serializedAtn, result);
         }
         return result;
     }
@@ -464,21 +464,21 @@ class Parser extends Recognizer {
      * @param {Lexer=} lexer
      * @return {ParseTreePattern}
 	 */
-    compileParseTreePattern(pattern, patternRuleIndex, lexer) {
-        if (lexer == null) {
-            if (this.getTokenStream() !== null) {
-                var tokenSource = this.getTokenStream().getTokenSource();
-                if (tokenSource instanceof Lexer) {
-                    lexer = tokenSource;
-                }
-            }
-        }
-        if (lexer == null) {
-            throw new Error("Parser can't discover a lexer to use");
-        }
-        var m = new ParseTreePatternMatcher(lexer, this);
-        return m.compile(pattern, patternRuleIndex);
-    }
+    // compileParseTreePattern(pattern, patternRuleIndex, lexer) {
+    //     if (lexer == null) {
+    //         if (this.getTokenStream() !== null) {
+    //             var tokenSource = this.getTokenStream().getTokenSource();
+    //             if (tokenSource instanceof Lexer) {
+    //                 lexer = tokenSource;
+    //             }
+    //         }
+    //     }
+    //     if (lexer == null) {
+    //         throw new Error("Parser can't discover a lexer to use");
+    //     }
+    //     var m = new ParseTreePatternMatcher(lexer, this);
+    //     return m.compile(pattern, patternRuleIndex);
+    // }
 
     /**
      * @return {org.antlr.v4.runtime.ANTLRErrorStrategy}
@@ -933,7 +933,7 @@ class Parser extends Recognizer {
     /**
      * @reutrn {void}
      */
-    dumpDFA = function() {
+    dumpDFA() {
         var seenOne = false;
         for (var i = 0; i < this._interp.decisionToDFA.length; i++) {
             var dfa = this._interp.decisionToDFA[i];

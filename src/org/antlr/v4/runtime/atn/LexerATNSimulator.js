@@ -711,59 +711,50 @@ class LexerATNSimulator extends ATNSimulator {
 
     /**
      * @protected
-     * @param {DFAState} from
-     * @param {number} t
-     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} q
-     * @return {DFAState}
-     */
-    addDFAEdge(from, t, q) {
-		/* leading to this call, ATNConfigSet.hasSemanticContext is used as a
-		 * marker indicating dynamic predicate evaluation makes this edge
-		 * dependent on the specific input sequence, so the static edge in the
-		 * DFA should be omitted. The target DFAState is still created since
-		 * execATN has the ability to resynchronize with the DFA state cache
-		 * following the predicate evaluation step.
-		 *
-		 * TJP notes: next time through the DFA, we see a pred again and eval.
-		 * If that gets us to a previously created (but dangling) DFA
-		 * state, we can continue in pure DFA mode from there.
-		 */
-		var suppressEdge = q.hasSemanticContext;
-		q.hasSemanticContext = false;
-
-
-		var to = this.addDFAState(q);
-
-		if (suppressEdge) {
-			return to;
-		}
-
-		this.addDFAEdge(from, t, to);
-		return to;
-    }
-
-    /**
-     * @protected
      * @param {DFAState} p
      * @param {number} t
-     * @param {DFAState} q
-     * @return {void}
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet|DFAState} q
+     * @return {DFAState}
      */
     addDFAEdge(p, t, q) {
-		if (t < LexerATNSimulator.MIN_DFA_EDGE || t > LexerATNSimulator.MAX_DFA_EDGE) {
-			// Only track edges within the DFA bounds
-			return;
-		}
+        if (!(q instanceof DFAState)) {
+            /* leading to this call, ATNConfigSet.hasSemanticContext is used as a
+             * marker indicating dynamic predicate evaluation makes this edge
+             * dependent on the specific input sequence, so the static edge in the
+             * DFA should be omitted. The target DFAState is still created since
+             * execATN has the ability to resynchronize with the DFA state cache
+             * following the predicate evaluation step.
+             *
+             * TJP notes: next time through the DFA, we see a pred again and eval.
+             * If that gets us to a previously created (but dangling) DFA
+             * state, we can continue in pure DFA mode from there.
+             */
+            var suppressEdge = q.hasSemanticContext;
+            q.hasSemanticContext = false;
 
-		if (LexerATNSimulator.debug) {
-			console.log("EDGE " + p + " -> " + q + " upon " + t);
-		}
+            q = this.addDFAState(q);
+
+            if (suppressEdge) {
+                return q;
+            }
+        }
+
+        if (t < LexerATNSimulator.MIN_DFA_EDGE || t > LexerATNSimulator.MAX_DFA_EDGE) {
+            // Only track edges within the DFA bounds
+            return;
+        }
+
+        if (LexerATNSimulator.debug) {
+            console.log("EDGE " + p + " -> " + q + " upon " + t);
+        }
 
         if (p.edges == null) {
             //  make room for tokens 1..n and -1 masquerading as index 0
             p.edges = [];
         }
         p.edges[t - LexerATNSimulator.MIN_DFA_EDGE] = q; // connect
+
+		return q;
     }
 
     /** Add a new DFA state if there isn't one with this set of
