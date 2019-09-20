@@ -26,11 +26,11 @@ const {every} = goog.require('goog.array');
 class LexerActionExecutor {
 	/**
 	 * Constructs an executor for a sequence of {@link LexerAction} actions.
-	 * @param {!Array.<LexerAction>} lexerActions The lexer actions to execute.
+	 * @param {!Array<LexerAction>} lexerActions The lexer actions to execute.
 	 */
 	constructor(lexerActions) {
         /**
-         * @private {Array.<LexerAction>}
+         * @private {!Array<LexerAction>}
          */
 		this.lexerActions = lexerActions;
 
@@ -45,7 +45,7 @@ class LexerActionExecutor {
          *
          * @private {number}
          */
-		this.hashCode = MurmurHash.finish(hash, lexerActions.length);
+		this._hashCode = MurmurHash.finish(hash, lexerActions.length);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class LexerActionExecutor {
 	 */
 	fixOffsetBeforeMatch(offset) {
         /**
-         * @type {Array.<LexerAction>}
+         * @type {Array<LexerAction>}
          */
 		var updatedLexerActions = null;
 		for (var i = 0; i < this.lexerActions.length; i++) {
@@ -101,7 +101,7 @@ class LexerActionExecutor {
 
 	/**
 	 * Gets the lexer actions to be executed by this executor.
-	 * @return {Array.<LexerAction>} The lexer actions to be executed by this executor.
+	 * @return {Array<LexerAction>} The lexer actions to be executed by this executor.
 	 */
 	getLexerActions() {
 		return this.lexerActions;
@@ -138,9 +138,9 @@ class LexerActionExecutor {
                      * @type {number}
                      */
 					var offset = lexerAction.getOffset();
-					input.seek(startIndex + this.offset);
+					input.seek(startIndex + offset);
 					lexerAction = lexerAction.getAction();
-					requiresSeek = (startIndex + this.offset) !== stopIndex;
+					requiresSeek = (startIndex + offset) !== stopIndex;
 				}
 				else if (lexerAction.isPositionDependent()) {
 					input.seek(stopIndex);
@@ -161,7 +161,7 @@ class LexerActionExecutor {
      * @return {number}
      */
 	hashCode() {
-		return this.hashCode;
+		return this._hashCode;
 	}
 
     /**
@@ -176,7 +176,7 @@ class LexerActionExecutor {
 			return false;
 		}
 
-		return this.hashCode === obj.hashCode
+		return this._hashCode === obj._hashCode
             && every(this.lexerActions, (la, i) => la.equals(obj.lexerActions[i]));
 	}
 }

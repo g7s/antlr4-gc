@@ -15,9 +15,9 @@ const ANTLRErrorListener = goog.require('org.antlr.v4.runtime.ANTLRErrorListener
  * necessary.
  *
  * @author Sam Harwell
- * @implements {org.antlr.v4.runtime.ANTLRErrorListener}
+ * @implements {ANTLRErrorListener}
  */
-class BaseErrorListener extends ANTLRErrorListener {
+class BaseErrorListener {
     syntaxError(recognizer, offendingSymbol, line, column, msg, e) {}
     reportAmbiguity(recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs) {}
     reportAttemptingFullContext(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs) {}

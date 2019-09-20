@@ -26,9 +26,9 @@ class InterpreterRuleContext extends ParserRuleContext {
      * Constructs a new {@link InterpreterRuleContext} with the specified
      * parent, invoking state, and rule index.
      *
-     * @param {ParserRuleContext} parent The parent context.
-     * @param {number} invokingStateNumber The invoking state number.
-     * @param {number} ruleIndex The rule index for the current context.
+     * @param {ParserRuleContext=} parent The parent context.
+     * @param {number=} invokingStateNumber The invoking state number.
+     * @param {number=} ruleIndex The rule index for the current context.
      */
     constructor(parent, invokingStateNumber, ruleIndex) {
         super(parent, invokingStateNumber);
@@ -37,7 +37,7 @@ class InterpreterRuleContext extends ParserRuleContext {
          *
          * @protected {number}
          */
-        this.ruleIndex = ruleIndex;
+        this.ruleIndex = ruleIndex || 0;
     }
 
     getRuleIndex() {

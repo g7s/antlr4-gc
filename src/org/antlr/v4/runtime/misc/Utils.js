@@ -23,12 +23,12 @@ function escapeWhitespace(s, escapeSpaces) {
 }
 
 /**
- * @param {Array.<string>} as
- * @return {Object.<number>}
+ * @param {Array<string>} as
+ * @return {Object<number>}
  */
 function toMap(as) {
     /**
-     * @type {Object.<number>}
+     * @type {Object<number>}
      */
     var ret = {};
     as.forEach((s, i) => {

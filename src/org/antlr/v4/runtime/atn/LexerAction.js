@@ -50,6 +50,12 @@ class LexerAction {
      * @return {void}
 	 */
 	execute(lexer) {}
+
+	/**
+	 * @param {Object} o
+	 * @return {boolean}
+	 */
+	equals(o) {}
 }
 
 

@@ -11,7 +11,7 @@ const IntSet = goog.require('org.antlr.v4.runtime.misc.IntSet');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const Lexer = goog.require('org.antlr.v4.runtime.Lexer');
 const Token = goog.require('org.antlr.v4.runtime.Token');
-const {forEach} = goog.require('goog.array');
+const {forEach, every} = goog.require('goog.array');
 
 /**
  * This class implements the {@link IntSet} backed by a sorted array of
@@ -24,16 +24,18 @@ const {forEach} = goog.require('goog.array');
  * This class is able to represent sets containing any combination of values in
  * the range {@link Integer#MIN_VALUE} to {@link Integer#MAX_VALUE}
  * (inclusive).</p>
+ *
+ * @implements {IntSet}
  */
-class IntervalSet extends IntSet {
+class IntervalSet {
     /**
-     * @param {*} obj
+     * @param {*=} obj
      */
     constructor(obj) {
         /**
          * The list of sorted, disjoint intervals.
          *
-         * @protected {Array.<Interval>}
+         * @protected {Array<Interval>}
          */
         this.intervals = [];
         /**
@@ -161,7 +163,7 @@ class IntervalSet extends IntSet {
      * @return {IntervalSet}
      */
     complementRange(minElement, maxElement) {
-        return this.complement(IntervalSet.of(minElement, maxElement));
+        return /** @type {IntervalSet} */ (this.complement(IntervalSet.of(minElement, maxElement)));
     }
 
     complement(vocabulary) {
@@ -204,6 +206,8 @@ class IntervalSet extends IntSet {
         if (other == null) { //|| !(other instanceof IntervalSet) ) {
             return null; // nothing in common with null set
         }
+        var myIntervals = this.intervals;
+        var theirIntervals = /** @type {IntervalSet} */ (other).intervals;
         var intersection = new IntervalSet();
         var mySize = this.intervals.length;
         var theirSize = other.intervals.length;
@@ -211,8 +215,8 @@ class IntervalSet extends IntSet {
         var j = 0;
         // iterate down both interval lists looking for nondisjoint intervals
         while (i < mySize && j < theirSize) {
-            var mine = this.intervals[i];
-            var theirs = other.intervals[j];
+            var mine = myIntervals[i];
+            var theirs = theirIntervals[j];
             //System.out.println("mine="+mine+" and theirs="+theirs);
             if (mine.startsBeforeDisjoint(theirs)) {
                 // move this iterator looking for interval that might overlap
@@ -309,7 +313,7 @@ class IntervalSet extends IntSet {
     /**
      * Return a list of Interval objects.
      *
-     * @return {Array.<Interval>}
+     * @return {Array<Interval>}
      */
     getIntervals() {
         return this.intervals;
@@ -324,7 +328,7 @@ class IntervalSet extends IntSet {
 
     toString() {
         var str = "";
-        for (let i = 0; i < this.intervals.length; i++) {
+        this.intervals.forEach(I => {
             var a = I.a;
             var b = I.b;
             if (a === b) {
@@ -333,7 +337,7 @@ class IntervalSet extends IntSet {
             else {
                 str += (a + ".." + b);
             }
-        }
+        });
         if (this.size() > 1) {
             str = "{" + str + "}";
         }
@@ -347,6 +351,7 @@ class IntervalSet extends IntSet {
     toStringWithVocabulary(vocabulary) {
         var str = "";
         for (var i = 0; i < this.intervals.length; i++) {
+            var I = this.intervals[i];
             var a = I.a;
             var b = I.b;
             if (a === b) {
@@ -397,11 +402,11 @@ class IntervalSet extends IntSet {
     }
 
     /**
-     * @return {Array.<number>}
+     * @return {Array<number>}
      */
     toIntegerList() {
         /**
-         * @type {Array.<number>}
+         * @type {Array<number>}
          */
         var values = [];
         for (var i = 0; i < this.intervals.length; i++) {
@@ -454,7 +459,7 @@ class IntervalSet extends IntSet {
     }
 
     /**
-     * @return {Array.<number>}
+     * @return {Array<number>}
      */
     toArray() {
         return this.toIntegerList();
@@ -523,7 +528,7 @@ IntervalSet.of = function (a, b) {
 /**
  * combine all sets in the array returned the or'd value
  *
- * @param {Array.<IntervalSet>} sets
+ * @param {Array<IntervalSet>} sets
  * @return {IntervalSet}
  */
 IntervalSet.or = function (sets) {
@@ -626,10 +631,7 @@ IntervalSet.equals = function (a, b) {
     if (a === b) return true;
     if (a == null || b == null) return false;
     if (a.intervals.length != b.intervals.length) return false;
-    for (var i = 0; i < a.length; ++i) {
-      if (!a[i].equals(b[i])) return false;
-    }
-    return true;
+    return every(a.intervals, (interval, i) => interval.equals(b.intervals[i]));
 };
 
 /**

@@ -146,7 +146,7 @@ class IntSet {
 	 * Return a list containing the elements represented by the current set. The
 	 * list is returned in ascending numerical order.
 	 *
-	 * @return {Array.<number>} A list containing all element present in the current set, sorted
+	 * @return {Array<number>} A list containing all element present in the current set, sorted
 	 * in ascending numerical order.
 	 */
 	toList() {}

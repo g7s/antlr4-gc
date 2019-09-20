@@ -12,7 +12,6 @@ const Token = goog.require('org.antlr.v4.runtime.Token');
 const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
 const LexerNoViableAltException = goog.require('org.antlr.v4.runtime.LexerNoViableAltException');
 const CommonTokenFactory = goog.require('org.antlr.v4.runtime.CommonTokenFactory');
-const LexerATNSimulator = goog.require('org.antlr.v4.runtime.atn.LexerATNSimulator');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
 
@@ -21,8 +20,9 @@ const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
  * lexer grammars result in a subclass of this object. A Lexer object
  * uses simplified match() and error recovery mechanisms in the interest
  * of speed.
+ *
  * @abstract
- * @extends org.antlr.v4.runtime.Recognizer<number, org.antlr.v4.runtime.atn.LexerATNSimulator>
+ * @extends {org.antlr.v4.runtime.Recognizer<number, org.antlr.v4.runtime.atn.LexerATNSimulator>}
  * @implements {org.antlr.v4.runtime.TokenSource}
  */
 class Lexer extends Recognizer {
@@ -30,12 +30,13 @@ class Lexer extends Recognizer {
      * @param {org.antlr.v4.runtime.CharStream} input
      */
     constructor(input) {
+        super();
         /**
          * @type {org.antlr.v4.runtime.CharStream}
          */
         this._input = input;
         /**
-         * @protected {Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
+         * @protected {!Pair<!Lexer, org.antlr.v4.runtime.CharStream>}
          */
         this._tokenFactorySourcePair = new Pair(this, input);
         /**
@@ -95,7 +96,7 @@ class Lexer extends Recognizer {
          */
         this._type = Token.INVALID_TYPE;
         /**
-         * @type {Array.<number>}
+         * @type {Array<number>}
          */
         this._modeStack = [];
         /**
@@ -106,9 +107,9 @@ class Lexer extends Recognizer {
          * You can set the text for the current token to override what is in
          * the input char buffer.  Use setText() or can set this instance var.
          *
-         * @type {string}
+         * @type {?string}
          */
-        this._text = "";
+        this._text = null;
     }
 
     /**
@@ -179,7 +180,7 @@ class Lexer extends Recognizer {
 						continue outer;
 					}
 				} while (this._type === Lexer.MORE);
-				if (this._token == null) this.emit();
+				this.emit();
 				return this._token;
 			}
 		}
@@ -204,6 +205,13 @@ class Lexer extends Recognizer {
     }
 
     /**
+     * @return {void}
+     */
+    more() {
+        this._type = Lexer.MORE;
+    }
+
+    /**
      * @param {number} m
      * @return {void}
      */
@@ -216,7 +224,6 @@ class Lexer extends Recognizer {
      * @return {void}
      */
     pushMode(m) {
-        if (LexerATNSimulator.debug) console.log("pushMode " + m);
         this._modeStack.push(this._mode);
         this.mode(m);
     }
@@ -226,7 +233,6 @@ class Lexer extends Recognizer {
      */
     popMode() {
         if (this._modeStack.length === 0) throw new Error();
-        if (LexerATNSimulator.debug) console.log("popMode back to " + this._modeStack[this._modeStack.length - 1]);
         this.mode(this._modeStack.pop());
         return this._mode;
     }
@@ -241,16 +247,19 @@ class Lexer extends Recognizer {
 
     setInputStream(input) {
         this._input = null;
-        this._tokenFactorySourcePair = new Pair(this, this._input);
+        this._tokenFactorySourcePair = /** @type {!Pair<!Lexer, ?>} */ (new Pair(this, this._input));
         this.reset();
-        this._input = input;
-        this._tokenFactorySourcePair = new Pair(this, this._input);
+        this._input = /** @type {org.antlr.v4.runtime.CharStream} */ (input);
+        this._tokenFactorySourcePair = /** @type {!Pair<!Lexer, ?>} */ (new Pair(this, this._input));
     }
 
     getSourceName() {
         return this._input.getSourceName();
     }
 
+    /**
+     * @return {org.antlr.v4.runtime.CharStream}
+     */
     getInputStream() {
         return this._input;
     }
@@ -261,12 +270,13 @@ class Lexer extends Recognizer {
      * and getToken (to push tokens into a list and pull from that list
      * rather than a single variable as this implementation does).
      *
-     * @param {Token} token
+     * @param {Token=} token
      * @return {void}
      */
     emit(token) {
         //System.err.println("emit "+token);
-        this._token = token || this._factory.create(this._tokenFactorySourcePair,
+        var p = /** @type {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>} */ (this._tokenFactorySourcePair);
+        this._token = token || this._factory.create(p,
                                                     this._type,
                                                     this._text,
                                                     this._channel,
@@ -282,8 +292,9 @@ class Lexer extends Recognizer {
     emitEOF() {
         var cpos = this.getCharPositionInLine();
         var line = this.getLine();
+        var p = /** @type {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>} */ (this._tokenFactorySourcePair);
         var eof = this._factory.create(
-            this._tokenFactorySourcePair,
+            p,
             Token.EOF,
             null,
             Token.DEFAULT_CHANNEL,
@@ -291,7 +302,7 @@ class Lexer extends Recognizer {
             this._input.index()-1,
             line,
             cpos);
-        emit(eof);
+        this.emit(eof);
         return eof;
     }
 
@@ -400,14 +411,14 @@ class Lexer extends Recognizer {
     }
 
     /**
-     * @return {Array.<string>}
+     * @return {Array<string>}
      */
     getChannelNames() {
         return null;
     }
 
     /**
-     * @return {Array.<string>}
+     * @return {Array<string>}
      */
     getModeNames() {
         return null;
@@ -419,7 +430,7 @@ class Lexer extends Recognizer {
      * that overrides this to point to their String[] tokenNames.
      * @override
      * @deprecated
-     * @return {Array.<string>}
+     * @return {Array<string>}
      */
     getTokenNames() {
         return null;
@@ -429,7 +440,7 @@ class Lexer extends Recognizer {
      * Return a list of all Token objects in input char stream.
      * Forces load of all tokens. Does not include EOF token.
      *
-     * @return {Array.<Token>}
+     * @return {Array<Token>}
      */
     getAllTokens() {
         var tokens = [];
@@ -464,7 +475,7 @@ class Lexer extends Recognizer {
         var text = this._input.getText(Interval.of(this._tokenStartCharIndex, this._input.index()));
         var msg = "token recognition error at: '"+ this.getErrorDisplay(text) + "'";
 
-        listener = this.getErrorListenerDispatch();
+        var listener = this.getErrorListenerDispatch();
         listener.syntaxError(this, null, this._tokenStartLine, this._tokenStartCharPositionInLine, msg, e);
     }
 
@@ -505,19 +516,20 @@ class Lexer extends Recognizer {
     getCharErrorDisplay(c) {
         return "'" + this.getErrorDisplayForChar(c) + "'";
     }
-};
-
+}
 
 /**
  * @type {number}
  * @final
  */
 Lexer.DEFAULT_MODE = 0;
+
 /**
  * @type {number}
  * @final
  */
 Lexer.MORE = -2;
+
 /**
  * @type {number}
  * @final
@@ -529,16 +541,19 @@ Lexer.SKIP = -3;
  * @final
  */
 Lexer.DEFAULT_TOKEN_CHANNEL = Token.DEFAULT_CHANNEL;
+
 /**
  * @type {number}
  * @final
  */
 Lexer.HIDDEN = Token.HIDDEN_CHANNEL;
+
 /**
  * @type {number}
  * @final
  */
 Lexer.MIN_CHAR_VALUE = 0x0000;
+
 /**
  * @type {number}
  * @final

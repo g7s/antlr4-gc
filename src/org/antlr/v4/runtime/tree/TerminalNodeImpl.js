@@ -7,18 +7,20 @@
 goog.module('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 
 
-const Parser = goog.require('org.antlr.v4.runtime.Parser');
-const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
+const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
 const Token = goog.require('org.antlr.v4.runtime.Token');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 
-class TerminalNodeImpl extends TerminalNode {
+/**
+ * @implements {TerminalNode}
+ */
+class TerminalNodeImpl {
     /**
-     * @param {org.antlr.v4.runtime.Token} symbol
+     * @param {Token} symbol
      */
 	constructor(symbol) {
         /**
-         * @type {org.antlr.v4.runtime.Token}
+         * @type {Token}
          */
         this.symbol = symbol;
         /**
@@ -44,7 +46,7 @@ class TerminalNodeImpl extends TerminalNode {
 	}
 
 	getPayload() {
-        return symbol;
+        return this.symbol;
     }
 
 	getSourceInterval() {
@@ -62,7 +64,7 @@ class TerminalNodeImpl extends TerminalNode {
 	}
 
 	getText() {
-        return this.symbol.getText();
+        return this.symbol.getText() || "";
     }
 
 	toStringTree(parser) {
@@ -71,7 +73,7 @@ class TerminalNodeImpl extends TerminalNode {
 
 	toString() {
         if (this.symbol.getType() === Token.EOF) return "<EOF>";
-        return this.symbol.getText();
+        return this.getText();
 	}
 }
 

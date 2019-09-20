@@ -22,13 +22,13 @@ const {format} = goog.require('goog.string');
 class FailedPredicateException extends RecognitionException {
     /**
      * @param {org.antlr.v4.runtime.Parser} recognizer
-     * @param {?string} predicate
-     * @param {?string} message
+     * @param {string=} predicate
+     * @param {string=} message
      */
     constructor(recognizer, predicate, message) {
         super(FailedPredicateException.formatMessage(predicate, message),
-            recognizer, recognizer.getInputStream(), recognizer._ctx);
-        var s = recognizer.getInterpreter().atn.states.get(recognizer.getState());
+            recognizer, recognizer.getInputStream(), recognizer.getContext());
+        var s = recognizer.getInterpreter().atn.states[recognizer.getState()];
 
         var trans = s.transition(0);
         if (trans instanceof PredicateTransition) {
@@ -42,19 +42,13 @@ class FailedPredicateException extends RecognitionException {
             this.predicateIndex = trans.predIndex;
         }
         else {
-            /**
-            * @private {number}
-            */
             this.ruleIndex = 0;
-            /**
-             * @private {number}
-             */
             this.predicateIndex = 0;
         }
         /**
          * @private {?string}
          */
-        this.predicate = predicate;
+        this.predicate = predicate || null;
         this.setOffendingToken(recognizer.getCurrentToken());
     }
 
@@ -73,24 +67,24 @@ class FailedPredicateException extends RecognitionException {
     }
 
     /**
-     * @return {string}
+     * @return {?string}
      */
     getPredicate() {
         return this.predicate;
     }
-};
+}
 
 /**
- * @param {?string} predicate
- * @param {?string} message
+ * @param {string=} predicate
+ * @param {string=} message
  * @return {string}
  */
-FailedPredicateException.formatMessage = function(predicate, message) {
+FailedPredicateException.formatMessage = function (predicate, message) {
     if (message != null) {
         return message;
     }
 
-    return format("failed predicate: {%s}?", predicate);
+    return format("failed predicate: {%s}?", predicate || "");
 };
 
 

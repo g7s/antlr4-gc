@@ -92,7 +92,7 @@ class ATNSimulator {
          * @type {Map<PredictionContext, PredictionContext>}
          */
         var visited = new Map();
-        return PredictionContext.getCachedContext(context, sharedContextCache, visited);
+        return PredictionContext.getCachedContext(context, this.sharedContextCache, visited);
 	}
 }
 
@@ -100,9 +100,8 @@ class ATNSimulator {
 /**
  * Must distinguish between missing edge and edge we know leads nowhere
  *
- * @type {DFAState}
+ * @type {!DFAState}
  */
-
 ATNSimulator.ERROR = new DFAState(new ATNConfigSet());
 ATNSimulator.ERROR.stateNumber = Number.MAX_VALUE;
 

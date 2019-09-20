@@ -15,16 +15,16 @@ const ANTLRErrorListener = goog.require('org.antlr.v4.runtime.ANTLRErrorListener
  * listeners.
  *
  * @author Sam Harwell
- * @implements {org.antlr.v4.runtime.ANTLRErrorListener}
+ * @implements {ANTLRErrorListener}
  */
-class ProxyErrorListener extends ANTLRErrorListener {
+class ProxyErrorListener {
     /**
-     * @param {Array.<org.antlr.v4.runtime.ANTLRErrorListener>} d
+     * @param {Array<org.antlr.v4.runtime.ANTLRErrorListener>} d
      */
     constructor(d) {
         /**
          * @private
-         * @type {Array.<org.antlr.v4.runtime.ANTLRErrorListener>}
+         * @type {Array<org.antlr.v4.runtime.ANTLRErrorListener>}
          */
         this.delegates = d;
     }

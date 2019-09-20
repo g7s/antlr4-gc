@@ -6,14 +6,27 @@
 
 goog.module('org.antlr.v4.runtime.atn.ATNConfigSet');
 
-// import org.antlr.v4.runtime.misc.AbstractEqualityComparator;
-// import org.antlr.v4.runtime.misc.Array2DHashSet;
-// import org.antlr.v4.runtime.misc.DoubleKeyMap;
 
-
+const ATN = goog.require('org.antlr.v4.runtime.atn.ATN');
+const SemanticContext = goog.require('org.antlr.v4.runtime.atn.SemanticContext');
 const PredictionContext = goog.require('org.antlr.v4.runtime.atn.PredictionContext');
 const Set = goog.require('org.antlr.v4.runtime.misc.Set');
 const BitSet = goog.require('org.antlr.v4.runtime.misc.BitSet');
+const Map = goog.require('org.antlr.v4.runtime.misc.Map');
+const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
+const {every} = goog.require('goog.array');
+
+/**
+ * @param {!Array<org.antlr.v4.runtime.atn.ATNConfig>} configs
+ * @return {number}
+ */
+const configsHashCode = (configs) => {
+    var hashCode = 0;
+    configs.forEach(c => {
+        hashCode = (31 * hashCode + c.hashCode()) >>> 0;
+    });
+    return hashCode;
+};
 
 /**
  * @param {org.antlr.v4.runtime.atn.ATNConfig} o
@@ -45,9 +58,9 @@ const configEquals = (a, b) => {
  * info about the set, with support for combining similar configurations using a
  * graph-structured stack.
  *
- * @extends {Set<org.antlr.v4.runtime.atn.ATNConfig>}
+ * @implements {Iterable}
  */
-class ATNConfigSet extends Set {
+class ATNConfigSet {
     /**
      * @param {(boolean|ATNConfigSet)=} o
      */
@@ -68,14 +81,14 @@ class ATNConfigSet extends Set {
          * All configs but hashed by (s, i, _, pi) not including context. Wiped out
          * when we go readonly as this set becomes a DFA state.
          *
-         * @type {Set<org.antlr.v4.runtime.atn.ATNConfig>}
+         * @type {!Set<org.antlr.v4.runtime.atn.ATNConfig>}
          */
         this.configLookup = new Set(configHashCode, configEquals);
 
         /**
          * Track the elements as they are added to the set; supports get(i)
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.ATNConfig>}
+         * @type {!Array<org.antlr.v4.runtime.atn.ATNConfig>}
          */
         this.configs = [];
 
@@ -90,7 +103,7 @@ class ATNConfigSet extends Set {
          * I should also point out that this seems to include predicated alternatives
          * that have predicates that evaluate to false. Computed in computeTargetState().
          *
-         * @protected {BitSet}
+         * @type {BitSet}
          */
         this.conflictingAlts = null;
 
@@ -122,7 +135,7 @@ class ATNConfigSet extends Set {
         if (goog.isBoolean(o)) {
             this.fullCtx = o;
         } else {
-            this.addAll(o);
+            this.addAll(o || []);
             this.uniqueAlt = o.uniqueAlt;
             this.conflictingAlts = o.conflictingAlts;
             this.hasSemanticContext = o.hasSemanticContext;
@@ -163,7 +176,7 @@ class ATNConfigSet extends Set {
 		}
 		// a previous (s,i,pi,_), merge with it and save result
 		var rootIsWildcard = !this.fullCtx;
-		var merged = PredictionContext.merge(existing.context, config.context, rootIsWildcard, mergeCache);
+		var merged = PredictionContext.merge(existing.context, config.context, rootIsWildcard, mergeCache || null);
 		// no need to check for existing.context, config.context in cache
 		// since only way to create new graphs is "call rule" and here. We
 		// cache at both places.
@@ -182,7 +195,7 @@ class ATNConfigSet extends Set {
 	/**
      * Return a List holding list of configs
      *
-     * @return {Array.<org.antlr.v4.runtime.atn.ATNConfig>}
+     * @return {Array<org.antlr.v4.runtime.atn.ATNConfig>}
      */
     elements() {
         return this.configs;
@@ -219,16 +232,16 @@ class ATNConfigSet extends Set {
 	}
 
     /**
-     * @return {Array.<SemanticContext>}
+     * @return {!Array<SemanticContext>}
      */
 	getPredicates() {
         /**
-         * @type {Array.<SemanticContext>}
+         * @type {!Array<SemanticContext>}
          */
-		var preds = new [];
+		var preds = [];
 		for (const c of this.configs) {
 			if (c.semanticContext !== SemanticContext.NONE) {
-				preds.add(c.semanticContext);
+				preds.push(c.semanticContext);
 			}
 		}
 		return preds;
@@ -260,7 +273,7 @@ class ATNConfigSet extends Set {
 	}
 
     /**
-     * @param {Array.<org.antlr.v4.runtime.atn.ATNConfig>} coll
+     * @param {!Array<org.antlr.v4.runtime.atn.ATNConfig>|!org.antlr.v4.runtime.atn.ATNConfigSet} coll
      * @return {boolean}
      */
 	addAll(coll) {
@@ -283,8 +296,8 @@ class ATNConfigSet extends Set {
 		}
 
 //		System.out.print("equals " + this + ", " + o+" = ");
-		return this.configs != null &&
-			this.configs.equals(o.configs) &&  // includes stack context
+        return this.configs != null &&
+            every(this.configs, (c, i) => c.equals(o.configs[i])) &&
 			this.fullCtx === o.fullCtx &&
 			this.uniqueAlt === o.uniqueAlt &&
 			this.conflictingAlts === o.conflictingAlts &&
@@ -298,23 +311,23 @@ class ATNConfigSet extends Set {
 	hashCode() {
 		if (this.isReadonly()) {
 			if (this.cachedHashCode === -1) {
-				this.cachedHashCode = this.configs.hashCode();
+				this.cachedHashCode = configsHashCode(this.configs);
 			}
 			return this.cachedHashCode;
 		}
-		return this.configs.hashCode();
+		return configsHashCode(this.configs);
 	}
 
 	size() {
-		return this.configs.size();
+		return this.configs.length;
 	}
 
 	isEmpty() {
-		return this.configs.isEmpty();
+		return this.size() === 0;
 	}
 
 	contains(o) {
-		if (this.configLookup == null) {
+		if (this.readonly) {
 			throw new Error("This method is not implemented for readonly sets.");
 		}
 
@@ -345,7 +358,7 @@ class ATNConfigSet extends Set {
      */
 	setReadonly(readonly) {
 		this.readonly = readonly;
-		this.configLookup = null; // can't mod, no need for lookup cache
+        readonly && this.configLookup.clear(); // can't mod, no need for lookup cache
 	}
 
     /**
@@ -354,9 +367,9 @@ class ATNConfigSet extends Set {
 	toString() {
 		var buf = "";
 		buf += "[" + this.elements().join(", ") + "]";
-		if (this.hasSemanticContext) buf += (",hasSemanticContext=" + hasSemanticContext);
-		if (this.uniqueAlt !== ATN.INVALID_ALT_NUMBER) buf += (",uniqueAlt=" + uniqueAlt);
-		if (this.conflictingAlts != null) buf += (",conflictingAlts=" + conflictingAlts);
+		if (this.hasSemanticContext) buf += (",hasSemanticContext=" + this.hasSemanticContext);
+		if (this.uniqueAlt !== ATN.INVALID_ALT_NUMBER) buf += (",uniqueAlt=" + this.uniqueAlt);
+		if (this.conflictingAlts != null) buf += (",conflictingAlts=" + this.conflictingAlts);
 		if (this.dipsIntoOuterContext) buf += ",dipsIntoOuterContext";
 		return buf;
 	}

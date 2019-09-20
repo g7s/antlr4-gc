@@ -45,9 +45,9 @@ class ParseTreeWalker {
      * @return {void}
 	 */
     enterRule(listener, r) {
-		var ctx = r.getRuleContext();
-		listener.enterEveryRule(ctx);
-		ctx.enterRule(listener);
+        var ctx = /** @type {ParserRuleContext} */ (r.getRuleContext());
+        listener.enterEveryRule(ctx);
+        ctx.enterRule(listener);
     }
 
     /**
@@ -57,9 +57,9 @@ class ParseTreeWalker {
      * @return {void}
      */
     exitRule(listener, r) {
-		var ctx = r.getRuleContext();
-		ctx.exitRule(listener);
-		listener.exitEveryRule(ctx);
+        var ctx = /** @type {ParserRuleContext} */ (r.getRuleContext());
+        ctx.exitRule(listener);
+        listener.exitEveryRule(ctx);
     }
 }
 

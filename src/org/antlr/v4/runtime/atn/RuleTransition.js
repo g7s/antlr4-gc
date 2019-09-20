@@ -12,7 +12,7 @@ const Transition = goog.require('org.antlr.v4.runtime.atn.Transition');
 class RuleTransition extends Transition {
     /**
      * @param {org.antlr.v4.runtime.atn.RuleStartState} ruleStart
-     * @param {number} ruleStart
+     * @param {number} ruleIndex
      * @param {number} precedence
      * @param {org.antlr.v4.runtime.atn.ATNState} followState
      */

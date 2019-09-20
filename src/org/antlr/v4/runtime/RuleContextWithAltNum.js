@@ -7,7 +7,6 @@
 goog.module('org.antlr.v4.runtime.RuleContextWithAltNum');
 
 
-const ATN = goog.require('org.antlr.v4.runtime.atn.ATN');
 const ParserRuleContext = goog.require('org.antlr.v4.runtime.ParserRuleContext');
 
 /** A handy class for use with
@@ -21,13 +20,19 @@ const ParserRuleContext = goog.require('org.antlr.v4.runtime.ParserRuleContext')
  *  will really every use this.
  */
 class RuleContextWithAltNum extends ParserRuleContext {
+    /**
+     * @param {org.antlr.v4.runtime.RuleContext=} parent
+     * @param {number=} invokingStateNumber
+     */
 	constructor(parent, invokingStateNumber) {
         super(parent, invokingStateNumber);
-        this.altNum = ATN.INVALID_ALT_NUMBER;
-	}
+        this.altNum = ParserRuleContext.ATNINVALID_ALT_NUMBER;
+    }
+
 	getAltNumber() {
         return this.altNum;
     }
+
 	setAltNumber(altNum) {
         this.altNum = altNum;
     }

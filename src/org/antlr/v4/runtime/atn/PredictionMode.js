@@ -22,9 +22,9 @@ const {find} = goog.require('goog.array');
  * utility methods for analyzing configuration sets for conflicts and/or
  * ambiguities.
  *
- * @type {Object}
+ * @type {!Object}
  */
-const PredictionMode = {};
+let PredictionMode = {};
 
 /**
  * The SLL(*) prediction mode. This prediction mode ignores the current
@@ -188,7 +188,7 @@ PredictionMode.LL_EXACT_AMBIG_DETECTION = 2;
  * {@link ATNConfigSet} will merge everything ignoring predicates.</p>
  *
  * @param {PredictionMode} mode
- * @param {ATNConfigSet} configs
+ * @param {!ATNConfigSet} configs
  * @return {boolean}
  */
 PredictionMode.hasSLLConflictTerminatingPrediction = function (mode, configs) {
@@ -208,8 +208,7 @@ PredictionMode.hasSLLConflictTerminatingPrediction = function (mode, configs) {
         if (configs.hasSemanticContext) {
             // dup configs, tossing out semantic predicates
             var dup = new ATNConfigSet();
-            for(var i = 0; i < configs.items.length; i++) {
-                var c = configs.items[i];
+            for (let c of configs) {
                 c = new ATNConfig(c, SemanticContext.NONE);
                 dup.add(c);
             }
@@ -228,12 +227,12 @@ PredictionMode.hasSLLConflictTerminatingPrediction = function (mode, configs) {
  * the end of the decision rule (local context) or end of start rule (full
  * context).
  *
- * @param {ATNConfigSet} configs the configuration set to test
+ * @param {!ATNConfigSet} configs the configuration set to test
  * @return {boolean} {@code true} if any configuration in {@code configs} is in a
  * {@link RuleStopState}, otherwise {@code false}
  */
 PredictionMode.hasConfigInRuleStopState = function (configs) {
-    return find(configs.items, c => c.state instanceof RuleStopState) !== null;
+    return find(configs.elements(), c => c.state instanceof RuleStopState) !== null;
 };
 
 /**
@@ -242,12 +241,12 @@ PredictionMode.hasConfigInRuleStopState = function (configs) {
  * the end of the decision rule (local context) or end of start rule (full
  * context).
  *
- * @param {ATNConfigSet} configs the configuration set to test
+ * @param {!ATNConfigSet} configs the configuration set to test
  * @return {boolean} {@code true} if all configurations in {@code configs} are in a
  * {@link RuleStopState}, otherwise {@code false}
  */
 PredictionMode.allConfigsInRuleStopStates = function (configs) {
-    return find(configs.items, c => !(c.state instanceof RuleStopState)) === null;
+    return find(configs.elements(), c => !(c.state instanceof RuleStopState)) === null;
 };
 
 /**
@@ -391,7 +390,7 @@ PredictionMode.allConfigsInRuleStopStates = function (configs) {
  * we need exact ambiguity detection when the sets look like
  * {@code A={{1,2}}} or {@code {{1,2},{1,2}}}, etc...</p>
  *
- * @param {Array.<BitSet>}
+ * @param {!Array<BitSet>} altsets
  * @return {number}
  */
 PredictionMode.resolvesToJustOneViableAlt = function(altsets) {
@@ -402,7 +401,7 @@ PredictionMode.resolvesToJustOneViableAlt = function(altsets) {
  * Determines if every alternative subset in {@code altsets} contains more
  * than one alternative.
  *
- * @param {Array.<BitSet>} altsets a collection of alternative subsets
+ * @param {!Array<BitSet>} altsets a collection of alternative subsets
  * @return {boolean} {@code true} if every {@link BitSet} in {@code altsets} has
  * {@link BitSet#cardinality cardinality} &gt; 1, otherwise {@code false}
  */
@@ -414,7 +413,7 @@ PredictionMode.allSubsetsConflict = function (altsets) {
  * Determines if any single alternative subset in {@code altsets} contains
  * exactly one alternative.
  *
- * @param {Array.<BitSet>} altsets a collection of alternative subsets
+ * @param {!Array<BitSet>} altsets a collection of alternative subsets
  * @return {boolean} {@code true} if {@code altsets} contains a {@link BitSet} with
  * {@link BitSet#cardinality cardinality} 1, otherwise {@code false}
  */
@@ -426,7 +425,7 @@ PredictionMode.hasNonConflictingAltSet = function (altsets) {
  * Determines if any single alternative subset in {@code altsets} contains
  * more than one alternative.
  *
- * @param {Array.<BitSet>} altsets a collection of alternative subsets
+ * @param {!Array<BitSet>} altsets a collection of alternative subsets
  * @return {boolean} {@code true} if {@code altsets} contains a {@link BitSet} with
  * {@link BitSet#cardinality cardinality} &gt; 1, otherwise {@code false}
  */
@@ -437,7 +436,7 @@ PredictionMode.hasConflictingAltSet = function (altsets) {
 /**
  * Determines if every alternative subset in {@code altsets} is equivalent.
  *
- * @param {Array.<BitSet>} altsets a collection of alternative subsets
+ * @param {!Array<BitSet>} altsets a collection of alternative subsets
  * @return {boolean} {@code true} if every member of {@code altsets} is equal to the
  * others, otherwise {@code false}
  */
@@ -454,7 +453,7 @@ PredictionMode.allSubsetsEqual = function (altsets) {
  * {@code altsets}. If no such alternative exists, this method returns
  * {@link ATN#INVALID_ALT_NUMBER}.
  *
- * @param {Array.<BitSet>} altsets a collection of alternative subsets
+ * @param {!Array<BitSet>} altsets a collection of alternative subsets
  * @return {number}
  */
 PredictionMode.getUniqueAlt = function (altsets) {
@@ -468,17 +467,42 @@ PredictionMode.getUniqueAlt = function (altsets) {
  * alternative subsets. This method returns the union of each {@link BitSet}
  * in {@code altsets}.
  *
- * @param {Array.<BitSet>|ATNConfigSet} altsets a collection of alternative subsets
- * @return {BitSet} the set of represented alternatives in {@code altsets}
+ * @param {!(Array<BitSet>|ATNConfigSet)} altsets a collection of alternative subsets
+ * @return {!BitSet} the set of represented alternatives in {@code altsets}
  */
 PredictionMode.getAlts = function (altsets) {
     var all = new BitSet();
     if (altsets instanceof ATNConfigSet) {
-        altsets.forEach(config => all.set(config.alt));
+        for (const config of altsets) {
+            all.set(config.alt);
+        }
     } else {
         altsets.forEach(alts => all.or(alts));
     }
     return all;
+};
+
+/**
+ * @param {ATNConfig} cfg
+ * @return {number}
+ */
+const hfn = function (cfg) {
+    var hashCode = MurmurHash.initialize(7);
+    hashCode = MurmurHash.update(hashCode, cfg.state.stateNumber);
+    hashCode = MurmurHash.update(hashCode, cfg.context);
+    hashCode = MurmurHash.finish(hashCode, 2);
+    return hashCode;
+};
+
+/**
+ * @param {ATNConfig} c1
+ * @param {ATNConfig} c2
+ * @return {boolean}
+ */
+const efn = function(c1, c2) {
+    if (c1 === c2) return true;
+    if (c1 === null || c2 === null) return false;
+    return c1.state.stateNumber === c2.state.stateNumber && c1.context.equals(c2.context);
 };
 
 /**
@@ -490,36 +514,15 @@ PredictionMode.getAlts = function (altsets) {
  * alt and not pred
  * </pre>
  *
- * @param {ATNConfigSet} configs
- * @return {Array.<BitSet>}
+ * @param {!ATNConfigSet} configs
+ * @return {!Array<BitSet>}
  */
 PredictionMode.getConflictingAltSubsets = function (configs) {
-    /**
-     * @param {ATNConfig} cfg
-     * @return {number}
-     */
-    var hfn = function (cfg) {
-        var hashCode = MurmurHash.initialize(7);
-        hashCode = MurmurHash.update(hashCode, cfg.state.stateNumber);
-        hashCode = MurmurHash.update(hashCode, cfg.context);
-        hashCode = MurmurHash.finish(hashCode, 2);
-        return hashCode;
-    };
-    /**
-     * @param {ATNConfig} c1
-     * @param {ATNConfig} c2
-     * @return {boolean}
-     */
-    var efn = function(c1, c2) {
-        if (c1 === c2) return true;
-        if (c1 === null || c2 === null) return false;
-        return c1.state.stateNumber === c2.state.stateNumber && c1.context.equals(c2.context);
-    };
     /**
      * @type {Map<ATNConfig, BitSet>}
      */
     var configToAlts = new Map(hfn, efn);
-    configs.items.forEach(function (c) {
+    configs.elements().forEach(function (c) {
         var alts = configToAlts.get(c);
         if (alts === null) {
             alts = new BitSet();
@@ -538,12 +541,12 @@ PredictionMode.getConflictingAltSubsets = function (configs) {
  * map[c.{@link ATNConfig#state state}] U= c.{@link ATNConfig#alt alt}
  * </pre>
  *
- * @param {ATNConfigSet} configs
- * @return {Map<org.antlr.v4.runtime.atn.ATNState, BitSet>}
+ * @param {!ATNConfigSet} configs
+ * @return {!Map<org.antlr.v4.runtime.atn.ATNState, BitSet>}
  */
 PredictionMode.getStateToAltMap = function (configs) {
     /**
-     * @type {Map<org.antlr.v4.runtime.atn.ATNState, BitSet>}
+     * @type {!Map<org.antlr.v4.runtime.atn.ATNState, BitSet>}
      */
     var m = new Map();
     for (const c of configs) {
@@ -558,13 +561,10 @@ PredictionMode.getStateToAltMap = function (configs) {
 };
 
 /**
- * @param {ATNConfigSet} configs
+ * @param {!ATNConfigSet} configs
  * @return {boolean}
  */
 PredictionMode.hasStateAssociatedWithOneAlt = function (configs) {
-    /**
-     * @type {Map<org.antlr.v4.runtime.atn.ATNState, BitSet>}
-     */
     var x = PredictionMode.getStateToAltMap(configs);
     for (const alts of x.values()) {
         if (alts.cardinality() === 1) return true;
@@ -573,7 +573,7 @@ PredictionMode.hasStateAssociatedWithOneAlt = function (configs) {
 };
 
 /**
- * @param {Array.<BitSet>}
+ * @param {!Array<BitSet>} altsets
  * @return {number}
  */
 PredictionMode.getSingleViableAlt = function (altsets) {

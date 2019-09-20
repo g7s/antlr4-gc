@@ -20,11 +20,11 @@ const RuleNode = goog.require('org.antlr.v4.runtime.tree.RuleNode');
 class IterativeParseTreeWalker extends ParseTreeWalker {
 	walk(listener, t) {
         /**
-         * @type {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+         * @type {Array<org.antlr.v4.runtime.tree.ParseTree>}
          */
         var nodeStack = [];
         /**
-         * @type {Array.<number>}
+         * @type {Array<number>}
          */
 		var indexStack = [];
 		var currentNode = t;
@@ -32,13 +32,13 @@ class IterativeParseTreeWalker extends ParseTreeWalker {
 		while (currentNode != null) {
 			// pre-order visit
 			if (currentNode instanceof ErrorNode) {
-				listener.visitErrorNode(currentNode);
+				listener.visitErrorNode(/** @type {!ErrorNode} */ (currentNode));
 			}
 			else if (currentNode instanceof TerminalNode) {
-				listener.visitTerminal(currentNode);
+				listener.visitTerminal(/** @type {!TerminalNode} */ (currentNode));
 			}
 			else {
-				this.enterRule(listener, currentNode);
+				this.enterRule(listener, /** @type {!RuleNode} */ (currentNode));
 			}
 
 			// Move down to first child, if exists
@@ -54,7 +54,7 @@ class IterativeParseTreeWalker extends ParseTreeWalker {
 			do {
 				// post-order visit
 				if (currentNode instanceof RuleNode) {
-					this.exitRule(listener, currentNode);
+					this.exitRule(listener, /** @type {!RuleNode} */ (currentNode));
 				}
 
 				// No parent, so no siblings

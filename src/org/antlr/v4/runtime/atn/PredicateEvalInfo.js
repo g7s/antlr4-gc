@@ -9,9 +9,6 @@ goog.module('org.antlr.v4.runtime.atn.PredicateEvalInfo');
 
 const DecisionEventInfo = goog.require('org.antlr.v4.runtime.atn.DecisionEventInfo');
 const ATNConfigSet = goog.require('org.antlr.v4.runtime.atn.ATNConfigSet');
-const ParserRuleContext = goog.require('org.antlr.v4.runtime.ParserRuleContext');
-const Recognizer = goog.require('org.antlr.v4.runtime.Recognizer');
-const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 
 /**
  * This class represents profiling event information for semantic predicate

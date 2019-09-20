@@ -14,7 +14,7 @@ class StarLoopbackState extends ATNState {
      * @return {org.antlr.v4.runtime.atn.StarLoopEntryState}
      */
 	getLoopEntryState() {
-		return this.transition(0).target;
+		return /** @type {org.antlr.v4.runtime.atn.StarLoopEntryState} */ (this.transition(0).target);
 	}
 
 	getStateType() {

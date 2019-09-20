@@ -7,9 +7,6 @@
 goog.module('org.antlr.v4.runtime.RecognitionException');
 
 
-const DecisionState = goog.require('org.antlr.v4.runtime.atn.DecisionState');
-const IntervalSet = goog.require('org.antlr.v4.runtime.misc.IntervalSet');
-
 /**
  * The root of the ANTLR exception hierarchy. In general, ANTLR tracks just
  * 3 kinds of errors: prediction errors, failed predicate errors, and
@@ -87,7 +84,7 @@ class RecognitionException extends Error {
      * <p>If the set of expected tokens is not known and could not be computed,
      * this method returns {@code null}.</p>
      *
-     * @return {org.antlr.v4.runtime.IntervalSet} The set of token types that
+     * @return {org.antlr.v4.runtime.misc.IntervalSet} The set of token types that
      * could potentially follow the current state in the ATN, or {@code null}
      * if the information is not available.
      */

@@ -114,7 +114,7 @@ Transition.WILDCARD = 9;
  */
 Transition.PRECEDENCE = 10;
 /**
- * @type {Array.<string>}
+ * @type {Array<string>}
  */
 Transition.serializationNames = [
     "INVALID",

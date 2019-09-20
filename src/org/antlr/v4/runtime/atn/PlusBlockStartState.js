@@ -18,6 +18,7 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
  */
 class PlusBlockStartState extends BlockStartState {
     constructor() {
+        super();
         /**
          * @type {org.antlr.v4.runtime.atn.PlusLoopbackState}
          */

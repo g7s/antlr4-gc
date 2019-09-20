@@ -14,12 +14,12 @@ const {find, findIndex} = goog.require('goog.array');
  */
 class Map {
     /**
-     * @param {function(K): number} hashFn
-     * @param {function(K, K): boolean} eqFn
+     * @param {(function(K): number)=} hashFn
+     * @param {(function(K, K): boolean)=} eqFn
      */
     constructor(hashFn, eqFn) {
         /**
-         * @protected {Object.<Array.<{key: K, value: V}>>}
+         * @protected {Object<Array<{key: K, value: V}>>}
          */
         this.data = {};
         /**
@@ -100,21 +100,21 @@ class Map {
     }
 
     /**
-     * @return {Array.<{key: K, value: V}>}
+     * @return {!Array<{key: K, value: V}>}
      */
     entries() {
         return this.mapEntries(e => e);
     }
 
     /**
-     * @return {Array.<K>}
+     * @return {!Array<K>}
      */
     keys() {
         return this.mapEntries(e => e.key);
     }
 
     /**
-     * @return {Array.<V>}
+     * @return {!Array<V>}
      */
     values() {
         return this.mapEntries(e => e.value);
@@ -148,7 +148,7 @@ class Map {
      */
     toString() {
         /**
-         * @type {Array.<string>}
+         * @type {Array<string>}
          */
         var ss = this.mapEntries(e => '{' + e.key + ':' + e.value + '}');
         return '[' + ss.join(", ") + ']';
@@ -167,7 +167,7 @@ class Map {
      * @private
      * @template T
      * @param {function({key: K, value: V}): T} fn
-     * @return {Array.<T>}
+     * @return {!Array<T>}
      */
     mapEntries(fn) {
         var l = [];

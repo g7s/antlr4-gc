@@ -18,9 +18,9 @@ class LexerInterpreter extends Lexer {
     /**
      * @param {string} grammarFileName
      * @param {org.antlr.v4.runtime.Vocabulary} vocabulary
-     * @param {Array.<string>} ruleNames
-     * @param {Array.<string>} channelNames
-     * @param {Array.<string>} modeNames
+     * @param {Array<string>} ruleNames
+     * @param {Array<string>} channelNames
+     * @param {Array<string>} modeNames
      * @param {ATN} atn
      * @param {org.antlr.v4.runtime.CharStream} input
      */
@@ -40,22 +40,22 @@ class LexerInterpreter extends Lexer {
          */
         this.atn = atn;
         /**
-         * @protected {Array.<string>}
+         * @protected {Array<string>}
          */
         this.tokenNames = [];
         for (var i = 0; i < atn.maxTokenType; i++) {
             this.tokenNames[i] = vocabulary.getDisplayName(i);
         }
         /**
-         * @protected {Array.<string>}
+         * @protected {Array<string>}
          */
         this.ruleNames = ruleNames;
         /**
-         * @protected {Array.<string>}
+         * @protected {Array<string>}
          */
         this.channelNames = channelNames;
         /**
-         * @protected {Array.<string>}
+         * @protected {Array<string>}
          */
         this.modeNames = modeNames;
         /**
@@ -63,7 +63,7 @@ class LexerInterpreter extends Lexer {
          */
         this.vocabulary = vocabulary;
         /**
-         * @protected {Array.<DFA>}
+         * @protected {Array<DFA>}
          */
         this._decisionToDFA = [];
         for (var i = 0; i < atn.getNumberOfDecisions(); i++) {

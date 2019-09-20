@@ -7,8 +7,6 @@
 goog.module('org.antlr.v4.runtime.atn.SemanticContext');
 
 
-const Recognizer = goog.require('org.antlr.v4.runtime.Recognizer');
-const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
 const {equals: arrEquals, filter} = goog.require('goog.array');
 
@@ -45,9 +43,9 @@ class SemanticContext {
     /**
      * Evaluate the precedence predicates for the context and reduce the result.
      *
-     * @param parser The parser instance.
-     * @param parserCallStack
-     * @return The simplified semantic context after precedence predicates are
+     * @param {org.antlr.v4.runtime.Recognizer<?, ?>} parser The parser instance.
+     * @param {org.antlr.v4.runtime.RuleContext} parserCallStack
+     * @return {SemanticContext} The simplified semantic context after precedence predicates are
      * evaluated, which will be one of the following values.
      * <ul>
      * <li>{@link #NONE}: if the predicate simplifies to {@code true} after
@@ -59,14 +57,23 @@ class SemanticContext {
      * <li>A non-{@code null} {@link SemanticContext}: the new simplified
      * semantic context after precedence predicates are evaluated.</li>
      * </ul>
-     *
-     * @param {org.antlr.v4.runtime.Recognizer<?, ?>} parser
-     * @param {org.antlr.v4.runtime.RuleContext} parserCallStack
-     * @return {SemanticContext}
      */
     evalPrecedence(parser, parserCallStack) {
         return this;
     }
+
+    /**
+     * @abstract
+     * @return {number}
+     */
+    hashCode() {}
+
+    /**
+     * @abstract
+     * @param {Object} o
+     * @return {boolean}
+     */
+    equals(o) {}
 }
 
 class SemanticContext$Predicate extends SemanticContext {
@@ -76,6 +83,7 @@ class SemanticContext$Predicate extends SemanticContext {
      * @param {boolean=} isCtxDependent
      */
     constructor(ruleIndex, predIndex, isCtxDependent) {
+        super();
         /**
          * @type {number}
          */
@@ -100,9 +108,9 @@ class SemanticContext$Predicate extends SemanticContext {
      */
     hashCode() {
         var hashCode = MurmurHash.initialize();
-        hashCode = MurmurHash.update(hashCode, ruleIndex);
-        hashCode = MurmurHash.update(hashCode, predIndex);
-        hashCode = MurmurHash.update(hashCode, isCtxDependent ? 1 : 0);
+        hashCode = MurmurHash.update(hashCode, this.ruleIndex);
+        hashCode = MurmurHash.update(hashCode, this.predIndex);
+        hashCode = MurmurHash.update(hashCode, this.isCtxDependent ? 1 : 0);
         hashCode = MurmurHash.finish(hashCode, 3);
         return hashCode;
     }
@@ -125,13 +133,14 @@ class SemanticContext$Predicate extends SemanticContext {
     toString() {
         return "{" + this.ruleIndex + ":" + this.predIndex + "}?";
     }
-};
+}
 
 class SemanticContext$PrecedencePredicate extends SemanticContext {
     /**
      * @param {number=} precedence
      */
     constructor(precedence) {
+        super();
         /**
          * @type {number}
          */
@@ -188,7 +197,7 @@ class SemanticContext$PrecedencePredicate extends SemanticContext {
     toString() {
         return "{" + this.precedence + ">=prec}?";
     }
-};
+}
 
 /**
  * This is the base class for semantic context "operators", which operate on
@@ -203,13 +212,13 @@ class SemanticContext$Operator extends SemanticContext {
      * Gets the operands for the semantic context operator.
      *
      * @abstract
-     * @return {Array.<SemanticContext>} a collection of {@link SemanticContext} operands for the
+     * @return {Array<SemanticContext>} a collection of {@link SemanticContext} operands for the
      * operator.
      *
      * @since 4.3
      */
     getOperands() {}
-};
+}
 
 /**
  * A semantic context which is true whenever none of the contained contexts
@@ -217,12 +226,13 @@ class SemanticContext$Operator extends SemanticContext {
  */
 class SemanticContext$AND extends SemanticContext$Operator {
     /**
-     * @param {SemanticContext} a
-     * @param {SemanticContext} b
+     * @param {!SemanticContext} a
+     * @param {!SemanticContext} b
      */
     constructor(a, b) {
+        super();
         /**
-         * @type {Array.<SemanticContext>}
+         * @type {!Array<!SemanticContext>}
          */
         var operands = [];
         if (a instanceof SemanticContext$AND) {
@@ -239,10 +249,10 @@ class SemanticContext$AND extends SemanticContext$Operator {
         if (precedencePredicates.length > 0) {
             // interested in the transition with the lowest precedence
             var sorted = precedencePredicates.sort((a, b) => a.compareTo(b));
-            operands.add(sorted[0]);
+            operands.push(sorted[0]);
         }
         /**
-         * @type {Array.<SemanticContext>}
+         * @type {!Array<!SemanticContext>}
          */
         this.opnds = operands;
     }
@@ -278,7 +288,7 @@ class SemanticContext$AND extends SemanticContext$Operator {
     evalPrecedence(parser, parserCallStack) {
         var differs = 0;
         /**
-         * @type {Array.<SemanticContext>}
+         * @type {!Array<!SemanticContext>}
          */
         var operands = [];
         for (const context of this.opnds) {
@@ -290,7 +300,7 @@ class SemanticContext$AND extends SemanticContext$Operator {
             }
             else if (evaluated !== SemanticContext.NONE) {
                 // Reduce the result by skipping true elements
-                operands.add(evaluated);
+                operands.push(evaluated);
             }
         }
         if (!differs) {
@@ -313,7 +323,7 @@ class SemanticContext$AND extends SemanticContext$Operator {
     toString() {
         return this.opnds.map(e => e.toString()).join("&&");
     }
-};
+}
 
 /**
  * A semantic context which is true whenever at least one of the contained
@@ -321,12 +331,13 @@ class SemanticContext$AND extends SemanticContext$Operator {
  */
 class SemanticContext$OR extends SemanticContext$Operator {
     /**
-     * @param {SemanticContext} a
-     * @param {SemanticContext} b
+     * @param {!SemanticContext} a
+     * @param {!SemanticContext} b
      */
     constructor(a, b) {
+        super();
         /**
-         * @type {Array.<SemanticContext>}
+         * @type {!Array<!SemanticContext>}
          */
         var operands = [];
         if (a instanceof SemanticContext$OR) {
@@ -342,10 +353,10 @@ class SemanticContext$OR extends SemanticContext$Operator {
         var precedencePredicates = SemanticContext.filterPrecedencePredicates(operands);
         if (precedencePredicates.length > 0) {
             var sorted = precedencePredicates.sort((a, b) => -a.compareTo(b));
-            operands.add(sorted[0]);
+            operands.push(sorted[0]);
         }
         /**
-         * @type {Array.<SemanticContext>}
+         * @type {!Array<!SemanticContext>}
          */
         this.opnds = operands;
     }
@@ -368,7 +379,7 @@ class SemanticContext$OR extends SemanticContext$Operator {
      * @return {number}
      */
     hashCode() {
-        return MurmurHash.hashCode(opnds, SemanticContext$OR.HASH_SEED);
+        return MurmurHash.hashCode(this.opnds, SemanticContext$OR.HASH_SEED);
     }
 
     eval(parser, parserCallStack) {
@@ -381,7 +392,7 @@ class SemanticContext$OR extends SemanticContext$Operator {
     evalPrecedence(parser, parserCallStack) {
         var differs = 0;
         /**
-         * @type {Array.<SemanticContext>}
+         * @type {!Array<!SemanticContext>}
          */
         var operands = [];
         for (const context of this.opnds) {
@@ -393,7 +404,7 @@ class SemanticContext$OR extends SemanticContext$Operator {
             }
             else if (evaluated !== SemanticContext.NONE) {
                 // Reduce the result by skipping true elements
-                operands.add(evaluated);
+                operands.push(evaluated);
             }
         }
         if (!differs) {
@@ -416,13 +427,7 @@ class SemanticContext$OR extends SemanticContext$Operator {
     toString() {
         return this.opnds.map(e => e.toString()).join("||");
     }
-};
-
-SemanticContext.Predicate = SemanticContext$Predicate;
-SemanticContext.PrecedencePredicate = SemanticContext$PrecedencePredicate;
-SemanticContext.Operator = SemanticContext$Operator;
-SemanticContext.AND = SemanticContext$AND;
-SemanticContext.OR = SemanticContext$OR;
+}
 
 /**
  * @private {number}
@@ -450,7 +455,7 @@ SemanticContext.NONE = new SemanticContext$Predicate();
 SemanticContext.and = function (a, b) {
     if (a === null || a === SemanticContext.NONE) return b;
     if (b === null || b === SemanticContext.NONE) return a;
-    var result = new AND(a, b);
+    var result = new SemanticContext$AND(a, b);
     if (result.opnds.length === 1) {
         return result.opnds[0];
     }
@@ -467,7 +472,7 @@ SemanticContext.and = function (a, b) {
 SemanticContext.or = function (a, b) {
     if (a === null || a === SemanticContext.NONE) return b;
     if (b === null || b === SemanticContext.NONE) return a;
-    var result = new OR(a, b);
+    var result = new SemanticContext$OR(a, b);
     if (result.opnds.length === 1) {
         return result.opnds[0];
     }
@@ -476,11 +481,16 @@ SemanticContext.or = function (a, b) {
 
 /**
  * @private
- * @param {Array.<SemanticContext>} collection
- * @return {Array.<SemanticContext$PrecedencePredicate>}
+ * @param {Array<SemanticContext>} collection
+ * @return {!Array<!SemanticContext$PrecedencePredicate>}
  */
 SemanticContext.filterPrecedencePredicates = function (collection) {
     return filter(collection, ctx => ctx instanceof SemanticContext$PrecedencePredicate);
 };
 
 exports = SemanticContext;
+exports.Predicate = SemanticContext$Predicate;
+exports.PrecedencePredicate = SemanticContext$PrecedencePredicate;
+exports.Operator = SemanticContext$Operator;
+exports.AND = SemanticContext$AND;
+exports.OR = SemanticContext$OR;

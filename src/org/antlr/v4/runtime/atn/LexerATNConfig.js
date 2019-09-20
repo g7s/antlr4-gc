@@ -7,6 +7,7 @@
 goog.module('org.antlr.v4.runtime.atn.LexerATNConfig');
 
 
+const SemanticContext = goog.require('org.antlr.v4.runtime.atn.SemanticContext');
 const ATNConfig = goog.require('org.antlr.v4.runtime.atn.ATNConfig');
 const LexerActionExecutor = goog.require('org.antlr.v4.runtime.atn.LexerActionExecutor');
 const DecisionState = goog.require('org.antlr.v4.runtime.atn.DecisionState');
@@ -17,16 +18,6 @@ class LexerATNConfig extends ATNConfig {
      * @param {...*} args
      */
     constructor(args) {
-        /**
-         * This is the backing field for {@link #getLexerActionExecutor}.
-         *
-         * @private {LexerActionExecutor}
-         */
-        this.lexerActionExecutor = null;
-        /**
-         * @private {boolean}
-         */
-        this.passedThroughNonGreedyDecision = false;
         if (arguments.length < 4) {
             var c = arguments[0];
             var state = arguments[1];
@@ -44,6 +35,16 @@ class LexerATNConfig extends ATNConfig {
             super(state, alt, context, SemanticContext.NONE);
             this.lexerActionExecutor = lexerActionExecutor;
         }
+        /**
+         * This is the backing field for {@link #getLexerActionExecutor}.
+         *
+         * @private {LexerActionExecutor}
+         */
+        this.lexerActionExecutor = goog.isDefAndNotNull(this.lexerActionExecutor) ? this.lexerActionExecutor : null;
+        /**
+         * @private {boolean}
+         */
+        this.passedThroughNonGreedyDecision = goog.isDefAndNotNull(this.passedThroughNonGreedyDecision) ? this.passedThroughNonGreedyDecision : false;
     }
 
 	/**
@@ -63,9 +64,6 @@ class LexerATNConfig extends ATNConfig {
 		return this.passedThroughNonGreedyDecision;
 	}
 
-    /**
-     * @return {number}
-     */
 	hashCode() {
 		var hashCode = MurmurHash.initialize(7);
 		hashCode = MurmurHash.update(hashCode, this.state.stateNumber);
@@ -78,10 +76,6 @@ class LexerATNConfig extends ATNConfig {
 		return hashCode;
 	}
 
-    /**
-     * @param {ATNConfig} other
-     * @return {boolean}
-     */
 	equals(other) {
 		if (this === other) {
 			return true;
@@ -105,7 +99,7 @@ class LexerATNConfig extends ATNConfig {
 /**
  * @private
  * @param {LexerATNConfig} source
- * @param {ATNState} target
+ * @param {org.antlr.v4.runtime.atn.ATNState} target
  * @return {boolean}
  */
 LexerATNConfig.checkNonGreedyDecision = function (source, target) {

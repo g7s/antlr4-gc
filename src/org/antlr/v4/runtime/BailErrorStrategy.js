@@ -40,32 +40,18 @@ const InputMismatchException = goog.require('org.antlr.v4.runtime.InputMismatchE
  * @see Parser#setErrorHandler(ANTLRErrorStrategy)
  */
 class BailErrorStrategy extends DefaultErrorStrategy {
-    /**
-     * Instead of recovering from exception {@code e}, re-throw it wrapped
-     * in a {@link ParseCancellationException} so it is not caught by the
-     * rule function catches.  Use {@link Exception#getCause()} to get the
-     * original {@link RecognitionException}.
-     */
     recover(recognizer, e) {
-        for (context = recognizer.getContext(); context !== null; context = context.getParent()) {
+        for (var context = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (recognizer.getContext()); context !== null; context = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (context.getParent())) {
             context.exception = e;
         }
         throw new ParseCancellationException(e);
     }
 
-    /**
-     * Make sure we don't attempt to recover inline; if the parser
-     * successfully recovers, it won't throw an exception.
-     */
     recoverInline(recognizer) {
-        let e = new InputMismatchException(recognizer);
-        for (context = recognizer.getContext(); context !== null; context = context.getParent()) {
-            context.exception = e;
-        }
-        throw new ParseCancellationException(e);
+        this.recover(recognizer, new InputMismatchException(recognizer));
+        return null;
     }
 
-    /** Make sure we don't attempt to recover from problems in subrules. */
     sync(recognizer) {}
 };
 

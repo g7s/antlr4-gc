@@ -71,15 +71,6 @@ class ParseTree extends SyntaxTree {
      * @return {string}
 	 */
 	getText() {}
-
-	/**
-     * Specialize toStringTree so that it can print out more information
-	 * based upon the parser.
-     *
-     * @param {rg.antlr.v4.runtime.Parser} parser
-     * @return {string}
-	 */
-	toStringTree(parser) {}
 }
 
 

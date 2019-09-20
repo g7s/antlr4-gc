@@ -72,9 +72,9 @@ const {format} = goog.require('goog.string');
  * omitted.</li>
  * </ul>
  *
- * @const
+ * @type {string}
  */
-VERSION = "4.7.2";
+const VERSION = "4.7.2";
 
 exports.VERSION = VERSION;
 
@@ -104,7 +104,7 @@ function getMajorMinorVersion(version) {
     let firstDot = version.indexOf('.');
     let secondDot = firstDot >= 0 ? version.indexOf('.', firstDot + 1) : -1;
     let firstDash = version.indexOf('-');
-    let referenceLength = version.length();
+    let referenceLength = version.length;
     if (secondDot >= 0) {
         referenceLength = Math.min(referenceLength, secondDot);
     }
@@ -190,9 +190,9 @@ exports.checkVersion = function (generatingToolVersion, compileTimeVersion) {
         getMajorMinorVersion(runtimeVersion) !== getMajorMinorVersion(compileTimeVersion);
 
     if (runtimeConflictsWithGeneratingTool) {
-        console.error(format("ANTLR Tool version %s used for code generation does not match the current runtime version %s", generatingToolVersion, runtimeVersion));
+        console.error(format("ANTLR Tool version %s used for code generation does not match the current runtime version %s", generatingToolVersion || "N/A", runtimeVersion));
     }
-    if ( runtimeConflictsWithCompileTimeTool ) {
+    if (runtimeConflictsWithCompileTimeTool) {
         console.error(format("ANTLR Runtime version %s used for parser compilation does not match the current runtime version %s", compileTimeVersion, runtimeVersion));
     }
 };

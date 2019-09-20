@@ -18,7 +18,7 @@ const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
  *
  * @implements {TokenFactory<CommonToken>}
  */
-class CommonTokenFactory extends TokenFactory {
+class CommonTokenFactory {
     /**
 	 * Constructs a {@link CommonTokenFactory} with the specified value for
 	 * {@link #copyText}.

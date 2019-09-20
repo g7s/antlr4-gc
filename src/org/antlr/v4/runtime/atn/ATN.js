@@ -7,7 +7,7 @@
 goog.module('org.antlr.v4.runtime.atn.ATN');
 
 
-const LL1Analyzer = goog.remove('org.antlr.v4.runtime.atn.LL1Analyzer');
+const LL1Analyzer = goog.require('org.antlr.v4.runtime.atn.LL1Analyzer');
 const Token = goog.require('org.antlr.v4.runtime.Token');
 const Map = goog.require('org.antlr.v4.runtime.misc.Map');
 const IntervalSet = goog.require('org.antlr.v4.runtime.misc.IntervalSet');
@@ -20,7 +20,7 @@ class ATN {
      */
     constructor(grammarType, maxTokenType) {
         /**
-         * @type {Array.<org.antlr.v4.runtime.atn.ATNState}
+         * @type {!Array<org.antlr.v4.runtime.atn.ATNState>}
          */
         this.states = [];
         /**
@@ -28,23 +28,23 @@ class ATN {
          * can go back later and build DFA predictors for them.  This includes
          * all the rules, subrules, optional blocks, ()+, ()* etc...
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.DecisionState>}
+         * @type {!Array<org.antlr.v4.runtime.atn.DecisionState>}
          */
         this.decisionToState = [];
         /**
          * Maps from rule index to starting state number.
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.RuleStartState>}
+         * @type {!Array<org.antlr.v4.runtime.atn.RuleStartState>}
          */
         this.ruleToStartState = [];
         /**
          * Maps from rule index to stop state number.
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.RuleStopState>}
+         * @type {!Array<org.antlr.v4.runtime.atn.RuleStopState>}
          */
         this.ruleToStopState = [];
         /**
-         * @type {Map<string, org.antlr.v4.runtime.atn.TokensStartState>}
+         * @type {!Map<string, org.antlr.v4.runtime.atn.TokensStartState>}
          */
         this.modeNameToStartState = new Map();
         /**
@@ -66,18 +66,18 @@ class ATN {
          * {@link ATNDeserializationOptions#isGenerateRuleBypassTransitions}
          * deserialization option was specified; otherwise, this is {@code null}.
          *
-         * @type {Array.<number>}
+         * @type {!Array<number>}
          */
         this.ruleToTokenType = [];
         /**
          * For lexer ATNs, this is an array of {@link LexerAction} objects which may
          * be referenced by action transitions in the ATN.
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.LexerAction>}
+         * @type {!Array<org.antlr.v4.runtime.atn.LexerAction>}
          */
         this.lexerActions = [];
         /**
-         * @type {Array.<org.antlr.v4.runtime.atn.TokensStartState>}
+         * @type {!Array<org.antlr.v4.runtime.atn.TokensStartState>}
          */
         this.modeToStartState = [];
     }
@@ -95,7 +95,7 @@ class ATN {
 	nextTokens(s, ctx) {
         if (goog.isDef(ctx)) {
             var anal = new LL1Analyzer(this);
-            var next = anal.LOOK(s, ctx);
+            var next = anal.LOOKC(s, ctx);
             return next;
         } else {
             if (s.nextTokenWithinRule != null) return s.nextTokenWithinRule;
@@ -205,10 +205,7 @@ class ATN {
 		expected.remove(Token.EPSILON);
 		while (ctx != null && ctx.invokingState >= 0 && following.contains(Token.EPSILON)) {
             var invokingState = this.states[ctx.invokingState];
-            /**
-             * @type {org.antlr.v4.runtime.atn.RuleTransition}
-             */
-			var rt = invokingState.transition(0);
+			var rt = /** @type {org.antlr.v4.runtime.atn.RuleTransition} */ (invokingState.transition(0));
 			following = this.nextTokens(rt.followState);
 			expected.addAll(following);
 			expected.remove(Token.EPSILON);
@@ -222,7 +219,6 @@ class ATN {
 		return expected;
 	}
 }
-
 
 /**
  * @type {number}

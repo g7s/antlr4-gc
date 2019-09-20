@@ -19,8 +19,10 @@ const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerPopModeAction extends LexerAction {
+class LexerPopModeAction {
 	getActionType() {
 		return LexerActionType.POP_MODE;
 	}

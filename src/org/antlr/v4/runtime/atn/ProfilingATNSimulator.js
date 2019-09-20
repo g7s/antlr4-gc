@@ -25,18 +25,18 @@ class ProfilingATNSimulator extends ParserATNSimulator {
      * @param {org.antlr.v4.runtime.Parser} parser
      */
 	constructor(parser) {
-        var i = parser.getInterpreter();
-        super(parser, i.atn, i.decisionToDFA, i.sharedContextCache);
+        var interp = parser.getInterpreter();
+        super(parser, interp.atn, interp.decisionToDFA, interp.sharedContextCache);
         /**
          * @protected {number}
          */
         this.numDecisions = this.atn.decisionToState.size();
         /**
-         * @protected {Array.<DecisionInfo>}
+         * @protected {Array<DecisionInfo>}
          */
 		this.decisions = [];
 		for (var i = 0; i < this.numDecisions; i++) {
-			decisions[i] = new DecisionInfo(i);
+			this.decisions[i] = new DecisionInfo(i);
         }
         /**
          * @protected {number}
@@ -221,7 +221,7 @@ class ProfilingATNSimulator extends ParserATNSimulator {
 	}
 
 	/**
-     * @return {Array.<DecisionInfo>}
+     * @return {Array<DecisionInfo>}
      */
 	getDecisionInfo() {
 		return this.decisions;

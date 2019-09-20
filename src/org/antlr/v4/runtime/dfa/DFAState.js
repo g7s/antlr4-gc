@@ -8,41 +8,11 @@ goog.module('org.antlr.v4.runtime.dfa.DFAState');
 
 
 const Token = goog.require('org.antlr.v4.runtime.Token');
-const ATN = goog.require('org.antlr.v4.runtime.atn.ATN');
+const PredPrediction = goog.require('org.antlr.v4.runtime.dfa.PredPrediction');
 const ATNConfig = goog.require('org.antlr.v4.runtime.atn.ATNConfig');
 const ATNConfigSet = goog.require('org.antlr.v4.runtime.atn.ATNConfigSet');
-const LexerActionExecutor = goog.require('org.antlr.v4.runtime.atn.LexerActionExecutor');
-const ParserATNSimulator = goog.require('org.antlr.v4.runtime.atn.ParserATNSimulator');
-const SemanticContext = goog.require('org.antlr.v4.runtime.atn.SemanticContext');
 const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
 
-/**
- * Map a predicate to a predicted alternative.
- */
-class PredPrediction {
-    /**
-     * @param {org.antlr.v4.runtime.atn.SemanticContext} pred
-     * @param {number} alt
-     */
-    constructor(pred, alt) {
-        /**
-         * @type {number}
-         */
-        this.alt = alt;
-        /**
-         * never null; at least SemanticContext.NONE
-         * @type {org.antlr.v4.runtime.atn.SemanticContext}
-         */
-        this.pred = pred;
-    }
-
-    /**
-     * @return {string}
-     */
-    toString() {
-        return "(" + this.pred + ", " + this.alt + ")";
-    }
-}
 
 /** A DFA state represents a set of possible ATN configurations.
  *  As Aho, Sethi, Ullman p. 117 says "The DFA uses its state
@@ -78,13 +48,13 @@ class DFAState {
          */
         this.stateNumber = -1;
         /**
-         * @type {ATNConfigSet}
+         * @type {!ATNConfigSet}
          */
         this.configs = new ATNConfigSet();
         /** {@code edges[symbol]} points to target of symbol. Shift up by 1 so (-1)
          *  {@link Token#EOF} maps to {@code edges[0]}.
          *
-         * @type {Array.<DFAState>}
+         * @type {!Array<DFAState>}
          */
         this.edges = [];
         /**
@@ -125,7 +95,7 @@ class DFAState {
          *
          * <p>This list is computed by {@link ParserATNSimulator#predicateDFAState}.</p>
          *
-         * @type {Array.<PredPrediction>}
+         * @type {!Array<PredPrediction>}
          */
         this.predicates = [];
 
@@ -194,7 +164,5 @@ class DFAState {
 		return str;
 	}
 }
-
-DFAState.PredPrediction = PredPrediction;
 
 exports = DFAState;

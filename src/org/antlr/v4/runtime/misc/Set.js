@@ -14,12 +14,12 @@ const {find} = goog.require('goog.array');
  */
 class Set {
     /**
-     * @param {function(T): number} hashFn
-     * @param {function(T, T): boolean} eqFn
+     * @param {(function(T): number)=} hashFn
+     * @param {(function(T, T): boolean)=} eqFn
      */
     constructor(hashFn, eqFn) {
         /**
-         * @protected {Object>}
+         * @protected {Object}
          */
         this.data = {};
         /**
@@ -96,7 +96,7 @@ class Set {
     }
 
     /**
-     * @return {Array.<T>}
+     * @return {Array<T>}
      */
     values() {
         var l = [];

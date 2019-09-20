@@ -14,9 +14,16 @@ const ParseTree = goog.require('org.antlr.v4.runtime.tree.ParseTree');
  */
 class RuleNode extends ParseTree {
     /**
+     * @param {...} args
      * @return {org.antlr.v4.runtime.RuleContext}
      */
-	getRuleContext() {}
+    getRuleContext(args) {}
+
+    /**
+     * @override
+     * @param {...} args
+     */
+    toString(args) {}
 }
 
 

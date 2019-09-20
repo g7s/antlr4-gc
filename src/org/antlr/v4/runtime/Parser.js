@@ -32,7 +32,10 @@ const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImp
 // const ParseTreePatternMatcher = goog.require('org.antlr.v4.runtime.tree.pattern.ParseTreePatternMatcher');
 
 
-class TraceListener extends ParseTreeListener {
+/**
+ * @implements {ParseTreeListener}
+ */
+class TraceListener {
     /**
      * @param {Parser} parser
      */
@@ -61,13 +64,14 @@ class TraceListener extends ParseTreeListener {
 
 /**
  * @abstract
- * @extends org.antlr.v4.runtime.Recognizer<org.antlr.v4.runtime.Token, org.antlr.v4.runtime.atn.ParserATNSimulator>
+ * @extends {org.antlr.v4.runtime.Recognizer<org.antlr.v4.runtime.Token, org.antlr.v4.runtime.atn.ParserATNSimulator>}
  */
 class Parser extends Recognizer {
     /**
      * @param {org.antlr.v4.runtime.TokenStream} input
      */
     constructor(input) {
+        super();
         /**
          * This field maps from the serialized ATN string to the deserialized {@link ATN} with
          * bypass alternatives.
@@ -94,7 +98,7 @@ class Parser extends Recognizer {
          */
         this._input = null;
         /**
-         * @protected {Array.<number>}
+         * @protected {Array<number>}
          */
         this._precedenceStack = [0];
         /**
@@ -127,7 +131,7 @@ class Parser extends Recognizer {
          * The list of {@link ParseTreeListener} listeners registered to receive
          * events during the parse.
          *
-         * @protected {Array.<ParseTreeListener>}
+         * @protected {Array<ParseTreeListener>}
          * @see #addParseListener
          */
         this._parseListeners = [];
@@ -181,7 +185,7 @@ class Parser extends Recognizer {
 	 *
 	 * @param {number} ttype the token type to match
 	 * @return {Token} the matched symbol
-	 * @throws {Error} RecognitionException if the current input symbol did not match
+	 * @throws {org.antlr.v4.runtime.RecognitionException} if the current input symbol did not match
 	 * {@code ttype} and the error strategy could not recover from the
 	 * mismatched symbol
 	 */
@@ -218,7 +222,7 @@ class Parser extends Recognizer {
      * {@link ParserRuleContext#addErrorNode(ErrorNode)}</p>
 	 *
 	 * @return {Token} the matched symbol
-	 * @throws {Error} RecognitionException if the current input symbol did not match
+	 * @throws {org.antlr.v4.runtime.RecognitionException} if the current input symbol did not match
 	 * a wildcard and the error strategy could not recover from the mismatched
 	 * symbol
 	 */
@@ -229,7 +233,7 @@ class Parser extends Recognizer {
             this.consume();
         } else {
             t = this._errHandler.recoverInline(this);
-            if (this._buildParseTrees && t.tokenIndex === -1) {
+            if (this._buildParseTrees && t.getTokenIndex() === -1) {
                 // we must have conjured up a new token during single token insertion
                 // if it's not the current symbol
                 this._ctx.addErrorNode(this.createErrorNode(this._ctx, t));
@@ -292,7 +296,7 @@ class Parser extends Recognizer {
     }
 
     /**
-     * @return {Array.<ParseTreeListener>}
+     * @return {Array<ParseTreeListener>}
      */
     getParseListeners() {
         return this._parseListeners || [];
@@ -495,8 +499,15 @@ class Parser extends Recognizer {
         this._errHandler = handler;
     }
 
+    /**
+     * @return {org.antlr.v4.runtime.TokenStream}
+     */
     getInputStream() {
         return this.getTokenStream();
+    }
+
+    setInputStream(input) {
+        this.setTokenStream(/** @type {org.antlr.v4.runtime.TokenStream} */ (input));
     }
 
     /**
@@ -531,18 +542,18 @@ class Parser extends Recognizer {
     }
 
     /**
-     * @param {string} msg
      * @param {Token} offendingToken
-     * @param {Error} e
+     * @param {string} msg
+     * @param {org.antlr.v4.runtime.RecognitionException} e
      * @return {void}
      */
-    notifyErrorListeners(msg, offendingToken, e) {
+    notifyErrorListeners(offendingToken, msg, e) {
         if (offendingToken == null) {
             offendingToken = this.getCurrentToken();
         }
         this._syntaxErrors += 1;
-        var line = offendingToken.line;
-        var column = offendingToken.column;
+        var line = offendingToken.getLine();
+        var column = offendingToken.getCharPositionInLine();
         var listener = this.getErrorListenerDispatch();
         listener.syntaxError(this, offendingToken, line, column, msg, e);
     }
@@ -572,24 +583,18 @@ class Parser extends Recognizer {
 	 */
     consume() {
         var o = this.getCurrentToken();
-        if (o.type !== Token.EOF) {
+        if (o.getType() !== Token.EOF) {
             this.getInputStream().consume();
         }
         var hasListener = this._parseListeners != null && this._parseListeners.length > 0;
         if (this._buildParseTrees || hasListener) {
             if (this._errHandler.inErrorRecoveryMode(this)) {
-                /**
-                 * @type {ErrorNode}
-                 */
-                var node = this._ctx.addErrorNode(this.createErrorNode(this._ctx, o));
+                let node = this._ctx.addErrorNode(this.createErrorNode(this._ctx, o));
                 (this._parseListeners || []).forEach((listener) => {
                     listener.visitErrorNode(node);
                 });
             } else {
-                /**
-                 * @type {TerminalNode}
-                 */
-                var node = this._ctx.addChild(this.createTerminalNode(this._ctx, o));
+                let node = /** @type {!TerminalNode} */ (this._ctx.addChild(this.createTerminalNode(this._ctx, o)));
                 (this._parseListeners || []).forEach((listener) => {
                     listener.visitTerminal(node);
                 });
@@ -629,7 +634,7 @@ class Parser extends Recognizer {
      * @return {void}
      */
     addContextToParseTree() {
-		parent = this._ctx.parent;
+		var parent = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (this._ctx.parent);
 		// add current context to parent if we have a parent
 		if (parent != null)	{
 			parent.addChild(this._ctx);
@@ -667,7 +672,7 @@ class Parser extends Recognizer {
             this.triggerExitRuleEvent();
         }
         this.setState(this._ctx.invokingState);
-        this._ctx = this._ctx.parent;
+        this._ctx = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (this._ctx.parent);
     }
 
     /**
@@ -680,7 +685,7 @@ class Parser extends Recognizer {
         // if we have new localctx, make sure we replace existing ctx
         // that is previous child of parse tree
         if (this._buildParseTrees && this._ctx !== localctx) {
-            var parent = this._ctx.parent;
+            var parent = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (this._ctx.parent);
             if (parent != null)	{
                 parent.removeLastChild();
                 parent.addChild(localctx);
@@ -758,7 +763,7 @@ class Parser extends Recognizer {
         if (this._parseListeners != null) {
             while (this._ctx !== _parentctx) {
                 this.triggerExitRuleEvent();
-                this._ctx = this._ctx.parent;
+                this._ctx = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (this._ctx.parent);
             }
         } else {
             this._ctx = _parentctx;
@@ -779,7 +784,7 @@ class Parser extends Recognizer {
         var p = this._ctx;
         while (p != null) {
             if (p.getRuleIndex() === ruleIndex) return p;
-            p = p.parent;
+            p = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (p.parent);
         }
         return null;
     }
@@ -800,7 +805,7 @@ class Parser extends Recognizer {
     }
 
     /**
-     * @param {org.antlr.v4.runtime.ParserRuleContext} localctx
+     * @param {org.antlr.v4.runtime.RuleContext} localctx
      * @param {number} precedence
      * @return {boolean}
      */
@@ -844,7 +849,7 @@ class Parser extends Recognizer {
         }
         while (ctx != null && ctx.invokingState >= 0 && following.contains(Token.EPSILON)) {
             var invokingState = atn.states[ctx.invokingState];
-            var rt = invokingState.transitions[0];
+            var rt = /** @type {RuleTransition} */ (invokingState.transition(0));
             following = atn.nextTokens(rt.followState);
             if (following.contains(symbol)) {
                 return true;
@@ -902,19 +907,20 @@ class Parser extends Recognizer {
     }
 
     /**
-     * @param {org.antlr.v4.runtime.RuleContext} p
-     * @return {Array.<string>}
+     * @param {org.antlr.v4.runtime.RuleContext=} p
+     * @return {Array<string>}
      */
     getRuleInvocationStack(p) {
         p = p || this._ctx;
+        var ruleNames = this.getRuleNames();
         var stack = [];
         while (p !== null) {
             // compute what follows who invoked us
-            var ruleIndex = p.ruleIndex;
+            var ruleIndex = p.getRuleIndex();
             if (ruleIndex < 0) {
                 stack.push("n/a");
             } else {
-                stack.push(this.ruleNames[ruleIndex]);
+                stack.push(ruleNames[ruleIndex]);
             }
             p = p.parent;
         }
@@ -922,7 +928,7 @@ class Parser extends Recognizer {
     }
 
     /**
-     * @return {Array.<string>}
+     * @return {Array<string>}
      */
     getDFAStrings() {
         return this._interp.decisionToDFA.map((dfa) => {
@@ -942,7 +948,7 @@ class Parser extends Recognizer {
                     console.log();
                 }
                 console.log("Decision " + dfa.decision + ":");
-                console.log(dfa.toString(this.literalNames, this.symbolicNames));
+                console.log(dfa.toString(this.getVocabulary()));
                 seenOne = true;
             }
         }
@@ -952,14 +958,14 @@ class Parser extends Recognizer {
      * @return {string}
      */
     getSourceName() {
-        return this._input.sourceName;
+        return this._input.getSourceName();
     }
 
     /**
      * @return {ParseInfo}
      */
     getParseInfo() {
-        interp = this.getInterpreter();
+        var interp = this.getInterpreter();
         if (interp instanceof ProfilingATNSimulator) {
             return new ParseInfo(interp);
         }
@@ -973,8 +979,8 @@ class Parser extends Recognizer {
      * @return {void}
      */
     setProfile(profile) {
-        interp = this.getInterpreter();
-        saveMode = interp.getPredictionMode();
+        var interp = this.getInterpreter();
+        var saveMode = interp.getPredictionMode();
         if (profile) {
             if (!(interp instanceof ProfilingATNSimulator) ) {
                 this.setInterpreter(new ProfilingATNSimulator(this));

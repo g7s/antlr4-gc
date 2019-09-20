@@ -71,7 +71,7 @@ const MurmurHash = {
 	 * MurmurHash algorithm.
 	 *
      * @template T
-	 * @param {Array.<T>} data the array data
+	 * @param {Array<T>} data the array data
 	 * @param {number} seed the seed for the MurmurHash algorithm
 	 * @return {number} the hash code of the data
 	 */

@@ -28,7 +28,7 @@ class ParseInfo {
 	 * Gets an array of {@link DecisionInfo} instances containing the profiling
 	 * information gathered for each decision in the ATN.
 	 *
-	 * @return {Array.<org.antlr.v4.runtime.atn.DecisionInfo>} An array of {@link DecisionInfo} instances, indexed by decision
+	 * @return {Array<org.antlr.v4.runtime.atn.DecisionInfo>} An array of {@link DecisionInfo} instances, indexed by decision
 	 * number.
 	 */
 	getDecisionInfo() {
@@ -40,13 +40,13 @@ class ParseInfo {
 	 * full-context predictions during parsing. These are decisions for which
 	 * {@link DecisionInfo#LL_Fallback} is non-zero.
 	 *
-	 * @return {Array.<number>} A list of decision numbers which required one or more
+	 * @return {Array<number>} A list of decision numbers which required one or more
 	 * full-context predictions during parsing.
 	 */
 	getLLDecisions() {
         var decisions = this.getDecisionInfo();
         /**
-         * @type {Array.<number>}
+         * @type {Array<number>}
          */
         var LL = [];
         decisions.forEach((d, i) => {
@@ -79,7 +79,7 @@ class ParseInfo {
 	getTotalSLLLookaheadOps() {
 		var decisions = this.getDecisionInfo();
         var k = 0;
-        decisions.forEach(d => k += d.SSL_TotalLook);
+        decisions.forEach(d => k += d.SLL_TotalLook);
 		return k;
 	}
 

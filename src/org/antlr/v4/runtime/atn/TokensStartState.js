@@ -7,7 +7,7 @@
 goog.module('org.antlr.v4.runtime.atn.TokensStartState');
 
 
-const DecisionState = goog.require('org.antlr.v4.runtime.atn.TokensStartState');
+const DecisionState = goog.require('org.antlr.v4.runtime.atn.DecisionState');
 const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
 
 /**

@@ -8,6 +8,7 @@ goog.module('org.antlr.v4.runtime.Recognizer');
 
 
 const ConsoleErrorListener = goog.require('org.antlr.v4.runtime.ConsoleErrorListener');
+const ProxyErrorListener = goog.require('org.antlr.v4.runtime.ProxyErrorListener');
 const VocabularyImpl = goog.require('org.antlr.v4.runtime.VocabularyImpl');
 const Token = goog.require('org.antlr.v4.runtime.Token');
 const {toMap} = goog.require('org.antlr.v4.runtime.misc.Utils');
@@ -21,7 +22,7 @@ class Recognizer {
     constructor() {
         /**
          * @private
-         * @type {Array.<org.antlr.v4.runtime.ANTLRErrorListener>}
+         * @type {Array<org.antlr.v4.runtime.ANTLRErrorListener>}
          */
         this._listeners = [ConsoleErrorListener.getInstance()];
         /**
@@ -41,14 +42,14 @@ class Recognizer {
      * error reporting.  The generated parsers implement a method
      * that overrides this to point to their String[] tokenNames.
      *
-     * @return {Array.<string>}
+     * @return {Array<?string>}
      * @abstract
      * @deprecated Use {@link #getVocabulary()} instead.
      */
     getTokenNames() {}
 
     /**
-     * @return {Array.<string>}
+     * @return {Array<string>}
      * @abstract
      */
     getRuleNames() {}
@@ -70,7 +71,7 @@ class Recognizer {
      *
      * <p>Used for XPath and tree pattern compilation.</p>
      *
-     * @return {Object.<number>}
+     * @return {Object<number>}
      */
     getTokenTypeMap() {
         let vocabulary = this.getVocabulary();
@@ -88,7 +89,7 @@ class Recognizer {
                 }
             }
             result["EOF"] = Token.EOF;
-            tokenTypeMapCache.put(vocabulary, result);
+            Recognizer.tokenTypeMapCache.set(vocabulary, result);
         }
         return result;
     }
@@ -98,7 +99,7 @@ class Recognizer {
      *
      * <p>Used for XPath and tree pattern compilation.</p>
      *
-     * @return {Object.<number>}
+     * @return {Object<number>}
      */
     getRuleIndexMap() {
         let ruleNames = this.getRuleNames();
@@ -106,11 +107,11 @@ class Recognizer {
             throw new Error("The current recognizer does not provide a list of rule names.");
         }
         /**
-         * @type {Object.<number>}
+         * @type {Object<number>}
          */
         let result = Recognizer.ruleIndexMapCache.get(ruleNames);
         if (result === null) {
-            Recognizer.ruleIndexMapCache.put(ruleNames, toMap(ruleNames));
+            Recognizer.ruleIndexMapCache.set(ruleNames, toMap(ruleNames));
         }
         return result;
     }
@@ -256,7 +257,7 @@ class Recognizer {
     }
 
     /**
-     * @return {Array.<org.antlr.v4.runtime.ANTLRErrorListener>}
+     * @return {Array<org.antlr.v4.runtime.ANTLRErrorListener>}
      */
     getErrorListeners() {
         return this._listeners;
@@ -357,14 +358,14 @@ class Recognizer {
 Recognizer.EOF = -1;
 
 /**
- * @type {WeakMap.<org.antlr.v4.runtime.Vocabulary, Object.<number>>}
+ * @type {WeakMap<org.antlr.v4.runtime.Vocabulary, Object<number>>}
  * @private
  * @final
  */
 Recognizer.tokenTypeMapCache = new WeakMap();
 
 /**
- * @type {WeakMap.<Array.<string>, Object.<number>>}
+ * @type {WeakMap<Array<string>, Object<number>>}
  * @private
  * @final
  */

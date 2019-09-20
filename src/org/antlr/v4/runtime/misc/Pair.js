@@ -11,7 +11,9 @@ const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
 const {format} = goog.require('goog.string');
 
 /**
- * @type {function(Object: o1, Object: o2): boolean}
+ * @param {Object} o1
+ * @param {Object} o2
+ * @return {boolean}
  */
 const objectEquals = (o1, o2) => {
     return o1 === null ? o2 === null : o1.equals(o2);
@@ -47,7 +49,7 @@ class Pair {
         else if (!(obj instanceof Pair)) {
             return false;
         }
-        return objectEquals(a, other.a) && objectEquals(b, other.b);
+        return objectEquals(this.a, obj.a) && objectEquals(this.b, obj.b);
     }
 
     /**

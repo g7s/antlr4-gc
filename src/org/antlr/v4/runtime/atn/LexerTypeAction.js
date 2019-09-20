@@ -18,8 +18,10 @@ const {format} = goog.require('goog.string');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerTypeAction extends LexerAction {
+class LexerTypeAction {
 	/**
 	 * Constructs a new {@code type} action with the specified token type value.
 	 * @param {number} type The type to assign to the token using {@link Lexer#setType}.

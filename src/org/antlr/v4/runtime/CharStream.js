@@ -7,6 +7,8 @@
 goog.module('org.antlr.v4.runtime.CharStream');
 
 
+const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
+
 /**
  * A source of characters for an ANTLR lexer.
  *
@@ -19,7 +21,7 @@ class CharStream extends IntStream {
      * specified {@code interval} lies entirely within a marked range. For more
      * information about marked ranges, see {@link IntStream#mark}.
      *
-     * @param {org.antlr.v4.runtime.Interval} interval an interval within the stream
+     * @param {org.antlr.v4.runtime.misc.Interval} interval an interval within the stream
      * @return {string} the text of the specified interval
      *
      * @throws {Error} NullPointerException if {@code interval} is {@code null}

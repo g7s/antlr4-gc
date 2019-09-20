@@ -142,7 +142,7 @@ class DecisionInfo {
          *
          * @see ContextSensitivityInfo
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.ContextSensitivityInfo>}
+         * @type {Array<org.antlr.v4.runtime.atn.ContextSensitivityInfo>}
          */
         this.contextSensitivities = [];
 
@@ -153,7 +153,7 @@ class DecisionInfo {
          *
          * @see ErrorInfo
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.ErrorInfo>}
+         * @type {Array<org.antlr.v4.runtime.atn.ErrorInfo>}
          */
         this.errors = [];
 
@@ -163,7 +163,7 @@ class DecisionInfo {
          *
          * @see AmbiguityInfo
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.AmbiguityInfo>}
+         * @type {Array<org.antlr.v4.runtime.atn.AmbiguityInfo>}
          */
         this.ambiguities = [];
 
@@ -174,7 +174,7 @@ class DecisionInfo {
          *
          * @see PredicateEvalInfo
          *
-         * @type {Array.<org.antlr.v4.runtime.atn.PredicateEvalInfo>}
+         * @type {Array<org.antlr.v4.runtime.atn.PredicateEvalInfo>}
          */
         this.predicateEvals = [];
 

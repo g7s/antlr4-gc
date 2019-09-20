@@ -18,8 +18,10 @@ const {format} = goog.require('goog.string');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerChannelAction extends LexerAction {
+class LexerChannelAction {
 	/**
 	 * Constructs a new {@code channel} action with the specified channel value.
 	 * @param {number} channel The channel value to pass to {@link Lexer#setChannel}.

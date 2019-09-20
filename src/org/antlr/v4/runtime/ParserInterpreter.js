@@ -7,7 +7,11 @@
 goog.module('org.antlr.v4.runtime.ParserInterpreter');
 
 
+const Token = goog.require('org.antlr.v4.runtime.Token');
 const Parser = goog.require('org.antlr.v4.runtime.Parser');
+const InterpreterRuleContext = goog.require('org.antlr.v4.runtime.InterpreterRuleContext');
+const InputMismatchException = goog.require('org.antlr.v4.runtime.InputMismatchException');
+const FailedPredicateException = goog.require('org.antlr.v4.runtime.FailedPredicateException');
 const ATN = goog.require('org.antlr.v4.runtime.atn.ATN');
 const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
 const ActionTransition = goog.require('org.antlr.v4.runtime.atn.ActionTransition');
@@ -43,9 +47,9 @@ class ParserInterpreter extends Parser {
      *
      * @param {string} grammarFileName
      * @param {org.antlr.v4.runtime.Vocabulary} vocabulary
-     * @param {Array.<string>} ruleNames
-     * @param {org.antlr.v4.runtime.ATN} atn
-     * @param {org.antlr.v4.runtime.TokenStream}
+     * @param {Array<string>} ruleNames
+     * @param {ATN} atn
+     * @param {org.antlr.v4.runtime.TokenStream} input
      */
     constructor(grammarFileName, vocabulary, ruleNames, atn, input) {
         super(input);
@@ -58,11 +62,11 @@ class ParserInterpreter extends Parser {
          */
         this.atn = atn;
         /**
-         * @protected {Array.<org.antlr.v4.runtime.dfa.DFA>}
+         * @protected {Array<org.antlr.v4.runtime.dfa.DFA>}
          */
         this.decisionToDFA = []; // not shared like it is for generated parsers
         for (var i = 0; i < atn.getNumberOfDecisions(); i++) {
-            decisionToDFA[i] = new DFA(atn.getDecisionState(i), i);
+            this.decisionToDFA[i] = new DFA(atn.getDecisionState(i), i);
         }
         /**
          * @protected {PredictionContextCache}
@@ -70,14 +74,14 @@ class ParserInterpreter extends Parser {
         this.sharedContextCache = new PredictionContextCache();
         /**
          * @deprecated
-         * @protected {Array.<string>}
+         * @protected {Array<string>}
          */
         this.tokenNames = [];
         for (var i = 0; i < atn.maxTokenType; i++) {
-            tokenNames[i] = vocabulary.getDisplayName(i);
+            this.tokenNames[i] = vocabulary.getDisplayName(i);
         }
         /**
-         * @protected {Array.<string>}
+         * @protected {Array<string>}
          */
         this.ruleNames = ruleNames;
         /**
@@ -98,7 +102,7 @@ class ParserInterpreter extends Parser {
          * Those values are used to create new recursive rule invocation contexts
          * associated with left operand of an alt like "expr '*' expr".
          *
-         * @protected {Array.<Pair<org.antlr.v4.runtime.ParserRuleContext, number>>}
+         * @protected {Array<Pair<org.antlr.v4.runtime.ParserRuleContext, number>>}
          */
         this._parentContextStack = [];
         /**
@@ -125,16 +129,16 @@ class ParserInterpreter extends Parser {
          * us what the root of the parse tree is when using override
          * for an ambiguity/lookahead check.
          *
-         * @protected {org.antlr.v4.runtime.InterpreterRuleContext}
+         * @protected {InterpreterRuleContext}
          */
         this.overrideDecisionRoot = null;
         /**
-         * @protected {org.antlr.v4.runtime.InterpreterRuleContext}
+         * @protected {InterpreterRuleContext}
          */
         this.rootContext = null;
 
         // get atn simulator that knows how to do predictions
-        setInterpreter(new ParserATNSimulator(this, this.atn,
+        this.setInterpreter(new ParserATNSimulator(this, this.atn,
             this.decisionToDFA, this.sharedContextCache));
     }
 
@@ -231,7 +235,7 @@ class ParserInterpreter extends Parser {
      * @return {ATNState}
      */
     getATNState() {
-        return this.atn.states.get(this.getState());
+        return this.atn.states[this.getState()];
     }
 
     /**
@@ -247,14 +251,13 @@ class ParserInterpreter extends Parser {
         var transition = p.transition(predictedAlt - 1);
         switch (transition.getSerializationType()) {
             case Transition.EPSILON:
-                if ( p.getStateType() === ATNState.STAR_LOOP_ENTRY &&
-                        p.isPrecedenceDecision &&
-                        !(transition.target instanceof LoopEndState))
-                {
+                if (p.getStateType() === ATNState.STAR_LOOP_ENTRY &&
+                    /**  @type {StarLoopEntryState} */ (p).isPrecedenceDecision &&
+                    !(transition.target instanceof LoopEndState)) {
                     // We are at the start of a left recursive rule's (...)* loop
                     // and we're not taking the exit branch of loop.
                     var peek = this._parentContextStack[this._parentContextStack.length - 1];
-                    localctx =
+                    var localctx =
                         this.createInterpreterRuleContext(peek.a,
                                                             peek.b,
                                                             this._ctx.getRuleIndex());
@@ -265,7 +268,7 @@ class ParserInterpreter extends Parser {
                 break;
 
             case Transition.ATOM:
-                this.match(transition.label);
+                this.match(/** @type {org.antlr.v4.runtime.atn.AtomTransition} */ (transition).tlabel);
                 break;
 
             case Transition.RANGE:
@@ -282,11 +285,12 @@ class ParserInterpreter extends Parser {
                 break;
 
             case Transition.RULE:
-                var ruleStartState = transition.target;
+                var ruleStartState = /** @type {RuleStartState} */ (transition.target);
                 var ruleIndex = ruleStartState.ruleIndex;
                 var newctx = this.createInterpreterRuleContext(this._ctx, p.stateNumber, ruleIndex);
                 if (ruleStartState.isLeftRecursiveRule) {
-                    this.enterRecursionRule(newctx, ruleStartState.stateNumber, ruleIndex, transition.precedence);
+                    var t = /** @type {RuleTransition} */ (transition);
+                    this.enterRecursionRule(newctx, ruleStartState.stateNumber, ruleIndex, t.precedence);
                 }
                 else {
                     this.enterRule(newctx, transition.target.stateNumber, ruleIndex);
@@ -294,19 +298,22 @@ class ParserInterpreter extends Parser {
                 break;
 
             case Transition.PREDICATE:
-                if (!this.sempred(this._ctx, transition.ruleIndex, transition.predIndex)) {
+                var predicateTransition = /** @type {PredicateTransition} */ (transition);
+                if (!this.sempred(this._ctx, predicateTransition.ruleIndex, predicateTransition.predIndex)) {
                     throw new FailedPredicateException(this);
                 }
 
                 break;
 
             case Transition.ACTION:
-                this.action(this._ctx, transition.ruleIndex, transition.actionIndex);
+                var actionTransition = /** @type {ActionTransition} */ (transition);
+                this.action(this._ctx, actionTransition.ruleIndex, actionTransition.actionIndex);
                 break;
 
             case Transition.PRECEDENCE:
-                if (!this.precpred(this._ctx, transition.precedence)) {
-                    throw new FailedPredicateException(this, format("precpred(_ctx, %d)", transition.precedence));
+                var ppt = /** @type {PrecedencePredicateTransition} */ (transition);
+                if (!this.precpred(this._ctx, ppt.precedence)) {
+                    throw new FailedPredicateException(this, format("precpred(_ctx, %d)", ppt.precedence));
                 }
                 break;
 
@@ -347,7 +354,7 @@ class ParserInterpreter extends Parser {
      * @since 4.5.1
      * @protected
      *
-     * @param {ParserRuleContext} parent
+     * @param {org.antlr.v4.runtime.ParserRuleContext} parent
      * @param {number} invokingStateNumber
      * @param {number} ruleIndex
      * @return {InterpreterRuleContext}
@@ -374,7 +381,7 @@ class ParserInterpreter extends Parser {
         else {
             this.exitRule();
         }
-        var ruleTransition = this.atn.states[this.getState()].transition(0);
+        var ruleTransition = /** @type {RuleTransition} */ (this.atn.states[this.getState()].transition(0));
         this.setState(ruleTransition.followState.stateNumber);
     }
 
@@ -431,7 +438,7 @@ class ParserInterpreter extends Parser {
     }
 
     /**
-     * @return {org.antlr.v4.runtime.InterpreterRuleContext}
+     * @return {InterpreterRuleContext}
      */
     getOverrideDecisionRoot() {
         return this.overrideDecisionRoot;
@@ -457,7 +464,7 @@ class ParserInterpreter extends Parser {
                 expectedTokenType = e.getExpectedTokens().getMinElement(); // get any element
             }
             /**
-             * @type {Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
+             * @type {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
              */
             var pair = new Pair(tok.getTokenSource(), tok.getTokenSource().getInputStream());
             var errToken = this.getTokenFactory().create(pair,
@@ -489,7 +496,7 @@ class ParserInterpreter extends Parser {
      *
      * @since 4.5.1
      *
-     * @return {org.antlr.v4.runtime.InterpreterRuleContext}
+     * @return {InterpreterRuleContext}
      */
     getRootContext() {
         return this.rootContext;

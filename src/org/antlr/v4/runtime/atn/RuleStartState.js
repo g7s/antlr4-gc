@@ -11,6 +11,7 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
 
 class RuleStartState extends ATNState {
     constructor() {
+        super();
         /**
          * @type {org.antlr.v4.runtime.atn.RuleStopState}
          */

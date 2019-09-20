@@ -9,6 +9,7 @@ goog.module('org.antlr.v4.runtime.DiagnosticErrorListener');
 
 const BaseErrorListener = goog.require('org.antlr.v4.runtime.BaseErrorListener');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
+const BitSet = goog.require('org.antlr.v4.runtime.misc.BitSet');
 const {format} = goog.require('goog.string');
 
 /**
@@ -20,13 +21,13 @@ function getDecisionDescription(recognizer, dfa) {
     let /** number */ decision = dfa.decision;
     let /** number */ ruleIndex = dfa.atnStartState.ruleIndex;
 
-    let /** Array.<string> */ ruleNames = recognizer.getRuleNames();
+    let /** Array<string> */ ruleNames = recognizer.getRuleNames();
     if (ruleIndex < 0 || ruleIndex >= ruleNames.length) {
         return decision.toString();
     }
 
     let /** string */ ruleName = ruleNames[ruleIndex];
-    if (ruleName === null || ruleName.isEmpty()) {
+    if (ruleName === null || ruleName.length === 0) {
         return decision.toString();
     }
 
@@ -38,11 +39,11 @@ function getDecisionDescription(recognizer, dfa) {
  * configuration set, if that information was not already provided by the
  * parser.
  *
- * @param {org.antlr.v4.runtime.misc.BitSet=} reportedAlts The set of conflicting
+ * @param {org.antlr.v4.runtime.misc.BitSet} reportedAlts The set of conflicting
  * or ambiguous alternatives, as reported by the parser.
  * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The conflicting or
  * ambiguous configuration set.
- * @return {org.antlr.v4.runtime.misc.BitSet} Returns {@code reportedAlts}
+ * @return {!org.antlr.v4.runtime.misc.BitSet} Returns {@code reportedAlts}
  * if it is not {@code null}, otherwise returns the set of alternatives
  * represented in {@code configs}.
  */
@@ -51,10 +52,10 @@ function getConflictingAlts(reportedAlts, configs) {
         return reportedAlts;
     }
 
-    let /** org.antlr.v4.runtime.misc.BitSet */ result = new BitSet();
-    configs.forEach(config => {
+    let result = new BitSet();
+    for (const config of (configs || [])) {
         result.set(config.alt);
-    });
+    }
     return result;
 }
 
@@ -84,6 +85,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
      * @param {boolean=} exactOnly
      */
     constructor(exactOnly) {
+        super();
         this.exactOnly = exactOnly || true;
     }
 
@@ -96,8 +98,8 @@ class DiagnosticErrorListener extends BaseErrorListener {
         let decision = getDecisionDescription(recognizer, dfa);
         let conflictingAlts = getConflictingAlts(ambigAlts, configs);
         let text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
-        let message = format(fmt, decision, conflictingAlts, text);
-        recognizer.notifyErrorListeners(message);
+        let message = format(fmt, decision, conflictingAlts.toString(), text);
+        recognizer.notifyErrorListeners(null, message, null);
     }
 
     reportAttemptingFullContext(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs) {
@@ -105,7 +107,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
         let decision = getDecisionDescription(recognizer, dfa);
         let text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
         let message = format(fmt, decision, text);
-        recognizer.notifyErrorListeners(message);
+        recognizer.notifyErrorListeners(null, message, null);
     }
 
     reportContextSensitivity(recognizer, dfa, startIndex, stopIndex, prediction, configs) {
@@ -113,7 +115,7 @@ class DiagnosticErrorListener extends BaseErrorListener {
         let decision = getDecisionDescription(recognizer, dfa);
         let text = recognizer.getTokenStream().getText(Interval.of(startIndex, stopIndex));
         let message = format(fmt, decision, text);
-        recognizer.notifyErrorListeners(message);
+        recognizer.notifyErrorListeners(null, message, null);
     }
 };
 

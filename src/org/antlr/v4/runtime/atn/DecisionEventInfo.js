@@ -24,12 +24,12 @@ goog.module('org.antlr.v4.runtime.atn.DecisionEventInfo');
  */
 class DecisionEventInfo {
     /**
-     * @param {number}
-     * @param {org.antlr.v4.runtime.atn.ATNConfigSet}
-     * @param {org.antlr.v4.runtime.TokenStream}
-     * @param {number}
-     * @param {number}
-     * @param {boolean}
+     * @param {number} decision
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs
+     * @param {org.antlr.v4.runtime.TokenStream} input
+     * @param {number} startIndex
+     * @param {number} stopIndex
+     * @param {boolean} fullCtx
      */
     constructor(decision, configs, input, startIndex, stopIndex, fullCtx) {
         /**

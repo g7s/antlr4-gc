@@ -7,6 +7,8 @@
 goog.module('org.antlr.v4.runtime.tree.SyntaxTree');
 
 
+const Tree = goog.require('org.antlr.v4.runtime.tree.Tree');
+
 /**
  * A tree that knows about an interval in a token stream
  * is some kind of syntax tree. Subinterfaces distinguish

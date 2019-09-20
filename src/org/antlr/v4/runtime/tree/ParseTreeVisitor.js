@@ -12,6 +12,7 @@ goog.module('org.antlr.v4.runtime.tree.ParseTreeVisitor');
  * visitors implement this interface and the {@code XVisitor} interface for
  * grammar {@code X}.
  *
+ * @interface
  * @template T
  */
 class ParseTreeVisitor {

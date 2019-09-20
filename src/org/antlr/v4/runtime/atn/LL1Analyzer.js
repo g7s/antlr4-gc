@@ -11,6 +11,7 @@ const ATNConfig = goog.require('org.antlr.v4.runtime.atn.ATNConfig');
 const PredictionContext = goog.require('org.antlr.v4.runtime.atn.PredictionContext');
 const SingletonPredictionContext = goog.require('org.antlr.v4.runtime.atn.SingletonPredictionContext');
 const RuleStopState = goog.require('org.antlr.v4.runtime.atn.RuleStopState');
+const AbstractPredicateTransition = goog.require('org.antlr.v4.runtime.atn.AbstractPredicateTransition');
 const RuleTransition = goog.require('org.antlr.v4.runtime.atn.RuleTransition');
 const WildcardTransition = goog.require('org.antlr.v4.runtime.atn.WildcardTransition');
 const NotSetTransition = goog.require('org.antlr.v4.runtime.atn.NotSetTransition');
@@ -38,7 +39,7 @@ class LL1Analyzer {
 	 * element at index <em>i</em> of the result will be {@code null}.
 	 *
 	 * @param {org.antlr.v4.runtime.atn.ATNState} s the ATN state
-	 * @return {Array.<IntervalSet>} the expected symbols for each outgoing transition of {@code s}.
+	 * @return {Array<IntervalSet>} the expected symbols for each outgoing transition of {@code s}.
 	 */
     getDecisionLookahead(s) {
 		if (s == null) {
@@ -46,7 +47,7 @@ class LL1Analyzer {
 		}
 
         /**
-         * @type {Array.<IntervalSet>}
+         * @type {Array<IntervalSet>}
          */
 		var look = [];
 		for (var alt = 0; alt < s.getNumberOfTransitions(); alt++) {
@@ -60,7 +61,7 @@ class LL1Analyzer {
 				  look[alt], lookBusy, new BitSet(), seeThruPreds, false);
 			// Wipe out lookahead for this alternative if we found nothing
 			// or we had a predicate when we !seeThruPreds
-			if (look[alt].size() === 0 || look[alt].contains(LL1AnalyzerHIT_PRED)) {
+			if (look[alt].size() === 0 || look[alt].contains(LL1Analyzer.HIT_PRED)) {
 				look[alt] = null;
 			}
 		}
@@ -77,10 +78,30 @@ class LL1Analyzer {
 	 * reached, {@link Token#EOF} is added to the result set.</p>
 	 *
 	 * @param {org.antlr.v4.runtime.atn.ATNState} s the ATN state
-	 * @param {org.antlr.v4.runtime.atn.ATNState|org.antlr.v4.runtime.RuleContext} stopState
+	 * @param {org.antlr.v4.runtime.RuleContext} ctx the complete parser
+	 * context, or {@code null} if the context should be ignored
+	 *
+	 * @return {IntervalSet} The set of tokens that can follow {@code s} in the ATN in the
+	 * specified {@code ctx}.
+	 */
+	LOOKC(s, ctx) {
+		return this.LOOK(s, null, ctx);
+   	}
+
+	/**
+	 * Compute set of tokens that can follow {@code s} in the ATN in the
+	 * specified {@code ctx}.
+	 *
+	 * <p>If {@code ctx} is {@code null} and the end of the rule containing
+	 * {@code s} is reached, {@link Token#EPSILON} is added to the result set.
+	 * If {@code ctx} is not {@code null} and the end of the outermost rule is
+	 * reached, {@link Token#EOF} is added to the result set.</p>
+	 *
+	 * @param {org.antlr.v4.runtime.atn.ATNState} s the ATN state
+	 * @param {org.antlr.v4.runtime.atn.ATNState} stopState
      * the ATN state to stop at. This can be a {@link BlockEndState} to detect
      * epsilon paths through a closure.
-	 * @param {org.antlr.v4.runtime.RuleContext=} ctx the complete parser context,
+	 * @param {org.antlr.v4.runtime.RuleContext} ctx the complete parser context,
      * or {@code null} if the context should be ignored
 	 *
 	 * @return {IntervalSet} The set of tokens that can follow {@code s} in the ATN in the
@@ -88,10 +109,6 @@ class LL1Analyzer {
 	 */
 
    	LOOK(s, stopState, ctx) {
-        if (arguments.length === 2) {
-            ctx = stopState;
-            stopState = null
-        }
    		var r = new IntervalSet();
 		var seeThruPreds = true; // ignore preds; get all lookahead
 		var lookContext = ctx != null ? PredictionContext.fromRuleContext(s.atn, ctx) : null;
@@ -113,7 +130,7 @@ class LL1Analyzer {
 	 * @param {org.antlr.v4.runtime.atn.ATNState} s the ATN state.
 	 * @param {org.antlr.v4.runtime.atn.ATNState} stopState the ATN state to stop at. This can be a
 	 * {@link BlockEndState} to detect epsilon paths through a closure.
-	 * @param {org.antlr.v4.runtime.RuleContext} ctx The outer context, or null
+	 * @param {org.antlr.v4.runtime.atn.PredictionContext} ctx The outer context, or null
      * if the outer context should not be used.
 	 * @param {IntervalSet} look The result lookahead set.
 	 * @param {Set<ATNConfig>} lookBusy A set used for preventing epsilon closures in the ATN
@@ -181,19 +198,19 @@ class LL1Analyzer {
         for (var i = 0; i < n; i++) {
 			var t = s.transition(i);
 			if (t.constructor.name === RuleTransition.name) {
-				if (calledRuleStack.get(t.target.ruleIndex)) {
+				var rt = /** @type {RuleTransition} */ (t);
+				if (calledRuleStack.get(rt.target.ruleIndex)) {
 					continue;
 				}
-
-				var newContext = SingletonPredictionContext.create(ctx, t.followState.stateNumber);
+				var newContext = SingletonPredictionContext.create(ctx, rt.followState.stateNumber);
 
 				try {
-					calledRuleStack.set(t.target.ruleIndex);
-                    this._LOOK(t.target, stopState, newContext, look, lookBusy,
+					calledRuleStack.set(rt.target.ruleIndex);
+                    this._LOOK(rt.target, stopState, newContext, look, lookBusy,
                         calledRuleStack, seeThruPreds, addEOF);
 				}
 				finally {
-					calledRuleStack.clear(t.target.ruleIndex);
+					calledRuleStack.clear(rt.target.ruleIndex);
 				}
 			}
 			else if (t instanceof AbstractPredicateTransition) {

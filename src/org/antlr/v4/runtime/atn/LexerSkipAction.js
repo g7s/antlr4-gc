@@ -19,8 +19,10 @@ const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerSkipAction extends LexerAction {
+class LexerSkipAction {
 	getActionType() {
 		return LexerActionType.SKIP;
 	}

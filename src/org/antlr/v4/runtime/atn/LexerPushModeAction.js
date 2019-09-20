@@ -18,8 +18,10 @@ const {format} = goog.require('goog.string');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerPushModeAction extends LexerAction {
+class LexerPushModeAction {
 	/**
 	 * Constructs a new {@code pushMode} action with the specified mode value.
 	 * @param {number} mode The mode value to pass to {@link Lexer#pushMode}.

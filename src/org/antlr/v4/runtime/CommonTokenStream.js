@@ -42,7 +42,7 @@ class CommonTokenStream extends BufferedTokenStream {
 	 * {@link Token#getType} equal to {@link Token#EOF} will be returned by the
 	 * token stream lookahead methods.
 	 *
-	 * @param {org.antlr.v4.runtime.TokenSource} tokenSource The token source.
+	 * @param {!org.antlr.v4.runtime.TokenSource} tokenSource The token source.
 	 * @param {number=} channel The channel to use for filtering tokens.
 	 */
     constructor(tokenSource, channel) {

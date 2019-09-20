@@ -80,7 +80,7 @@ class ATNDeserializer {
      */
     deserialize(str) {
         /**
-         * @type {Array.<number>}
+         * @type {Array<number>}
          */
         var data = [str.charCodeAt(0)];
         // Each char value in data is shifted by +2 at the entry to this method.
@@ -120,11 +120,11 @@ class ATNDeserializer {
         var maxTokenType = ATNDeserializer.toInt(data[p++]);
         var atn = new ATN(grammarType, maxTokenType);
         /**
-         * @type {Array.<Pair<LoopEndState, number>>}
+         * @type {!Array<Pair<LoopEndState, number>>}
          */
         var loopBackStateNumbers = [];
         /**
-         * @type {Array.<Pair<BlockStartState, number>>}
+         * @type {!Array<Pair<BlockStartState, number>>}
          */
         var endStateNumbers = [];
         var nstates = ATNDeserializer.toInt(data[p++]);
@@ -143,10 +143,12 @@ class ATNDeserializer {
             var s = this.stateFactory(stype, ruleIndex);
             if (stype === ATNState.LOOP_END) { // special case
                 var loopBackStateNumber = ATNDeserializer.toInt(data[p++]);
+                s = /** @type {LoopEndState} */ (s);
                 loopBackStateNumbers.push(new Pair(s, loopBackStateNumber));
             }
             else if (s instanceof BlockStartState) {
                 var endStateNumber = ATNDeserializer.toInt(data[p++]);
+                s = /** @type {BlockStartState} */ (s);
                 endStateNumbers.push(new Pair(s, endStateNumber));
             }
             atn.addState(s);
@@ -158,20 +160,22 @@ class ATNDeserializer {
         }
 
         for (const pair of endStateNumbers) {
-            pair.a.endState = atn.states[pair.b];
+            pair.a.endState = /** @type {BlockEndState} */ (atn.states[pair.b]);
         }
 
         var numNonGreedyStates = ATNDeserializer.toInt(data[p++]);
         for (var i = 0; i < numNonGreedyStates; i++) {
             var stateNumber = ATNDeserializer.toInt(data[p++]);
-            atn.states[stateNumber].nonGreedy = true;
+            var st = /** @type {DecisionState} */ (atn.states[stateNumber]);
+            st.nonGreedy = true;
         }
 
         if (supportsPrecedencePredicates) {
             var numPrecedenceStates = ATNDeserializer.toInt(data[p++]);
             for (var i = 0; i < numPrecedenceStates; i++) {
                 var stateNumber = ATNDeserializer.toInt(data[p++]);
-                atn.states[stateNumber].isLeftRecursiveRule = true;
+                var st = /** @type {RuleStartState} */ (atn.states[stateNumber]);
+                st.isLeftRecursiveRule = true;
             }
         }
 
@@ -181,21 +185,18 @@ class ATNDeserializer {
         var nrules = ATNDeserializer.toInt(data[p++]);
         if (atn.grammarType === ATNType.LEXER) {
             /**
-             * @type {Array.<number>}
+             * @type {Array<number>}
              */
             atn.ruleToTokenType = [];
         }
 
         /**
-         * @type {Array.<RuleStartState>}
+         * @type {!Array<RuleStartState>}
          */
         atn.ruleToStartState = [];
         for (var i = 0; i < nrules; i++) {
             var s = ATNDeserializer.toInt(data[p++]);
-            /**
-             * @type {RuleStartState}
-             */
-            var startState = atn.states[s];
+            var startState = /** @type {RuleStartState} */ (atn.states[s]);
             atn.ruleToStartState[i] = startState;
             if (atn.grammarType === ATNType.LEXER) {
                 var tokenType = ATNDeserializer.toInt(data[p++]);
@@ -214,7 +215,7 @@ class ATNDeserializer {
         }
 
         /**
-         * @type {Array.<RuleStopState>}
+         * @type {!Array<RuleStopState>}
          */
         atn.ruleToStopState = [];
         for (const state of atn.states) {
@@ -232,14 +233,14 @@ class ATNDeserializer {
         var nmodes = ATNDeserializer.toInt(data[p++]);
         for (var i = 0; i < nmodes; i++) {
             var s = ATNDeserializer.toInt(data[p++]);
-            atn.modeToStartState.push(atn.states[s]);
+            atn.modeToStartState.push(/** @type {TokensStartState} */ (atn.states[s]));
         }
 
         //
         // SETS
         //
         /**
-         * @type {Array.<IntervalSet>}
+         * @type {Array<IntervalSet>}
          */
         var sets = [];
 
@@ -313,26 +314,22 @@ class ATNDeserializer {
             }
 
             if (state instanceof PlusLoopbackState) {
-                /**
-                 * @type {PlusLoopbackState}
-                 */
-                var loopbackState = state;
+                let loopbackState = /** @type {PlusLoopbackState} */ (state);
                 for (var i = 0; i < loopbackState.getNumberOfTransitions(); i++) {
-                    target = loopbackState.transition(i).target;
+                    var target = loopbackState.transition(i).target;
                     if (target instanceof PlusBlockStartState) {
-                        target.loopBackState = loopbackState;
+                        var t = /** @type {PlusBlockStartState} */ (target);
+                        t.loopBackState = loopbackState;
                     }
                 }
             }
             else if (state instanceof StarLoopbackState) {
-                /**
-                 * @type {StarLoopbackState}
-                 */
-                var loopbackState = state;
+                let loopbackState = /** @type {StarLoopbackState} */ (state);
                 for (var i = 0; i < loopbackState.getNumberOfTransitions(); i++) {
                     var target = loopbackState.transition(i).target;
                     if (target instanceof StarLoopEntryState) {
-                        target.loopBackState = loopbackState;
+                        var t = /** @type {StarLoopEntryState} */ (target);
+                        t.loopBackState = loopbackState;
                     }
                 }
             }
@@ -344,7 +341,7 @@ class ATNDeserializer {
         var ndecisions = ATNDeserializer.toInt(data[p++]);
         for (var i = 1; i <= ndecisions; i++) {
             var s = ATNDeserializer.toInt(data[p++]);
-            var decState = atn.states[s];
+            var decState = /** @type {DecisionState} */ (atn.states[s]);
             atn.decisionToState.push(decState);
             decState.decision = i - 1;
         }
@@ -356,7 +353,7 @@ class ATNDeserializer {
             if (supportsLexerActions) {
                 var count = ATNDeserializer.toInt(data[p++]);
                 /**
-                 * @type {Array.<org.antlr.v4.runtime.atn.LexerAction>}
+                 * @type {Array<org.antlr.v4.runtime.atn.LexerAction>}
                  */
                 atn.lexerActions = [];
                 for (var i = 0; i < count; i++) {
@@ -381,7 +378,7 @@ class ATNDeserializer {
                 // serialized action index for action transitions to the new
                 // form, which is the index of a LexerCustomAction
                 /**
-                 * @type {Array.<org.antlr.v4.runtime.atn.LexerAction>}
+                 * @type {!Array<org.antlr.v4.runtime.atn.LexerAction>}
                  */
                 var legacyLexerActions = [];
                 for (const state of atn.states) {
@@ -406,7 +403,7 @@ class ATNDeserializer {
         this.markPrecedenceDecisions(atn);
 
         if (this.deserializationOptions.isVerifyATN()) {
-            verifyATN(atn);
+            this.verifyATN(atn);
         }
 
         if (this.deserializationOptions.isGenerateRuleBypassTransitions() && atn.grammarType === ATNType.PARSER) {
@@ -472,7 +469,7 @@ class ATNDeserializer {
 
                 // all non-excluded transitions that currently target end state need to target blockEnd instead
                 for (const state of atn.states) {
-                    for (const transition of state.transitions) {
+                    for (const transition of state.getTransitions()) {
                         if (transition === excludeTransition) {
                             continue;
                         }
@@ -510,20 +507,20 @@ class ATNDeserializer {
 
     /**
      * @private
-     * @param {Array.<number>} data
+     * @param {Array<number>} data
      * @param {number} p
-     * @param {Array.<IntervalSet>} sets
+     * @param {Array<IntervalSet>} sets
      * @param {Function} reader
      * @param {number} size
-     * @return {numbers}
+     * @return {number}
      */
     deserializeSets(data, p, sets, reader, size) {
-        var nsets = toInt(data[p++]);
+        var nsets = ATNDeserializer.toInt(data[p++]);
         for (var i = 0; i < nsets; i++) {
             var nintervals = ATNDeserializer.toInt(data[p]);
             p++;
             var set = new IntervalSet();
-            sets.add(set);
+            sets.push(set);
 
             var containsEof = ATNDeserializer.toInt(data[p++]) !== 0;
             if (containsEof) {
@@ -535,7 +532,7 @@ class ATNDeserializer {
                 p += size;
                 var b = reader(data, p);
                 p += size;
-                set.add(a, b);
+                set.addRange(a, b);
             }
         }
         return p;
@@ -561,7 +558,7 @@ class ATNDeserializer {
              * precedence rule should continue or complete.
              */
             if (atn.ruleToStartState[state.ruleIndex].isLeftRecursiveRule) {
-                varmaybeLoopEndState = state.transition(state.getNumberOfTransitions() - 1).target;
+                var maybeLoopEndState = state.transition(state.getNumberOfTransitions() - 1).target;
                 if (maybeLoopEndState instanceof LoopEndState) {
                     if (maybeLoopEndState.epsilonOnlyTransitions && maybeLoopEndState.transition(0).target instanceof RuleStopState) {
                         state.isPrecedenceDecision = true;
@@ -656,7 +653,7 @@ class ATNDeserializer {
      * @param {number} arg1
      * @param {number} arg2
      * @param {number} arg3
-     * @param {Array.<IntervalSet>} sets
+     * @param {Array<IntervalSet>} sets
      * @return {Transition}
      */
     edgeFactory(atn, type, src, trg, arg1, arg2, arg3, sets) {
@@ -671,7 +668,8 @@ class ATNDeserializer {
 					return new RangeTransition(target, arg1, arg2);
 				}
 			case Transition.RULE :
-				var rt = new RuleTransition(atn.states[arg1], arg2, arg3, target);
+                var rss = /** @type {RuleStartState} */ (atn.states[arg1]);
+				var rt = new RuleTransition(rss, arg2, arg3, target);
 				return rt;
 			case Transition.PREDICATE :
 				var pt = new PredicateTransition(target, arg1, arg2, arg3 !== 0);
@@ -811,7 +809,7 @@ ATNDeserializer.ADDED_UNICODE_SMP = "59627784-3BE5-417A-B9EB-8131A7286089";
  * This list contains all of the currently supported UUIDs, ordered by when
  * the feature first appeared in this branch.
  *
- * @type {Array.<string>}
+ * @type {Array<string>}
  */
 ATNDeserializer.SUPPORTED_UUIDS = [
     ATNDeserializer.BASE_SERIALIZED_UUID,
@@ -859,7 +857,7 @@ ATNDeserializer.toInt = function (c) {
 };
 
 /**
- * @param {Array.<number>} data
+ * @param {Array<number>} data
  * @param {number} offset
  * @return {number}
  */
@@ -868,7 +866,7 @@ ATNDeserializer.toInt32 = function (data, offset) {
 };
 
 /**
- * @param {Array.<number>} data
+ * @param {Array<number>} data
  * @param {number} offset
  * @return {number}
  */
@@ -879,7 +877,7 @@ ATNDeserializer.toLong = function (data, offset) {
 };
 
 /**
- * @param {Array.<number>} data
+ * @param {Array<number>} data
  * @param {number} offset
  * @return {string}
  */

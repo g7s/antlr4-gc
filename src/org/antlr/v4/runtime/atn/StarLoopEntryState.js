@@ -12,6 +12,7 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
 
 class StarLoopEntryState extends DecisionState {
     constructor() {
+        super();
         /**
          * @type {org.antlr.v4.runtime.atn.StarLoopbackState}
          */

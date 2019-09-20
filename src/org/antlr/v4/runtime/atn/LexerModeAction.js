@@ -18,8 +18,10 @@ const {format} = goog.require('goog.string');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerModeAction extends LexerAction {
+class LexerModeAction {
 	/**
 	 * Constructs a new {@code mode} action with the specified mode value.
      *

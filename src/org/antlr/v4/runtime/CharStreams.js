@@ -8,7 +8,10 @@ goog.module('org.antlr.v4.runtime.CharStreams');
 
 
 const CodePointCharStream = goog.require('org.antlr.v4.runtime.CodePointCharStream');
-const fs = require('fs');
+/**
+ * TODO: Check what to do with this: const fs = require('fs');
+ */
+const fs = {readFile: (a, b, c) => {}, readFileSync: (a, b) => {}};
 
 /** This module represents the primary interface for creating {@link CharStream}s
  *  from a variety of sources as of 4.7.  The motivation was to support
@@ -55,7 +58,7 @@ const fs = require('fs');
  * @return {CodePointCharStream}
  */
 exports.fromString = function (str) {
-    return new CodePointCharStream(str, true);
+    return new CodePointCharStream(str);
 };
 
 /**
@@ -63,14 +66,14 @@ exports.fromString = function (str) {
  * encoding of the bytes in that blob (defaults to 'utf8' if encoding is null).
  * Invokes onLoad(result) on success, onError(error) on failure.
  *
- * @param {Blob} blob
- * @param {?string} encoding
+ * @param {!Blob} blob
+ * @param {string|undefined} encoding
  * @param {Function} onLoad
  * @param {Function=} onError
  * @return {void}
  */
 exports.fromBlob = function (blob, encoding, onLoad, onError) {
-  var reader = FileReader();
+  var reader = new FileReader();
   reader.onload = function (e) {
     onLoad(new CodePointCharStream(e.target.result));
   };
@@ -78,17 +81,17 @@ exports.fromBlob = function (blob, encoding, onLoad, onError) {
   reader.readAsText(blob, encoding);
 };
 
-/**
- * Creates an CodePointCharStream from a Buffer given the
- * encoding of the bytes in that buffer (defaults to 'utf8' if encoding is null).
- *
- * @param {Buffer} buffer
- * @param {?string} encoding
- * @return {CodePointCharStream}
- */
-exports.fromBuffer = function (buffer, encoding) {
-  return new CodePointCharStream(buffer.toString(encoding));
-};
+// /**
+//  * Creates an CodePointCharStream from a Buffer given the
+//  * encoding of the bytes in that buffer (defaults to 'utf8' if encoding is null).
+//  *
+//  * @param {Buffer} buffer
+//  * @param {?string} encoding
+//  * @return {CodePointCharStream}
+//  */
+// exports.fromBuffer = function (buffer, encoding) {
+//   return new CodePointCharStream(buffer.toString(encoding));
+// };
 
 /**
  * Asynchronously creates an CodePointCharStream from a file on disk given
@@ -118,5 +121,5 @@ exports.fromPath = function (path, encoding, callback) {
  */
 exports.fromPathSync = function (path, encoding) {
   var data = fs.readFileSync(path, encoding);
-  return new CodePointCharStream(data);
+  return new CodePointCharStream(data || "");
 };

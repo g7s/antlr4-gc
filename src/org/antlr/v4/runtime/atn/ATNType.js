@@ -10,7 +10,7 @@ goog.module('org.antlr.v4.runtime.atn.ATNType');
 /**
  * Represents the type of recognizer an ATN applies to.
  *
- * @type {Object.<number>}
+ * @type {!Object<number>}
  *
  * @author Sam Harwell
  */

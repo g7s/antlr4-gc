@@ -27,21 +27,20 @@ const {assert} = goog.require('goog.asserts');
  * channel, such as {@link Token#DEFAULT_CHANNEL} or
  * {@link Token#HIDDEN_CHANNEL}, use a filtering token stream such a
  * {@link CommonTokenStream}.</p>
+ *
+ * @implements {TokenStream}
  */
-class BufferedTokenStream extends TokenStream {
+class BufferedTokenStream {
     /**
-     * @param {org.antlr.v4.runtime.tokenSource} tokenSource
+     * @param {!org.antlr.v4.runtime.TokenSource} tokenSource
      */
     constructor(tokenSource) {
-        if (tokenSource == null) {
-            throw new Error("tokenSource cannot be null");
-        }
         /**
          * A collection of all tokens fetched from the token source. The list is
          * considered a complete view of the input once {@link #fetchedEOF} is set
          * to {@code true}.
          *
-         * @protected {Array.<org.antlr.v4.runtime.Token>}
+         * @protected {!Array<org.antlr.v4.runtime.Token>}
          */
         this.tokens = [];
         /**
@@ -77,7 +76,7 @@ class BufferedTokenStream extends TokenStream {
         /**
          * The {@link TokenSource} from which tokens for this stream are fetched.
          *
-         * @protected {org.antlr.v4.runtime.tokenSource}
+         * @protected {!org.antlr.v4.runtime.TokenSource}
          */
         this.tokenSource = tokenSource;
     }
@@ -188,7 +187,7 @@ class BufferedTokenStream extends TokenStream {
         if (i < 0 || i >= this.size()) {
             throw new Error("token index "+i+" out of range 0.."+(this.size()-1));
         }
-        return this.tokens[i];
+        return /** @type {!Token} */ (this.tokens[i]);
     }
 
     /**
@@ -196,18 +195,18 @@ class BufferedTokenStream extends TokenStream {
      *
      * @param {number} start
      * @param {number} stop
-     * @return {Array.<Token>}
+     * @return {Array<Token>}
      */
     getRange(start, stop) {
         if (start < 0 || stop < 0) return null;
         this.lazyInit();
         /**
-         * @type {Array.<Token>}
+         * @type {Array<Token>}
          */
         var subset = [];
         if (stop >= this.size()) stop = this.size() - 1;
         for (var i = start; i <= stop; i++) {
-            var t = tokens[i];
+            var t = this.tokens[i];
             if (t.getType() === Token.EOF) break;
             subset.push(t);
         }
@@ -282,7 +281,7 @@ class BufferedTokenStream extends TokenStream {
     /**
      * Reset this token stream by setting its token source.
      *
-     * @param {org.antlr.v4.runtime.TokenSource} tokenSource
+     * @param {!org.antlr.v4.runtime.TokenSource} tokenSource
      * @return {void}
      */
     setTokenSource(tokenSource) {
@@ -295,8 +294,8 @@ class BufferedTokenStream extends TokenStream {
     /**
      * @param {number=} start
      * @param {number=} stop
-     * @param {Array.<number>=} types
-     * @return {?Array.<Token>}
+     * @param {Array<number>=} types
+     * @return {?Array<Token>}
      */
     getTokens(start, stop, types) {
         if (arguments.length === 0) {
@@ -313,7 +312,7 @@ class BufferedTokenStream extends TokenStream {
 
         // list = tokens[start:stop]:{T t, t.getType() in types}
         /**
-         * @type {Array.<Token>}
+         * @type {Array<Token>}
          */
         var filteredTokens = [];
         for (var i = start; i <= stop; i++) {
@@ -396,12 +395,12 @@ class BufferedTokenStream extends TokenStream {
      *
      * @param {number} tokenIndex
      * @param {number=} channel
-     * @return {Array.<Token>}
+     * @return {Array<Token>}
      */
     getHiddenTokensToRight(tokenIndex, channel) {
         this.lazyInit();
         if (tokenIndex < 0 || tokenIndex >= this.size()) {
-            throw new IndexOutOfBoundsException(tokenIndex+" not in 0.."+(this.size()-1));
+            throw new Error(tokenIndex+" not in 0.."+(this.size()-1));
         }
         var nextOnChannel = this.nextTokenOnChannel(tokenIndex + 1, Lexer.DEFAULT_TOKEN_CHANNEL);
         /** @type {number} */
@@ -420,7 +419,7 @@ class BufferedTokenStream extends TokenStream {
      *
      * @param {number} tokenIndex
      * @param {number=} channel
-     * @return {Array.<Token>}
+     * @return {Array<Token>}
      */
     getHiddenTokensToLeft(tokenIndex, channel) {
         this.lazyInit();
@@ -444,11 +443,11 @@ class BufferedTokenStream extends TokenStream {
      * @param {number} from
      * @param {number} to
      * @param {number} channel
-     * @return {?Array.<Token>}
+     * @return {?Array<Token>}
      */
     filterForChannel(from, to, channel) {
         /**
-         * @type {Array.<Token>}
+         * @type {Array<Token>}
          */
         var hidden = [];
         for (var i = from; i <= to; i++) {

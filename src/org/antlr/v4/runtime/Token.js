@@ -19,7 +19,7 @@ const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
 class Token {
     /**
      * Get the text of the token.
-     * @return {string}
+     * @return {?string}
      */
     getText() {}
 

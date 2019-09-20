@@ -31,7 +31,7 @@ class TokenSource {
 	 * on the characters until you get a good one; errors are not passed through
 	 * to the parser.
      *
-     * @return {!org.antlr.v4.runtime.Token}
+     * @return {org.antlr.v4.runtime.Token}
 	 */
 	nextToken() {}
 

@@ -7,26 +7,31 @@
 goog.module('org.antlr.v4.runtime.RuleContext');
 
 
-const ATN = goog.require('org.antlr.v4.runtime.atn.ATN');
+const Token = goog.require('org.antlr.v4.runtime.Token');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
+const Utils = goog.require('org.antlr.v4.runtime.misc.Utils');
 const RuleNode = goog.require('org.antlr.v4.runtime.tree.RuleNode');
-const {toStringTree} = goog.require('org.antlr.v4.runtime.tree.Trees');
+const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
+const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
+
+// Hack to resolve cyclic deps issue
+const ATNINVALID_ALT_NUMBER = 0; // See ATN.INVALID_ALT_NUMBER
 
 /**
  * @private
  * @param {RuleContext} p
- * @param {Array.<string>} ruleNames
- * @param {RuleContext} stop
+ * @param {Array<string>=} ruleNames
+ * @param {RuleContext=} stop
  */
 function toString_(p, ruleNames, stop) {
     var s = "[";
     while (p !== null && p !== stop) {
-        if (ruleNames === null) {
+        if (ruleNames == null) {
             if (!p.isEmpty()) {
                 s += p.invokingState;
             }
         } else {
-            var ri = p.ruleIndex;
+            var ri = p.getRuleIndex();
             var ruleName = (ri >= 0 && ri < ruleNames.length) ? ruleNames[ri]
                     : "" + ri;
             s += ruleName;
@@ -90,14 +95,15 @@ function toString_(p, ruleNames, stop) {
  * ParserRuleContext.
  *
  * @see ParserRuleContext
+ *
+ * @implements {RuleNode}
  */
-class RuleContext extends RuleNode {
+class RuleContext {
     /**
      * @param {RuleContext=} parent
      * @param {number=} invokingState
      */
     constructor(parent, invokingState) {
-        super();
         /**
          * What context invoked this rule?
          * @type {RuleContext}
@@ -194,7 +200,7 @@ class RuleContext extends RuleNode {
      * @return {number}
      */
     getAltNumber() {
-        return ATN.INVALID_ALT_NUMBER;
+        return ATNINVALID_ALT_NUMBER;
     }
 
     /**
@@ -228,23 +234,89 @@ class RuleContext extends RuleNode {
         return visitor.visitChildren(this);
     }
 
-    /**
-     * Print out a whole tree, not just a node, in LISP format
-     * (root child1 .. childN). Print just a node if this is a leaf.
-     * We have to know the recognizer so we can get rule names.
-     */
     toStringTree(recog) {
-        return toStringTree(this, goog.isDef(recog) ? recog : null);
+        return toStringTree(this, recog);
     }
 
+    /**
+     * @param {(org.antlr.v4.runtime.Recognizer<?, ?>|Array<string>)=} ruleNamesOrRecog
+     * @param {RuleContext=} stop
+     */
     toString(ruleNamesOrRecog, stop) {
-        var ruleNames = ruleNamesOrRecog;
+        var ruleNames = /** @type {Array<string>} */ (ruleNamesOrRecog);
         if (ruleNamesOrRecog && ruleNamesOrRecog.getRuleNames) {
-            ruleNames = ruleNamesOrRecog.getRuleNames();
+            ruleNames = /** @type {!org.antlr.v4.runtime.Recognizer<?, ?>} */ (ruleNamesOrRecog).getRuleNames();
         }
-        return toString_(this, ruleNames || null, stop || null);
+        return toString_(this, ruleNames, stop);
     }
-};
+}
 
+/**
+ * Print out a whole tree in LISP form. {@link #getNodeText} is used on the
+ * node payloads to get the text for the nodes.
+ *
+ * @param {!org.antlr.v4.runtime.tree.Tree} t
+ * @param {(org.antlr.v4.runtime.Parser|Array<string>)=} o
+ * @return {string}
+ */
+function toStringTree(t, o) {
+    var s = Utils.escapeWhitespace(getNodeText(t, o) || "", false);
+    if (t.getChildCount() === 0) return s;
+    var res = "";
+    res += "(";
+    res += Utils.escapeWhitespace(getNodeText(t, o) || "", false);
+    res += ' ';
+    for (var i = 0; i < t.getChildCount(); i++) {
+        if (i > 0) res += ' ';
+        var c = /** @type {!org.antlr.v4.runtime.tree.Tree} */ (t.getChild(i));
+        res += c ? toStringTree(c, o) : "";
+    }
+    res += ")";
+    return res;
+}
+
+/**
+ * @param {!org.antlr.v4.runtime.tree.Tree} t
+ * @param {(org.antlr.v4.runtime.Parser|Array<string>)=} o
+ * @return {?string}
+ */
+function getNodeText(t, o) {
+    if (o && goog.isDef(o.getRuleNames)) {
+        o = /** @type {!Array<string>} */ (o.getRuleNames());
+    }
+    var ruleNames = /** @type {!Array<string>} */ (o);
+    if (ruleNames != null) {
+        if (t instanceof RuleContext) {
+            var ruleIndex = t.getRuleContext().getRuleIndex();
+            var ruleName = ruleNames[ruleIndex];
+            var altNumber = t.getAltNumber();
+            if (altNumber != ATNINVALID_ALT_NUMBER) {
+                return ruleName+":"+altNumber;
+            }
+            return ruleName;
+        }
+        else if (t instanceof ErrorNode) {
+            return t.toString();
+        }
+        else if (t instanceof TerminalNode) {
+            var symbol = t.getSymbol();
+            if (symbol != null) {
+                return symbol.getText();
+            }
+        }
+    }
+    // no recog for rule names
+    var payload = t.getPayload();
+    if (payload instanceof Token) {
+        return payload.getText();
+    }
+    return payload.toString();
+}
+
+RuleContext.toStringTree = toStringTree;
+
+RuleContext.getNodeText = getNodeText;
+
+RuleContext.ATNINVALID_ALT_NUMBER = ATNINVALID_ALT_NUMBER;
 
 exports = RuleContext;

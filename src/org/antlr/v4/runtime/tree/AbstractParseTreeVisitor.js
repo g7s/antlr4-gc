@@ -14,7 +14,7 @@ const ParseTreeVisitor = goog.require('org.antlr.v4.runtime.tree.ParseTreeVisito
  * @implements {ParseTreeVisitor<T>}
  * @abstract
  */
-class AbstractParseTreeVisitor extends ParseTreeVisitor {
+class AbstractParseTreeVisitor {
 	/**
 	 * {@inheritDoc}
 	 *
@@ -112,16 +112,13 @@ class AbstractParseTreeVisitor extends ParseTreeVisitor {
 	 * {@link #visitChildren} will return the result of the last child visited
 	 * (or return the initial value if the node has no children).</p>
 	 *
-	 * @param aggregate The previous aggregate value. In the default
+	 * @protected
+	 * @param {T} aggregate The previous aggregate value. In the default
 	 * implementation, the aggregate value is initialized to
 	 * {@link #defaultResult}, which is passed as the {@code aggregate} argument
 	 * to this method after the first child node is visited.
-	 * @param nextResult The result of the immediately preceeding call to visit
+	 * @param {T} nextResult The result of the immediately preceeding call to visit
 	 * a child node.
-	 *
-     * @protected
-     * @param {T} aggregate
-     * @param {T} nextResult
 	 * @return {T} The updated aggregate result.
 	 */
 	aggregateResult(aggregate, nextResult) {

@@ -19,7 +19,7 @@ class EpsilonTransition extends Transition {
         /**
          * @private {number}
          */
-		this.outermostPrecedenceReturn = goog.isDef(outermostPrecedenceReturn) ? outermostPrecedenceReturn : -1;
+		this._outermostPrecedenceReturn = goog.isDef(outermostPrecedenceReturn) ? outermostPrecedenceReturn : -1;
 	}
 
 	/**
@@ -31,7 +31,7 @@ class EpsilonTransition extends Transition {
 	 * @since 4.4.1
 	 */
 	outermostPrecedenceReturn() {
-		return this.outermostPrecedenceReturn;
+		return this._outermostPrecedenceReturn;
 	}
 
 	getSerializationType() {

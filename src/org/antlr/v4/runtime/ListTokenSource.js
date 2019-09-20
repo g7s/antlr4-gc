@@ -7,6 +7,7 @@
 goog.module('org.antlr.v4.runtime.ListTokenSource');
 
 
+const Token = goog.require('org.antlr.v4.runtime.Token');
 const TokenSource = goog.require('org.antlr.v4.runtime.TokenSource');
 const CommonTokenFactory = goog.require('org.antlr.v4.runtime.CommonTokenFactory');
 const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
@@ -18,13 +19,15 @@ const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
  * <p>If the final token in the list is an {@link Token#EOF} token, it will be used
  * as the EOF token for every call to {@link #nextToken} after the end of the
  * list is reached. Otherwise, an EOF token will be created.</p>
+ *
+ * @implements {TokenSource}
  */
-class ListTokenSource extends TokenSource {
+class ListTokenSource {
     /**
 	 * Constructs a new {@link ListTokenSource} instance from the specified
 	 * collection of {@link Token} objects and source name.
 	 *
-	 * @param {Array.<org.antlr.v4.runtime.Token>} tokens The collection of {@link Token} objects to provide as a
+	 * @param {Array<org.antlr.v4.runtime.Token>} tokens The collection of {@link Token} objects to provide as a
 	 * {@link TokenSource}.
 	 * @param {?string} sourceName The name of the {@link TokenSource}. If this value is
 	 * {@code null}, {@link #getSourceName} will attempt to infer the name from
@@ -40,7 +43,7 @@ class ListTokenSource extends TokenSource {
         /**
 	     * The wrapped collection of {@link Token} objects to return.
          *
-         * @protected {Array.<org.antlr.v4.runtime.Token>}
+         * @protected {Array<org.antlr.v4.runtime.Token>}
 	     */
         this.tokens = tokens;
         /**
@@ -49,7 +52,7 @@ class ListTokenSource extends TokenSource {
          * the next token in {@link #tokens} (or the previous token if the end of
          * the input has been reached).
          *
-         * @private {string}
+         * @private {?string}
          */
         this.sourceName = sourceName;
         /**
@@ -77,7 +80,7 @@ class ListTokenSource extends TokenSource {
 
     getCharPositionInLine() {
         if (this.i < this.tokens.length) {
-            return this.tokens[i].getCharPositionInLine();
+            return this.tokens[this.i].getCharPositionInLine();
         }
         else if (this.eofToken != null) {
             return this.eofToken.getCharPositionInLine();
@@ -114,18 +117,15 @@ class ListTokenSource extends TokenSource {
                 }
 
                 var stop = Math.max(-1, start - 1);
-                /**
-                 * @type {Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
-                 */
-                var pair = new Pair(this, this.getInputStream());
+                var pair = /** @type {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>} */ (new Pair(this, this.getInputStream()));
                 this.eofToken = this._factory.create(pair, Token.EOF, "EOF", Token.DEFAULT_CHANNEL, start, stop, this.getLine(), this.getCharPositionInLine());
             }
 
             return this.eofToken;
         }
 
-        var t = this.tokens[i];
-        if (i === (this.tokens.length - 1) && t.getType() === Token.EOF) {
+        var t = this.tokens[this.i];
+        if (this.i === (this.tokens.length - 1) && t.getType() === Token.EOF) {
             this.eofToken = t;
         }
 
@@ -135,7 +135,7 @@ class ListTokenSource extends TokenSource {
 
     getLine() {
         if (this.i < this.tokens.length) {
-            return this.tokens[i].getLine();
+            return this.tokens[this.i].getLine();
         }
         else if (this.eofToken != null) {
             return this.eofToken.getLine();
@@ -166,7 +166,7 @@ class ListTokenSource extends TokenSource {
 
     getInputStream() {
         if (this.i < this.tokens.length) {
-            return this.tokens[i].getInputStream();
+            return this.tokens[this.i].getInputStream();
         }
         else if (this.eofToken != null) {
             return this.eofToken.getInputStream();

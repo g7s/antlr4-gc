@@ -7,17 +7,22 @@
 goog.module('org.antlr.v4.runtime.DefaultErrorStrategy');
 
 
+const ANTLRErrorStrategy = goog.require('org.antlr.v4.runtime.ANTLRErrorStrategy');
+const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
 const Token = goog.require('org.antlr.v4.runtime.Token');
 const IntervalSet = goog.require('org.antlr.v4.runtime.misc.IntervalSet');
 const NoViableAltException = goog.require('org.antlr.v4.runtime.NoViableAltException');
 const InputMismatchException = goog.require('org.antlr.v4.runtime.InputMismatchException');
 const FailedPredicateException = goog.require('org.antlr.v4.runtime.FailedPredicateException');
+const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
 
 /**
  * This is the default implementation of {@link ANTLRErrorStrategy} used for
  * error reporting and recovery in ANTLR parsers.
+ *
+ * @implements {ANTLRErrorStrategy}
  */
-class DefaultErrorStrategy extends ANTLRErrorStrategy {
+class DefaultErrorStrategy {
     constructor() {
         /**
          * Indicates whether the error strategy is currently "recovering from an
@@ -81,7 +86,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 
     /**
      * @param {Token} symbol
-     * @return {string}
+     * @return {?string}
      */
     getSymbolText(symbol) {
         return symbol.getText();
@@ -221,18 +226,12 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
          * @type {org.antlr.v4.runtime.atn.ATN}
          */
         let atn = recognizer.getInterpreter().atn;
-        let ctx = recognizer._ctx;
+        let ctx = recognizer.getContext();
         let recoverSet = new IntervalSet();
         while (ctx !== null && ctx.invokingState >= 0) {
             // compute what follows who invoked us
-            /**
-             * @type {org.antlr.v4.runtime.atn.ATNState}
-             */
-            let invokingState = atn.states.get(ctx.invokingState);
-            /**
-             * @type {org.antlr.v4.runtime.atn.RuleTransition}
-             */
-            let rt = invokingState.transition(0);
+            let invokingState = atn.states[ctx.invokingState];
+            let rt = /** @type {org.antlr.v4.runtime.atn.RuleTransition} */ (invokingState.transition(0));
             /**
              * @type {org.antlr.v4.runtime.misc.IntervalSet}
              */
@@ -302,9 +301,9 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
             current = lookback;
         }
         /**
-         * @type {Pair<TokenSource, org.antlr.v4.runtime.CharStream>}
+         * @type {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
          */
-        let p = new Pair(current.getTokenSource(), current.getTokenSource().getInputStream())
+        let p = new Pair(current.getTokenSource(), current.getTokenSource().getInputStream());
         return recognizer.getTokenFactory().create(p, expectedTokenType, tokenText,
                             Token.DEFAULT_CHANNEL,
                             -1, -1,
@@ -343,14 +342,11 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
      * before returning {@link #reportMatch} is called to signal a successful
      * match.</p>
      *
-     * @param recognizer the parser instance
-     * @return the successfully matched {@link Token} instance if single-token
+     * @protected
+     * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
+     * @return {Token} the successfully matched {@link Token} instance if single-token
      * deletion successfully recovers from the mismatched input, otherwise
      * {@code null}
-     *
-     * @param {org.antlr.v4.runtime.Parser} recognizer
-     * @return {?Token}
-     * @protected
      */
     singleTokenDeletion(recognizer) {
         let nextTokenType = recognizer.getInputStream().LA(2);
@@ -373,7 +369,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
      * @see #reportError
      *
      * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
-     * @param {org.antlr.v4.runtime.NoViableAltException} e the recognition exception
+     * @param {NoViableAltException} e the recognition exception
      * @protected
      */
     reportNoViableAlternative(recognizer, e) {
@@ -400,14 +396,14 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 	 *
 	 * @see #reportError
 	 * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
-     * @param {org.antlr.v4.runtime.InputMismatchException} e the recognition exception
+     * @param {InputMismatchException} e the recognition exception
      * @protected
 	 */
 	reportInputMismatch(recognizer, e) {
         let msg = "mismatched input " +
             this.getTokenErrorDisplay(e.getOffendingToken()) +
             " expecting " +
-            e.getExpectedTokens().toString(recognizer.getVocabulary());
+            e.getExpectedTokens().toStringWithVocabulary(recognizer.getVocabulary());
 		recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
 	}
 
@@ -418,11 +414,11 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 	 * @see #reportError
 	 *
 	 * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
-	 * @param {org.antlr.v4.runtime.FailedPredicateException} e the recognition exception
+	 * @param {FailedPredicateException} e the recognition exception
      * @protected
 	 */
 	reportFailedPredicate(recognizer, e) {
-		let ruleName = recognizer.getRuleNames()[recognizer._ctx.getRuleIndex()];
+		let ruleName = recognizer.getRuleNames()[recognizer.getContext().getRuleIndex()];
 		let msg = "rule " + ruleName + " " + e.message;
 		recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
 	}
@@ -455,7 +451,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
         let tokenName = this.getTokenErrorDisplay(t);
         let expecting = recognizer.getExpectedTokens();
         let msg = "extraneous input " + tokenName + " expecting " +
-            expecting.toString(recognizer.getVocabulary());
+            expecting.toStringWithVocabulary(recognizer.getVocabulary());
         recognizer.notifyErrorListeners(t, msg, null);
     }
 
@@ -483,8 +479,8 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
         }
         this.beginErrorCondition(recognizer);
         let t = recognizer.getCurrentToken();
-        let expecting = getExpectedTokens(recognizer);
-        let msg = "missing " + expecting.toString(recognizer.getVocabulary()) +
+        let expecting = recognizer.getExpectedTokens();
+        let msg = "missing " + expecting.toStringWithVocabulary(recognizer.getVocabulary()) +
             " at " + this.getTokenErrorDisplay(t);
         recognizer.notifyErrorListeners(t, msg, null);
     }
@@ -513,21 +509,21 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 		// ATN state, then we know we're missing a token; error recovery
         // is free to conjure up and insert the missing token
         /**
-         * @type {org.antlr.runtime.atn.ATNState}
+         * @type {org.antlr.v4.runtime.atn.ATNState}
          */
-        let currentState = recognizer.getInterpreter().atn.states.get(recognizer.getState());
+        let currentState = recognizer.getInterpreter().atn.states[recognizer.getState()];
         /**
-         * @type {org.antlr.runtime.atn.ATNState}
+         * @type {org.antlr.v4.runtime.atn.ATNState}
          */
         let next = currentState.transition(0).target;
         /**
-         * @type {org.antlr.runtime.atn.ATN}
+         * @type {org.antlr.v4.runtime.atn.ATN}
          */
         let atn = recognizer.getInterpreter().atn;
         /**
-         * @type {org.antlr.runtime.misc.IntervalSet}
+         * @type {org.antlr.v4.runtime.misc.IntervalSet}
          */
-		let expectingAtLL2 = atn.nextTokens(next, recognizer._ctx);
+		let expectingAtLL2 = atn.nextTokens(next, recognizer.getContext());
 		if (expectingAtLL2.contains(currentSymbolType)) {
 			this.reportMissingToken(recognizer);
 			return true;
@@ -544,7 +540,7 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
     }
 
     inErrorRecoveryMode(recognizer) {
-        return errorRecoveryMode;
+        return this.errorRecoveryMode;
     }
 
     /**
@@ -554,23 +550,6 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
         this.endErrorCondition(recognizer);
     }
 
-    /**
-	 * <p>The default implementation returns immediately if the handler is already
-	 * in error recovery mode. Otherwise, it calls {@link #beginErrorCondition}
-	 * and dispatches the reporting task based on the runtime type of {@code e}
-	 * according to the following table.</p>
-	 *
-	 * <ul>
-	 * <li>{@link NoViableAltException}: Dispatches the call to
-	 * {@link #reportNoViableAlternative}</li>
-	 * <li>{@link InputMismatchException}: Dispatches the call to
-	 * {@link #reportInputMismatch}</li>
-	 * <li>{@link FailedPredicateException}: Dispatches the call to
-	 * {@link #reportFailedPredicate}</li>
-	 * <li>All other types: calls {@link Parser#notifyErrorListeners} to report
-	 * the exception</li>
-	 * </ul>
-	 */
 	reportError(recognizer, e) {
 		// if we've already reported an error and have not matched a token
 		// yet successfully, don't report any errors.
@@ -593,11 +572,6 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 		}
     }
 
-    /**
-	 * <p>The default implementation resynchronizes the parser by consuming tokens
-	 * until we find one in the resynchronization set--loosely the set of tokens
-	 * that can follow the current rule.</p>
-	 */
 	recover(recognizer, e) {
 		if (this.lastErrorIndex === recognizer.getInputStream().index() &&
 			this.lastErrorStates != null &&
@@ -620,67 +594,17 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 		this.consumeUntil(recognizer, followSet);
     }
 
-    /**
-	 * The default implementation of {@link ANTLRErrorStrategy#sync} makes sure
-	 * that the current lookahead symbol is consistent with what were expecting
-	 * at this point in the ATN. You can call this anytime but ANTLR only
-	 * generates code to check before subrules/loops and each iteration.
-	 *
-	 * <p>Implements Jim Idle's magic sync mechanism in closures and optional
-	 * subrules. E.g.,</p>
-	 *
-	 * <pre>
-	 * a : sync ( stuff sync )* ;
-	 * sync : {consume to what can follow sync} ;
-	 * </pre>
-	 *
-	 * At the start of a sub rule upon error, {@link #sync} performs single
-	 * token deletion, if possible. If it can't do that, it bails on the current
-	 * rule and uses the default error recovery, which consumes until the
-	 * resynchronization set of the current rule.
-	 *
-	 * <p>If the sub rule is optional ({@code (...)?}, {@code (...)*}, or block
-	 * with an empty alternative), then the expected set includes what follows
-	 * the subrule.</p>
-	 *
-	 * <p>During loop iteration, it consumes until it sees a token that can start a
-	 * sub rule or what follows loop. Yes, that is pretty aggressive. We opt to
-	 * stay in the loop as long as possible.</p>
-	 *
-	 * <p><strong>ORIGINS</strong></p>
-	 *
-	 * <p>Previous versions of ANTLR did a poor job of their recovery within loops.
-	 * A single mismatch token or missing token would force the parser to bail
-	 * out of the entire rules surrounding the loop. So, for rule</p>
-	 *
-	 * <pre>
-	 * classDef : 'class' ID '{' member* '}'
-	 * </pre>
-	 *
-	 * input with an extra token between members would force the parser to
-	 * consume until it found the next class definition rather than the next
-	 * member definition of the current class.
-	 *
-	 * <p>This functionality cost a little bit of effort because the parser has to
-	 * compare token set at the start of the loop and at each iteration. If for
-	 * some reason speed is suffering for you, you can turn off this
-	 * functionality by simply overriding this method as a blank { }.</p>
-     *
-	 */
 	sync(recognizer) {
         /**
          * @type {org.antlr.v4.runtime.atn.ATNState}
          */
-		let s = recognizer.getInterpreter().atn.states.get(recognizer.getState());
+		let s = recognizer.getInterpreter().atn.states[recognizer.getState()];
 		// If already recovering, don't try to sync
 		if (this.inErrorRecoveryMode(recognizer)) {
 			return;
 		}
 
-        /**
-         * @type {TokenStream}
-         */
-        let tokens = recognizer.getInputStream();
+        let tokens = /** @type {org.antlr.v4.runtime.TokenStream} */ (recognizer.getInputStream());
         let la = tokens.LA(1);
 
         // try cheaper subset first; might get lucky. seems to shave a wee bit off
@@ -718,14 +642,8 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 		    case ATNState.PLUS_LOOP_BACK:
 		    case ATNState.STAR_LOOP_BACK:
                 this.reportUnwantedToken(recognizer);
-                /**
-                 * @type {org.antlr.v4.runtime.misc.IntervalSet}
-                 */
-                let expecting = recognizer.getExpectedTokens();
-                /**
-                 * @type {org.antlr.v4.runtime.misc.IntervalSet}
-                 */
-			    let whatFollowsLoopIterationOrRule = expecting.or(this.getErrorRecoverySet(recognizer));
+                let expecting = /** @type {org.antlr.v4.runtime.misc.IntervalSet} */ (recognizer.getExpectedTokens());
+			    let whatFollowsLoopIterationOrRule = /** @type {org.antlr.v4.runtime.misc.IntervalSet} */ (expecting.or(this.getErrorRecoverySet(recognizer)));
 			    this.consumeUntil(recognizer, whatFollowsLoopIterationOrRule);
 			    break;
 		    default:
@@ -734,54 +652,6 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
 		}
     }
 
-    /**
-     * <p>The default implementation attempts to recover from the mismatched input
-     * by using single token insertion and deletion as described below. If the
-     * recovery attempt fails, this method throws an
-     * {@link InputMismatchException}.</p>
-     *
-     * <p><strong>EXTRA TOKEN</strong> (single token deletion)</p>
-     *
-     * <p>{@code LA(1)} is not what we are looking for. If {@code LA(2)} has the
-     * right token, however, then assume {@code LA(1)} is some extra spurious
-     * token and delete it. Then consume and return the next token (which was
-     * the {@code LA(2)} token) as the successful result of the match operation.</p>
-     *
-     * <p>This recovery strategy is implemented by {@link #singleTokenDeletion}.</p>
-     *
-     * <p><strong>MISSING TOKEN</strong> (single token insertion)</p>
-     *
-     * <p>If current token (at {@code LA(1)}) is consistent with what could come
-     * after the expected {@code LA(1)} token, then assume the token is missing
-     * and use the parser's {@link TokenFactory} to create it on the fly. The
-     * "insertion" is performed by returning the created token as the successful
-     * result of the match operation.</p>
-     *
-     * <p>This recovery strategy is implemented by {@link #singleTokenInsertion}.</p>
-     *
-     * <p><strong>EXAMPLE</strong></p>
-     *
-     * <p>For example, Input {@code i=(3;} is clearly missing the {@code ')'}. When
-     * the parser returns from the nested call to {@code expr}, it will have
-     * call chain:</p>
-     *
-     * <pre>
-     * stat &rarr; expr &rarr; atom
-     * </pre>
-     *
-     * and it will be trying to match the {@code ')'} at this point in the
-     * derivation:
-     *
-     * <pre>
-     * =&gt; ID '=' '(' INT ')' ('+' atom)* ';'
-     *                    ^
-     * </pre>
-     *
-     * The attempt to match {@code ')'} will fail when it sees {@code ';'} and
-     * call {@link #recoverInline}. To recover, it sees that {@code LA(1)==';'}
-     * is in the set of tokens that can follow the {@code ')'} token reference
-     * in rule {@code atom}. It can assume that you forgot the {@code ')'}.
-     */
     recoverInline(recognizer) {
         // SINGLE TOKEN DELETION
         let matchedSymbol = this.singleTokenDeletion(recognizer);
@@ -797,6 +667,10 @@ class DefaultErrorStrategy extends ANTLRErrorStrategy {
             return this.getMissingSymbol(recognizer);
         }
 
+        /**
+         * @type {Error}
+         */
+        var e;
         // even that didn't work; must throw the exception
         if (this.nextTokensContext === null) {
             e = new InputMismatchException(recognizer);

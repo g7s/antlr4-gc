@@ -11,7 +11,10 @@ const IntStream = goog.require('org.antlr.v4.runtime.IntStream');
 const CharStream = goog.require('org.antlr.v4.runtime.CharStream');
 const {assert} = goog.require('goog.asserts');
 
-class CodePointCharStream extends CharStream {
+/**
+ * @implements {CharStream}
+ */
+class CodePointCharStream {
     /**
      *
      * @param {string} input
@@ -24,7 +27,7 @@ class CodePointCharStream extends CharStream {
         this.position = 0;
         /**
          * The data being scanned
-         * @private {Array.<number>}
+         * @private {!Array<number>}
          */
         this.data = [];
         /**
@@ -127,7 +130,7 @@ class CodePointCharStream extends CharStream {
     }
 
     getSourceName() {
-        if (this.name === null || this.name.isEmpty()) {
+        if (this.name === null || this.name.length === 0) {
             return IntStream.UNKNOWN_SOURCE_NAME;
         }
         return this.name;

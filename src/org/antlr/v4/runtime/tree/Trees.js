@@ -12,7 +12,6 @@ goog.module('org.antlr.v4.runtime.tree.Trees');
 
 const Token = goog.require('org.antlr.v4.runtime.Token');
 const CommonToken = goog.require('org.antlr.v4.runtime.CommonToken');
-const Parser = goog.require('org.antlr.v4.runtime.Parser');
 const ParserRuleContext = goog.require('org.antlr.v4.runtime.ParserRuleContext');
 const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
@@ -20,78 +19,17 @@ const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 const ATN = goog.require('org.antlr.v4.runtime.atn.ATN');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
-const Predicate = goog.require('org.antlr.v4.runtime.misc.Predicate');
-const Utils = goog.require('org.antlr.v4.runtime.misc.Utils');
-
-/**
- * Print out a whole tree in LISP form. {@link #getNodeText} is used on the
- * node payloads to get the text for the nodes.
- *
- * @param {!org.antlr.v4.runtime.Tree} t
- * @param {(Parser|Array.<string>)=} o
- * @return {string}
- */
-function toStringTree(t, o) {
-    var s = Utils.escapeWhitespace(getNodeText(t, o), false);
-    if (t.getChildCount() === 0) return s;
-    var res = "";
-    res += "(";
-    res += Utils.escapeWhitespace(getNodeText(t, o), false);
-    res += ' ';
-    for (var i = 0; i < t.getChildCount(); i++) {
-        if (i > 0) res += ' ';
-        res += toStringTree(t.getChild(i), o);
-    }
-    res += ")";
-    return res;
-}
-
-/**
- * @param {!org.antlr.v4.runtime.Tree} t
- * @param {(Parser|Array.<string>)=} o
- * @return {string}
- */
-function getNodeText(t, o) {
-    if (o instanceof Parser) {
-        o = o.getRuleNames();
-    }
-    if (o != null) {
-        if (t instanceof RuleContext) {
-            var ruleIndex = t.getRuleContext().getRuleIndex();
-            var ruleName = o[ruleIndex];
-            var altNumber = t.getAltNumber();
-            if (altNumber != ATN.INVALID_ALT_NUMBER ) {
-                return ruleName+":"+altNumber;
-            }
-            return ruleName;
-        }
-        else if (t instanceof ErrorNode) {
-            return t.toString();
-        }
-        else if (t instanceof TerminalNode) {
-            var symbol = t.getSymbol();
-            if (symbol != null) {
-                return symbol.getText();
-            }
-        }
-    }
-    // no recog for rule names
-    var payload = t.getPayload();
-    if (payload instanceof Token) {
-        return payload.getText();
-    }
-    return payload.toString();
-}
+// const Predicate = goog.require('org.antlr.v4.runtime.misc.Predicate');
 
 /**
  * Return ordered list of all children of this node
  *
- * @param {org.antlr.v4.runtime.Tree} t
- * @return {Array.<org.antlr.v4.runtime.Tree>}
+ * @param {org.antlr.v4.runtime.tree.Tree} t
+ * @return {Array<org.antlr.v4.runtime.tree.Tree>}
  */
 function getChildren(t) {
     /**
-     * @type {Array.<org.antlr.v4.runtime.Tree>}
+     * @type {Array<org.antlr.v4.runtime.tree.Tree>}
      */
     var kids = [];
     for (var i = 0; i < t.getChildCount(); i++) {
@@ -106,15 +44,18 @@ function getChildren(t) {
  *
  * @since 4.5.1
  *
- * @param {!org.antlr.v4.runtime.Tree} t
+ * @param {!org.antlr.v4.runtime.tree.Tree} t
  * @return {Array}
  */
 function getAncestors(t) {
     if (t.getParent() == null) return [];
     /**
-     * @type {Array.<org.antlr.v4.runtime.Tree>}
+     * @type {Array<org.antlr.v4.runtime.tree.Tree>}
      */
     var ancestors = [];
+    /**
+     * @type {org.antlr.v4.runtime.tree.Tree}
+     */
     t = t.getParent();
     while (t != null) {
         ancestors.unshift(t); // insert at start
@@ -129,8 +70,8 @@ function getAncestors(t) {
  *
  * @since 4.5.1
  *
- * @param {org.antlr.v4.runtime.Tree} t
- * @param {org.antlr.v4.runtime.Tree} u
+ * @param {org.antlr.v4.runtime.tree.Tree} t
+ * @param {org.antlr.v4.runtime.tree.Tree} u
  * @return {boolean}
  */
 function isAncestorOf(t, u) {
@@ -146,7 +87,7 @@ function isAncestorOf(t, u) {
 /**
  * @param {org.antlr.v4.runtime.tree.ParseTree} t
  * @param {number} ttype
- * @return {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+ * @return {Array<org.antlr.v4.runtime.tree.ParseTree>}
  */
 function findAllTokenNodes(t, ttype) {
     return findAllNodes(t, ttype, true);
@@ -155,7 +96,7 @@ function findAllTokenNodes(t, ttype) {
 /**
  * @param {org.antlr.v4.runtime.tree.ParseTree} t
  * @param {number} ruleIndex
- * @return {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+ * @return {Array<org.antlr.v4.runtime.tree.ParseTree>}
  */
 function findAllRuleNodes(t, ruleIndex) {
     return findAllNodes(t, ruleIndex, false);
@@ -165,11 +106,11 @@ function findAllRuleNodes(t, ruleIndex) {
  * @param {org.antlr.v4.runtime.tree.ParseTree} t
  * @param {number} index
  * @param {boolean} findTokens
- * @return {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+ * @return {Array<org.antlr.v4.runtime.tree.ParseTree>}
  */
 function findAllNodes(t, index, findTokens) {
     /**
-     * @type {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+     * @type {Array<org.antlr.v4.runtime.tree.ParseTree>}
      */
     var nodes = [];
     _findAllNodes(t, index, findTokens, nodes);
@@ -189,7 +130,7 @@ function _findAllNodes(t, index, findTokens, nodes) {
         if (t.getSymbol().getType() === index) nodes.push(t);
     }
     else if (!findTokens && t instanceof ParserRuleContext) {
-        if (ctx.getRuleIndex() === index) nodes.push(t);
+        if (t.getRuleIndex() === index) nodes.push(t);
     }
     // check children
     for (var i = 0; i < t.getChildCount(); i++){
@@ -203,11 +144,11 @@ function _findAllNodes(t, index, findTokens, nodes) {
  * @since 4.5.1
  *
  * @param {org.antlr.v4.runtime.tree.ParseTree} t
- * @return {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+ * @return {Array<org.antlr.v4.runtime.tree.ParseTree>}
  */
 function getDescendants(t) {
     /**
-     * @type {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+     * @type {Array<org.antlr.v4.runtime.tree.ParseTree>}
      */
     var nodes = [t];
     var n = t.getChildCount();
@@ -221,7 +162,7 @@ function getDescendants(t) {
  * @deprecated
  *
  * @param {org.antlr.v4.runtime.tree.ParseTree} t
- * @return {Array.<org.antlr.v4.runtime.tree.ParseTree>}
+ * @return {Array<org.antlr.v4.runtime.tree.ParseTree>}
  */
 function descendants(t) {
     return getDescendants(t);
@@ -283,30 +224,30 @@ function stripChildrenOutOfRange(t, root, startIndex, stopIndex) {
     }
 }
 
-/**
- * Return first node satisfying the pred
- *
- * @since 4.5.1
- *
- * @param {org.antlr.v4.runtime.tree.Tree} t
- * @param {Predicate<org.antlr.v4.runtime.tree.Tree>} pred
- * @return {org.antlr.v4.runtime.tree.Tree}
- */
-function findNodeSuchThat(t, pred) {
-    if (pred.test(t)) return t;
-    if (t === null) return null;
-    var n = t.getChildCount();
-    for (var i = 0; i < n; i++){
-        var u = findNodeSuchThat(t.getChild(i), pred);
-        if (u !== null) return u;
-    }
-    return null;
-}
+// /**
+//  * Return first node satisfying the pred
+//  *
+//  * @since 4.5.1
+//  *
+//  * @param {org.antlr.v4.runtime.tree.Tree} t
+//  * @param {Predicate<org.antlr.v4.runtime.tree.Tree>} pred
+//  * @return {org.antlr.v4.runtime.tree.Tree}
+//  */
+// function findNodeSuchThat(t, pred) {
+//     if (pred.test(t)) return t;
+//     if (t === null) return null;
+//     var n = t.getChildCount();
+//     for (var i = 0; i < n; i++){
+//         var u = findNodeSuchThat(t.getChild(i), pred);
+//         if (u !== null) return u;
+//     }
+//     return null;
+// }
 
 
 exports = {
-    toStringTree,
-    getNodeText,
+    toStringTree: RuleContext.toStringTree,
+    getNodeText: RuleContext.getNodeText,
     getChildren,
     getAncestors,
     isAncestorOf,
@@ -318,5 +259,5 @@ exports = {
     descendants,
     getRootOfSubtreeEnclosingRegion,
     stripChildrenOutOfRange,
-    findNodeSuchThat,
+    // findNodeSuchThat,
 };

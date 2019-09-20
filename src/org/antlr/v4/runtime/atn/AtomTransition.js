@@ -25,7 +25,7 @@ class AtomTransition extends Transition {
          *
          * @type {number}
          */
-		this.label = label;
+		this.tlabel = label;
 	}
 
 	getSerializationType() {
@@ -33,18 +33,18 @@ class AtomTransition extends Transition {
 	}
 
 	label() {
-        return IntervalSet.of(this.label);
+        return IntervalSet.of(this.tlabel);
     }
 
 	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return this.label === symbol;
+		return this.tlabel === symbol;
 	}
 
     /**
      * @return {string}
      */
 	toString() {
-		return "" + label;
+		return "" + this.tlabel;
 	}
 }
 

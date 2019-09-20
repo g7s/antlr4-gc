@@ -12,8 +12,6 @@ const Token = goog.require('org.antlr.v4.runtime.Token');
 const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
 const ErrorNodeImpl = goog.require('org.antlr.v4.runtime.tree.ErrorNodeImpl');
-const ParseTree = goog.require('org.antlr.v4.runtime.tree.ParseTree');
-const ParseTreeListener = goog.require('org.antlr.v4.runtime.tree.ParseTreeListener');
 const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 const {filter, find} = goog.require('goog.array');
@@ -42,6 +40,10 @@ const {filter, find} = goog.require('goog.array');
  * satisfy the superclass interface.
  */
 class ParserRuleContext extends RuleContext {
+    /**
+     * @param {RuleContext=} parent
+     * @param {number=} invokingStateNumber
+     */
     constructor(parent, invokingStateNumber) {
         super(parent, invokingStateNumber);
         /**
@@ -51,7 +53,7 @@ class ParserRuleContext extends RuleContext {
          * operation because we don't the need to track the details about
          * how we parse this rule.
          *
-         * @type {!Array.<ParseTree>}
+         * @type {!Array<org.antlr.v4.runtime.tree.ParseTree>}
          */
         this.children = [];
 
@@ -143,15 +145,11 @@ class ParserRuleContext extends RuleContext {
     }
 
     /**
-     * @param {RuleContext|TerminalNode|Token} child
-     * @return {RuleContext|TerminalNode|Token}
+     * @param {RuleContext|TerminalNode} child
+     * @return {RuleContext|TerminalNode}
      */
     addChild(child) {
         if (child instanceof TerminalNode) {
-            child.setParent(this);
-        }
-        if (child instanceof Token) {
-            child = new TerminalNodeImpl(child);
             child.setParent(this);
         }
         return this.addAnyChild(child);
@@ -162,15 +160,12 @@ class ParserRuleContext extends RuleContext {
      *
      * @since 4.7
      *
-     * @param {ErrorNode|Token} errorNode
-     * @return {ErrorNode|Token}
+     * @param {ErrorNode} errorNode
+     * @return {ErrorNode}
      */
     addErrorNode(errorNode) {
-        if (errorNode instanceof Token) {
-            errorNode = new ErrorNodeImpl(errorNode);
-        }
         errorNode.setParent(this);
-        return addAnyChild(errorNode);
+        return this.addAnyChild(errorNode);
     }
 
     /**
@@ -185,13 +180,13 @@ class ParserRuleContext extends RuleContext {
     }
 
     /**
-     * @param {ParseTreeListener} listener
+     * @param {org.antlr.v4.runtime.tree.ParseTreeListener} listener
      * @return {void}
      */
     enterRule(listener) {}
 
     /**
-     * @param {ParseTreeListener} listener
+     * @param {org.antlr.v4.runtime.tree.ParseTreeListener} listener
      * @return {void}
      */
     exitRule(listener) {}
@@ -200,12 +195,20 @@ class ParserRuleContext extends RuleContext {
         return super.getParent();
     }
 
-    getChild(a, b) {
-        if (arguments.length === 1) {
-            return this.children[a] || null;
+    /**
+     * @override
+     * @param {!Function|number} ctxTypeOrIndex
+     * @param {number=} i
+     * @return {org.antlr.v4.runtime.tree.ParseTree}
+     */
+    getChild(ctxTypeOrIndex, i) {
+        if (!goog.isDef(i)) {
+            var j = /** @type {number} */ (ctxTypeOrIndex);
+            return this.children[j] || null;
         }
+        var ctxType = /** @type {!Function} */ (ctxTypeOrIndex);
         return find(this.children, function (child) {
-            return child instanceof a && b-- === 0;
+            return child instanceof ctxType && i-- === 0;
         }) || null;
     }
 
@@ -218,19 +221,21 @@ class ParserRuleContext extends RuleContext {
         if (i < 0 || i >= this.children.length) {
             return null;
         }
-        return find(this.children, function (child) {
-            return child instanceof TerminalNode && child.symbol.getType() === ttype && i-- === 0;
+        var found = find(this.children, function (child) {
+            return child instanceof TerminalNode && /** @type {TerminalNode} */ (child).getSymbol().getType() === ttype && i-- === 0;
         }) || null;
+        return /** @type {TerminalNode} */ (found);
     }
 
     /**
      * @param {number} ttype
-     * @return {!Array.<TerminalNode>}
+     * @return {!Array<TerminalNode>}
      */
     getTokens(ttype) {
-        return filter(this.children, function (child) {
-            return child instanceof TerminalNode && child.symbol.getType() === ttype;
+        var filtered = filter(this.children, function (child) {
+            return child instanceof TerminalNode && /** @type {TerminalNode} */ (child).getSymbol().getType() === ttype;
         });
+        return /** @type {!Array<TerminalNode>} */ (filtered);
     }
 
     /**
@@ -239,12 +244,12 @@ class ParserRuleContext extends RuleContext {
      * @return {ParserRuleContext}
      */
     getRuleContext(ctxType, i) {
-        return this.getChild(ctxType, i);
+        return /** @type {ParserRuleContext} */ (this.getChild(ctxType, i));
     }
 
     /**
      * @param {!Function} ctxType
-     * @return {!Array.<ParserRuleContext>}
+     * @return {!Array<ParserRuleContext>}
      */
     getRuleContexts(ctxType) {
         return filter(this.children, function (child) {
@@ -297,11 +302,13 @@ class ParserRuleContext extends RuleContext {
     toInfoString(recognizer) {
         let rules = recognizer.getRuleInvocationStack(this);
         return "ParserRuleContext"+rules.reverse()+"{" +
-            "start=" + start +
-            ", stop=" + stop +
+            "start=" + this.start +
+            ", stop=" + this.stop +
             '}';
     }
-};
+}
+
+ParserRuleContext.EMPTY = new ParserRuleContext();
 
 
 exports = ParserRuleContext;

@@ -16,17 +16,19 @@ const {isEmptyOrWhitespace} = goog.require('goog.string');
  * interface.
  *
  * @author Sam Harwell
+ *
+ * @implements {Vocabulary}
  */
-class VocabularyImpl extends Vocabulary {
+class VocabularyImpl {
 	/**
 	 * Constructs a new instance of {@link VocabularyImpl} from the specified
 	 * literal, symbolic, and display token names.
 	 *
-	 * @param {Array.<?string>=} literalNames The literal names assigned to tokens, or {@code null}
+	 * @param {Array<?string>=} literalNames The literal names assigned to tokens, or {@code null}
 	 * if no literal names are assigned.
-	 * @param {Array.<?string>=} symbolicNames The symbolic names assigned to tokens, or
+	 * @param {Array<?string>=} symbolicNames The symbolic names assigned to tokens, or
 	 * {@code null} if no symbolic names are assigned.
-	 * @param {Array.<?string>=} displayNames The display names assigned to tokens, or {@code null}
+	 * @param {Array<?string>=} displayNames The display names assigned to tokens, or {@code null}
 	 * to use the values in {@code literalNames} and {@code symbolicNames} as
 	 * the source of display names, as described in
 	 * {@link #getDisplayName(int)}.
@@ -37,15 +39,15 @@ class VocabularyImpl extends Vocabulary {
 	 */
 	constructor(literalNames, symbolicNames, displayNames) {
         /**
-         * @private {!Array.<?string>}
+         * @private {!Array<?string>}
          */
         this.literalNames = literalNames || VocabularyImpl.EMPTY_NAMES;
         /**
-         * @private {!Array.<?string>}
+         * @private {!Array<?string>}
          */
         this.symbolicNames = symbolicNames || VocabularyImpl.EMPTY_NAMES;
         /**
-         * @private {!Array.<?string>}
+         * @private {!Array<?string>}
          */
 		this.displayNames = displayNames || VocabularyImpl.EMPTY_NAMES;
         // See note here on -1 part: https://github.com/antlr/antlr4/pull/1146
@@ -80,7 +82,7 @@ class VocabularyImpl extends Vocabulary {
 
 	getDisplayName(tokenType) {
 		if (tokenType >= 0 && tokenType < this.displayNames.length) {
-			displayName = this.displayNames[tokenType];
+			var displayName = this.displayNames[tokenType];
 			if (displayName !== null) {
 				return displayName;
 			}
@@ -100,7 +102,7 @@ class VocabularyImpl extends Vocabulary {
 };
 
 /**
- * @type {!Array.<string>}
+ * @type {!Array<string>}
  * @private
  * @final
  */
@@ -133,7 +135,7 @@ VocabularyImpl.EMPTY_VOCABULARY = new VocabularyImpl(
  * {@link #getLiteralName(int)} and {@link #getSymbolicName(int)}, and the
  * value from {@code tokenNames} for the display names.</p>
  *
- * @param {!Array.<?string>} tokenNames The token names, or {@code null} if no token names are
+ * @param {Array<?string>} tokenNames The token names, or {@code null} if no token names are
  * available.
  * @return {Vocabulary} A {@link Vocabulary} instance which uses {@code tokenNames} for
  * the display names of tokens.
@@ -146,7 +148,7 @@ VocabularyImpl.fromTokenNames = function (tokenNames) {
     let symbolicNames = tokenNames.slice(0);
     for (var i = 0; i < tokenNames.length; i++) {
         let tokenName = tokenNames[i];
-        if (tokenName === null) {
+        if (goog.isNull(tokenName)) {
             continue;
         }
 

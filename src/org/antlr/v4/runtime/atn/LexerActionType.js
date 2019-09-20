@@ -14,6 +14,11 @@ goog.module('org.antlr.v4.runtime.atn.LexerActionType');
  */
 
 /**
+ * @type {!Object}
+ */
+const LexerActionType = {};
+
+/**
  * The type of a {@link LexerChannelAction} action.
  *
  * @type {number}

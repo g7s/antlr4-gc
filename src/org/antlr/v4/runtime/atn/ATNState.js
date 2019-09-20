@@ -94,7 +94,7 @@ class ATNState {
         /**
          * Track the transitions emanating from this ATN state.
          *
-         * @protected {Array.<org.antlr.v4.runtime.atn.Transition>}
+         * @protected {!Array<org.antlr.v4.runtime.atn.Transition>}
          */
         this.transitions = [];
         /**
@@ -137,7 +137,7 @@ class ATNState {
 	}
 
     /**
-     * @return {Array.<org.antlr.v4.runtime.atn.Transition>}
+     * @return {!Array<org.antlr.v4.runtime.atn.Transition>}
      */
 	getTransitions() {
 		return this.transitions;
@@ -207,8 +207,8 @@ class ATNState {
      * @return {org.antlr.v4.runtime.atn.Transition}
      */
 	removeTransition(index) {
-        var e = transitions[index];
-        delete transitions[index];
+        var e = this.transitions[index];
+        delete this.transitions[index];
         return e;
 	}
 
@@ -291,7 +291,7 @@ ATNState.PLUS_LOOP_BACK = 11;
  */
 ATNState.LOOP_END = 12;
 /**
- * @type {Array.<string>}
+ * @type {Array<string>}
  */
 ATNState.serializationNames = [
     "INVALID",

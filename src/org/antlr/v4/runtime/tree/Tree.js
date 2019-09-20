@@ -7,9 +7,6 @@
 goog.module('org.antlr.v4.runtime.tree.Tree');
 
 
-const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
-const Token = goog.require('org.antlr.v4.runtime.Token');
-
 /**
  * The basic notion of a tree has a parent, a payload, and a list of children.
  * It is the most abstract interface for all the trees used by ANTLR.
@@ -56,9 +53,10 @@ class Tree {
      * Print out a whole tree, not just a node, in LISP format
      * {@code (root child1 .. childN)}. Print just a node if this is a leaf.
      *
+     * @param {org.antlr.v4.runtime.Parser=} parser
      * @return {string}
      */
-    toStringTree() {}
+    toStringTree(parser) {}
 }
 
 

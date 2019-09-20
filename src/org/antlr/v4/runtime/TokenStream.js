@@ -25,7 +25,7 @@ class TokenStream extends IntStream {
 	 * @see IntStream#LA
      *
      * @param {number} k
-     * @return {!org.antlr.v4.runtime.Token}
+     * @return {org.antlr.v4.runtime.Token}
 	 */
 	LT(k) {}
 

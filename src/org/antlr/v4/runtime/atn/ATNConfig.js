@@ -8,6 +8,7 @@ goog.module('org.antlr.v4.runtime.atn.ATNConfig');
 
 
 const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
+const SemanticContext = goog.require('org.antlr.v4.runtime.atn.SemanticContext');
 const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
 
 /**

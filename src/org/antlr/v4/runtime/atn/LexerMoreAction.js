@@ -20,8 +20,10 @@ const {format} = goog.require('goog.string');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerMoreAction extends LexerAction {
+class LexerMoreAction {
 	getActionType() {
 		return LexerActionType.MORE;
 	}

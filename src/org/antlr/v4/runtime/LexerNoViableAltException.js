@@ -8,7 +8,6 @@ goog.module('org.antlr.v4.runtime.LexerNoViableAltException');
 
 
 const RecognitionException = goog.require('org.antlr.v4.runtime.RecognitionException');
-const ATNConfigSet = goog.require('org.antlr.v4.runtime.atn.ATNConfigSet');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const {escapeWhitespace} = goog.require('org.antlr.v4.runtime.misc.Utils');
 const {format} = goog.require('goog.string');
@@ -21,7 +20,7 @@ class LexerNoViableAltException extends RecognitionException {
      * @param {org.antlr.v4.runtime.atn.ATNConfigSet} deadEndConfigs
      */
     constructor(lexer, input, startIndex, deadEndConfigs) {
-        super(lexer, input, null);
+        super("", lexer, input, null);
         /**
          * Matching attempted at what input index?
          *
@@ -48,6 +47,13 @@ class LexerNoViableAltException extends RecognitionException {
      */
     getDeadEndConfigs() {
         return this.deadEndConfigs;
+    }
+
+    /**
+     * @return {org.antlr.v4.runtime.CharStream}
+     */
+    getInputStream() {
+        return /** @type {org.antlr.v4.runtime.CharStream} */ (super.getInputStream());
     }
 
     /**

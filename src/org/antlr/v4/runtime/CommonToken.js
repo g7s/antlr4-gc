@@ -12,21 +12,24 @@ const WritableToken = goog.require('org.antlr.v4.runtime.WritableToken');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
 
-class CommonToken extends WritableToken {
+/**
+ * @implements {WritableToken}
+ */
+class CommonToken {
     /**
-     * @param {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>|number} source
-     * @param {*} type
+     * @param {!Token|!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>|number} a
+     * @param {number|string=} b
      * @param {number=} channel
      * @param {number=} start
      * @param {number=} stop
      */
-    constructor(source, type, channel, start, stop) {
+    constructor(a, b, channel, start, stop) {
         /**
          * This is the backing field for {@link #getType} and {@link #setType}.
          *
-         * @protected {?number}
+         * @protected {number}
          */
-        this.type = goog.isNumber(type) ? type : null;
+        this.type = 0;
         /**
          * This is the backing field for {@link #getLine} and {@link #setLine}.
          *
@@ -40,10 +43,6 @@ class CommonToken extends WritableToken {
          * @protected {number}
          */
         this.charPositionInLine = -1; // set to invalid position
-        if (source.a != null) {
-            this.line = source.a.getLine();
-            this.charPositionInLine = source.a.getCharPositionInLine();
-        }
         /**
          * This is the backing field for {@link #getChannel} and
          * {@link #setChannel}.
@@ -61,9 +60,9 @@ class CommonToken extends WritableToken {
          * the same source and input stream share a reference to the same
          * {@link Pair} containing these values.</p>
          *
-         * @protected {Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
+         * @protected {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
          */
-        this.source = (source instanceof Pair) ? source : CommonToken.EMPTY_SOURCE;
+        this.source = CommonToken.EMPTY_SOURCE;
         /**
          * This is the backing field for {@link #getText} when the token text is
          * explicitly set in the constructor or via {@link #setText}.
@@ -95,11 +94,34 @@ class CommonToken extends WritableToken {
          */
         this.stop = stop || -1;
 
-        if (arguments.length === 1) {
-            this.type = source;
-        } else if (arguments.length === 2) {
-            this.type = source;
-            this.text = type;
+        if (goog.isNumber(a)) {
+            this.type = /** @type {number} */ (a);
+            this.channel = Token.DEFAULT_CHANNEL;
+            this.text = /** @type {string} */ (b);
+        } else if (a instanceof Pair) {
+            this.source = /** @type {!Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>} */ (a);
+            this.type = /** @type {number} */ (b);
+            if (this.source.a != null) {
+                this.line = this.source.a.getLine();
+                this.charPositionInLine = this.source.a.getCharPositionInLine();
+            }
+        } else if (a instanceof Token) {
+            var oldToken = /** @type {!Token} */ (a);
+            this.type = oldToken.getType();
+            this.line = oldToken.getLine();
+            this.index = oldToken.getTokenIndex();
+            this.charPositionInLine = oldToken.getCharPositionInLine();
+            this.channel = oldToken.getChannel();
+            this.start = oldToken.getStartIndex();
+            this.stop = oldToken.getStopIndex();
+
+            if (oldToken instanceof CommonToken) {
+                this.text = /** @type {!CommonToken} */ (oldToken).text;
+                this.source = /** @type {!CommonToken} */ (oldToken).source;
+            } else {
+                this.text = oldToken.getText();
+                this.source = new Pair(oldToken.getTokenSource(), oldToken.getInputStream());
+            }
         }
     }
 
@@ -197,7 +219,7 @@ class CommonToken extends WritableToken {
     }
 
     /**
-     * @param {org.antlr.v4.runtime.Recognizer} r
+     * @param {org.antlr.v4.runtime.Recognizer=} r
      * @return {string}
      */
     toString(r) {
@@ -227,7 +249,7 @@ class CommonToken extends WritableToken {
  * An empty {@link Pair} which is used as the default value of
  * {@link #source} for tokens that do not have a source.
  *
- * @protected {Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>}
+ * @type {!Pair<?, ?>}
  */
 CommonToken.EMPTY_SOURCE = new Pair(null, null);
 

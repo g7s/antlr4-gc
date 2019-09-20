@@ -186,7 +186,7 @@ Interval.INTERVAL_POOL_MAX_VALUE = 1000;
 Interval.INVALID = new Interval(-1, -2);
 
 /**
- * @type {Array.<Interval>}
+ * @type {Array<Interval>}
  */
 Interval.cache = [];
 
@@ -205,10 +205,10 @@ Interval.of = function (a, b) {
     if (a !== b || a < 0 || a > Interval.INTERVAL_POOL_MAX_VALUE) {
         return new Interval(a, b);
     }
-    if (!cache[a]) {
-        cache[a] = new Interval(a, a);
+    if (!Interval.cache[a]) {
+        Interval.cache[a] = new Interval(a, a);
     }
-    return cache[a];
+    return Interval.cache[a];
 };
 
 exports = Interval;

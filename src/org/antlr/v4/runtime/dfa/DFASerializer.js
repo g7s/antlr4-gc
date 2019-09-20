@@ -30,13 +30,13 @@ class DFASerializer {
     }
 
     /**
-     * @return {?string}
+     * @return {string}
      */
     toString() {
-        if (this.dfa.s0 == null) return null;
+        if (this.dfa.s0 == null) return "";
         var str = "";
         var states = this.dfa.getStates();
-        state.forEach(s => {
+        states.forEach(s => {
             var n = s.edges.length;
             for (var i = 0; i < n; i++) {
                 var t = s.edges[i];
@@ -45,7 +45,7 @@ class DFASerializer {
                 }
             }
         });
-        if (str.length === 0) return null;
+        if (str.length === 0) return "";
         return str;
     }
 

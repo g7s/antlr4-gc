@@ -430,7 +430,7 @@ BitSet.prototype = {
             return this.clone();
         } else if (to === undefined) {
             to = this.data.length * WORD_LENGTH;
-            var im = Object.create(BitSet.prototype);
+            var im = /** @type {BitSet} */ (Object.create(BitSet.prototype));
             im._ = this._;
             im.data = [0];
             for (var i = from; i <= to; i++) {
@@ -438,7 +438,7 @@ BitSet.prototype = {
             }
             return im;
         } else if (from <= to && 0 <= from) {
-            var im = Object.create(BitSet.prototype);
+            var im = /** @type {BitSet} */ (Object.create(BitSet.prototype));
             im.data = [0];
             for (var i = from; i <= to; i++) {
                 im.set(i - from, this.get(i));
@@ -473,10 +473,10 @@ BitSet.prototype = {
      * bs1 = new BitSet(10);
      * bs2 = bs1.clone();
      *
-     * @return {BitSet|Object} A new BitSet object, containing a copy of the actual object
+     * @return {BitSet} A new BitSet object, containing a copy of the actual object
      */
     clone: function() {
-        var im = Object.create(BitSet.prototype);
+        var im = /** @type {BitSet} */ (Object.create(BitSet.prototype));
         im.data = this.data.slice();
         im._ = this._;
         return im;
@@ -774,7 +774,7 @@ BitSet.Random = function(n) {
     var len = Math.ceil(n / WORD_LENGTH);
 
     // Create an bitset instance
-    var s = Object.create(BitSet.prototype);
+    var s = /** @type {BitSet} */ (Object.create(BitSet.prototype));
 
     // Fill the vector with random data, uniformally distributed
     for (var i = 0; i < len; i++) {
@@ -792,4 +792,4 @@ BitSet.Random = function(n) {
 };
 
 
-exports = Bitset;
+exports = BitSet;

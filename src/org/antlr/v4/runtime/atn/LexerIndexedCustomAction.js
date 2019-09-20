@@ -22,8 +22,10 @@ const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
  *
  * @author Sam Harwell
  * @since 4.2
+ *
+ * @implements {LexerAction}
  */
-class LexerIndexedCustomAction extends LexerAction {
+class LexerIndexedCustomAction {
 	/**
 	 * Constructs a new indexed custom action by associating a character offset
 	 * with a {@link LexerAction}.

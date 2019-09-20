@@ -24,7 +24,7 @@ class NoViableAltException extends RecognitionException {
         offendingToken = offendingToken || recognizer.getCurrentToken();
         deadEndConfigs = deadEndConfigs || null;
         ctx = ctx || recognizer.getContext();
-        super(recognizer, input, ctx);
+        super("", recognizer, input, ctx);
         /**
          * Which configurations did we try at input.index() that couldn't match input.LT(1)?
          * @private {org.antlr.v4.runtime.atn.ATNConfigSet}
