@@ -45,21 +45,21 @@ function getChildren(t) {
  * @since 4.5.1
  *
  * @param {!org.antlr.v4.runtime.tree.Tree} t
- * @return {Array}
+ * @return {!Array<org.antlr.v4.runtime.tree.Tree>}
  */
 function getAncestors(t) {
     if (t.getParent() == null) return [];
     /**
-     * @type {Array<org.antlr.v4.runtime.tree.Tree>}
+     * @type {!Array<org.antlr.v4.runtime.tree.Tree>}
      */
     var ancestors = [];
     /**
      * @type {org.antlr.v4.runtime.tree.Tree}
      */
-    t = t.getParent();
-    while (t != null) {
-        ancestors.unshift(t); // insert at start
-        t = t.getParent();
+    var p = t.getParent();
+    while (p != null) {
+        ancestors.unshift(p); // insert at start
+        p = p.getParent();
     }
     return ancestors;
 }

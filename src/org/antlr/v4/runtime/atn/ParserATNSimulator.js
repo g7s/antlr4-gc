@@ -285,7 +285,7 @@ class ParserATNSimulator extends ATNSimulator {
         /**
          * SLL, LL, or LL + exact ambig detection?
          *
-         * @private {PredictionMode}
+         * @private {number}
          */
         this.mode = PredictionMode.LL;
         /**
@@ -2272,7 +2272,7 @@ class ParserATNSimulator extends ATNSimulator {
     }
 
     /**
-     * @param {PredictionMode} mode
+     * @param {number} mode
      * @return {void}
      */
     setPredictionMode(mode) {
@@ -2280,7 +2280,7 @@ class ParserATNSimulator extends ATNSimulator {
     }
 
     /**
-     * @return {PredictionMode}
+     * @return {number}
      */
     getPredictionMode() {
         return this.mode;

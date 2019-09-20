@@ -24,13 +24,14 @@ class ParseTreeWalker {
 		else if (t instanceof TerminalNode) {
 			listener.visitTerminal(t);
 			return;
-		}
-        this.enterRule(listener, t);
-        var n = t.getChildCount();
-        for (var i = 0; i < n; i++) {
-            this.walk(listener, t.getChild(i));
         }
-		this.exitRule(listener, t);
+        var r = /** @type {org.antlr.v4.runtime.tree.RuleNode} */ (t);
+        this.enterRule(listener, r);
+        var n = r.getChildCount();
+        for (var i = 0; i < n; i++) {
+            this.walk(listener, r.getChild(i));
+        }
+		this.exitRule(listener, r);
     }
 
 	/**
@@ -45,7 +46,7 @@ class ParseTreeWalker {
      * @return {void}
 	 */
     enterRule(listener, r) {
-        var ctx = /** @type {ParserRuleContext} */ (r.getRuleContext());
+        var ctx = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (r.getRuleContext());
         listener.enterEveryRule(ctx);
         ctx.enterRule(listener);
     }
@@ -57,7 +58,7 @@ class ParseTreeWalker {
      * @return {void}
      */
     exitRule(listener, r) {
-        var ctx = /** @type {ParserRuleContext} */ (r.getRuleContext());
+        var ctx = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (r.getRuleContext());
         ctx.exitRule(listener);
         listener.exitEveryRule(ctx);
     }

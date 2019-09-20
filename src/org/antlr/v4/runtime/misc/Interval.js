@@ -50,7 +50,7 @@ class Interval {
     /**
      * Does this start completely before other? Disjoint
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     startsBeforeDisjoint(other) {
@@ -60,7 +60,7 @@ class Interval {
     /**
      * Does this start at or before other? Nondisjoint
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     startsBeforeNonDisjoint(other) {
@@ -70,7 +70,7 @@ class Interval {
     /**
      * Does this.a start after other.b? May or may not be disjoint
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     startsAfter(other) {
@@ -80,7 +80,7 @@ class Interval {
     /**
      * Does this start completely after other? Disjoint
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     startsAfterDisjoint(other) {
@@ -90,7 +90,7 @@ class Interval {
     /**
      * Does this start after other? NonDisjoint
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     startsAfterNonDisjoint(other) {
@@ -100,7 +100,7 @@ class Interval {
     /**
      * Are both ranges disjoint? I.e., no overlap?
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     disjoint(other) {
@@ -110,7 +110,7 @@ class Interval {
     /**
      * Are two intervals adjacent such as 0..41 and 42..42?
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     adjacent(other) {
@@ -118,7 +118,7 @@ class Interval {
     }
 
     /**
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {boolean}
      */
     properlyContains(other) {
@@ -128,8 +128,8 @@ class Interval {
     /**
      * Return the interval computed from combining this and other
      *
-     * @param {Interval} other
-     * @return {Interval}
+     * @param {!Interval} other
+     * @return {!Interval}
      */
     union(other) {
         return Interval.of(Math.min(this.a, other.a), Math.max(this.b, other.b));
@@ -138,8 +138,8 @@ class Interval {
     /**
      * Return the interval in common between this and o
      *
-     * @param {Interval} other
-     * @return {Interval}
+     * @param {!Interval} other
+     * @return {!Interval}
      */
     intersection(other) {
         return Interval.of(Math.max(this.a, other.a), Math.min(this.b, other.b));
@@ -151,7 +151,7 @@ class Interval {
      * within this, which would result in two disjoint intervals
      * instead of the single one returned by this method.
      *
-     * @param {Interval} other
+     * @param {!Interval} other
      * @return {Interval}
      */
     differenceNotProperlyContained(other) {
@@ -199,6 +199,7 @@ Interval.cache = [];
  *
  * @param {number} a
  * @param {number} b
+ * @return {!Interval}
  */
 Interval.of = function (a, b) {
     // cache just a..a
@@ -208,7 +209,7 @@ Interval.of = function (a, b) {
     if (!Interval.cache[a]) {
         Interval.cache[a] = new Interval(a, a);
     }
-    return Interval.cache[a];
+    return /** @type {!Interval} */ (Interval.cache[a]);
 };
 
 exports = Interval;

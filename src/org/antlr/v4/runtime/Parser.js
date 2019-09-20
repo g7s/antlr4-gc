@@ -17,7 +17,6 @@ const ATNSimulator = goog.require('org.antlr.v4.runtime.atn.ATNSimulator');
 const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
 const ParseInfo = goog.require('org.antlr.v4.runtime.atn.ParseInfo');
 const ParserATNSimulator = goog.require('org.antlr.v4.runtime.atn.ParserATNSimulator');
-const PredictionMode = goog.require('org.antlr.v4.runtime.atn.PredictionMode');
 const ProfilingATNSimulator = goog.require('org.antlr.v4.runtime.atn.ProfilingATNSimulator');
 const RuleTransition = goog.require('org.antlr.v4.runtime.atn.RuleTransition');
 const DFA = goog.require('org.antlr.v4.runtime.dfa.DFA');

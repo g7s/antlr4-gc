@@ -187,7 +187,7 @@ PredictionMode.LL_EXACT_AMBIG_DETECTION = 2;
  * the configurations to strip out all of the predicates so that a standard
  * {@link ATNConfigSet} will merge everything ignoring predicates.</p>
  *
- * @param {PredictionMode} mode
+ * @param {number} mode
  * @param {!ATNConfigSet} configs
  * @return {boolean}
  */

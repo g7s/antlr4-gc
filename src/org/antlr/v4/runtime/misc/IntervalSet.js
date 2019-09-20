@@ -64,11 +64,21 @@ class IntervalSet {
 		this.intervals = [];
     }
 
+    /**
+     * @override
+     * @param {!Interval|number} el
+     * @return {void}
+     */
     add(el) {
         if (this.readonly) {
             throw new Error("can't alter readonly IntervalSet");
         }
-        this.addRange(el, el);
+        if (goog.isNumber(el)) {
+            let num = /** @type {number} */ (el);
+            this.addRange(num, num);
+        } else {
+            this.addInterval(/** @type {!Interval} */ (el));
+        }
     }
 
     /**
@@ -89,7 +99,7 @@ class IntervalSet {
 
     /**
      * @protected
-     * @param {Interval} addition
+     * @param {!Interval} addition
      * @return {void}
      */
     addInterval(addition) {
@@ -103,10 +113,7 @@ class IntervalSet {
         // find position in list
         // Use iterators as we modify list in place
         for (var k = 0; k < this.intervals.length; k++) {
-            /**
-             * @type {Interval}
-             */
-            var r = this.intervals[k];
+            var r = /** @type {!Interval} */ (this.intervals[k]);
             if (addition.equals(r)) {
                 return;
             }
@@ -117,8 +124,8 @@ class IntervalSet {
                 // make sure we didn't just create an interval that
                 // should be merged with next interval in list
                 for (var j = k + 1; j < this.intervals.length; j++) {
-                    var curr = this.intervals[k];
-                    var next = this.intervals[j];
+                    var curr = /** @type {!Interval} */ (this.intervals[k]);
+                    var next = /** @type {!Interval} */ (this.intervals[j]);
                     if (!curr.adjacent(next) && curr.disjoint(next)) {
                         break;
                     }
@@ -209,14 +216,14 @@ class IntervalSet {
         var myIntervals = this.intervals;
         var theirIntervals = /** @type {IntervalSet} */ (other).intervals;
         var intersection = new IntervalSet();
-        var mySize = this.intervals.length;
-        var theirSize = other.intervals.length;
+        var mySize = myIntervals.length;
+        var theirSize = theirIntervals.length;
         var i = 0;
         var j = 0;
         // iterate down both interval lists looking for nondisjoint intervals
         while (i < mySize && j < theirSize) {
-            var mine = myIntervals[i];
-            var theirs = theirIntervals[j];
+            var mine = /** @type {!Interval} */ (myIntervals[i]);
+            var theirs = /** @type {!Interval} */ (theirIntervals[j]);
             //System.out.println("mine="+mine+" and theirs="+theirs);
             if (mine.startsBeforeDisjoint(theirs)) {
                 // move this iterator looking for interval that might overlap
