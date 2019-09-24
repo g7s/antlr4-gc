@@ -8,6 +8,7 @@
  * A set of utility routines useful for all kinds of ANTLR trees.
  */
 goog.module('org.antlr.v4.runtime.tree.Trees');
+goog.module.declareLegacyNamespace();
 
 
 const Token = goog.require('org.antlr.v4.runtime.Token');

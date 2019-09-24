@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.PrecedencePredicateTransition');
+goog.module.declareLegacyNamespace();
 
 
 const AbstractPredicateTransition = goog.require('org.antlr.v4.runtime.atn.AbstractPredicateTransition');

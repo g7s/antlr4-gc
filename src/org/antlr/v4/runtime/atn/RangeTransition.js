@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.RangeTransition');
+goog.module.declareLegacyNamespace();
 
 
 const IntervalSet = goog.require('org.antlr.v4.runtime.misc.IntervalSet');

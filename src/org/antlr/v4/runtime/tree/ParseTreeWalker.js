@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.tree.ParseTreeWalker');
+goog.module.declareLegacyNamespace();
 
 
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.tree.AbstractParseTreeVisitor');
+goog.module.declareLegacyNamespace();
 
 
 const ParseTreeVisitor = goog.require('org.antlr.v4.runtime.tree.ParseTreeVisitor');

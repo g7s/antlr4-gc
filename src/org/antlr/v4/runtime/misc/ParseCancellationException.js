@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.misc.ParseCancellationException');
+goog.module.declareLegacyNamespace();
 
 
 /**

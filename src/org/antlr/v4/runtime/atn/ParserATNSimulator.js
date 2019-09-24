@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.ParserATNSimulator');
+goog.module.declareLegacyNamespace();
 
 
 const PredictionMode = goog.require('org.antlr.v4.runtime.atn.PredictionMode');

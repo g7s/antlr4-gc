@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.ListTokenSource');
+goog.module.declareLegacyNamespace();
 
 
 const Token = goog.require('org.antlr.v4.runtime.Token');

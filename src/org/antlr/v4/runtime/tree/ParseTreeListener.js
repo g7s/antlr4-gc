@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.tree.ParseTreeListener');
+goog.module.declareLegacyNamespace();
 
 
 /** This interface describes the minimal core of methods triggered

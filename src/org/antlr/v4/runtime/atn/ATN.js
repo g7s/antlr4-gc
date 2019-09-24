@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.ATN');
+goog.module.declareLegacyNamespace();
 
 
 const LL1Analyzer = goog.require('org.antlr.v4.runtime.atn.LL1Analyzer');

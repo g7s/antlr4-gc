@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.RuleContextWithAltNum');
+goog.module.declareLegacyNamespace();
 
 
 const ParserRuleContext = goog.require('org.antlr.v4.runtime.ParserRuleContext');

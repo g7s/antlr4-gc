@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.dfa.LexerDFASerializer');
+goog.module.declareLegacyNamespace();
 
 
 const DFASerializer = goog.require('org.antlr.v4.runtime.dfa.DFASerializer');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.ATNState');
+goog.module.declareLegacyNamespace();
 
 
 const {format} = goog.require('goog.string');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.ANTLRErrorListener');
+goog.module.declareLegacyNamespace();
 
 
 /**

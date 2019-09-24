@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.misc.MurmurHash');
+goog.module.declareLegacyNamespace();
 
 /**
  *

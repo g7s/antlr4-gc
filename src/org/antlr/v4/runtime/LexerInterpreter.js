@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.LexerInterpreter');
+goog.module.declareLegacyNamespace();
 
 
 const Lexer = goog.require('org.antlr.v4.runtime.Lexer');

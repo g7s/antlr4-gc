@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.LexerATNSimulator');
+goog.module.declareLegacyNamespace();
 
 
 const LexerActionExecutor = goog.require('org.antlr.v4.runtime.atn.LexerActionExecutor');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.SemanticContext');
+goog.module.declareLegacyNamespace();
 
 
 const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.tree.ErrorNodeImpl');
+goog.module.declareLegacyNamespace();
 
 
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');

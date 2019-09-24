@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.NotSetTransition');
+goog.module.declareLegacyNamespace();
 
 
 const SetTransition = goog.require('org.antlr.v4.runtime.atn.SetTransition');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.PlusBlockStartState');
+goog.module.declareLegacyNamespace();
 
 
 const BlockStartState = goog.require('org.antlr.v4.runtime.atn.BlockStartState');

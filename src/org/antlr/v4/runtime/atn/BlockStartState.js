@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.BlockStartState');
+goog.module.declareLegacyNamespace();
 
 
 const DecisionState = goog.require('org.antlr.v4.runtime.atn.DecisionState');

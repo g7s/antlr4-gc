@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.tree.IterativeParseTreeWalker');
+goog.module.declareLegacyNamespace();
 
 
 const ParseTreeWalker = goog.require('org.antlr.v4.runtime.tree.ParseTreeWalker');

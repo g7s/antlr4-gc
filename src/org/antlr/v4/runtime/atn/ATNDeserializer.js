@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.ATNDeserializer');
+goog.module.declareLegacyNamespace();
 
 
 const Token = goog.require('org.antlr.v4.runtime.Token');

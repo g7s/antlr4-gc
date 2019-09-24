@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.Transition');
+goog.module.declareLegacyNamespace();
 
 
 /** An ATN transition between any two ATN states.  Subclasses define

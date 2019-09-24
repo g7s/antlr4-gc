@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.DefaultErrorStrategy');
+goog.module.declareLegacyNamespace();
 
 
 const ANTLRErrorStrategy = goog.require('org.antlr.v4.runtime.ANTLRErrorStrategy');

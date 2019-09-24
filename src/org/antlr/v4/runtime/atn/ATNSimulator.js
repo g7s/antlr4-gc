@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.ATNSimulator');
+goog.module.declareLegacyNamespace();
 
 
 const DFAState = goog.require('org.antlr.v4.runtime.dfa.DFAState');

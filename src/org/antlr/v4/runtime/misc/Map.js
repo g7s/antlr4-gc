@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.misc.Map');
+goog.module.declareLegacyNamespace();
 
 
 const {find, findIndex} = goog.require('goog.array');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.Recognizer');
+goog.module.declareLegacyNamespace();
 
 
 const ConsoleErrorListener = goog.require('org.antlr.v4.runtime.ConsoleErrorListener');

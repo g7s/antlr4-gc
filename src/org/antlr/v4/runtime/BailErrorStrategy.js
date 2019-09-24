@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.BailErrorStrategy');
+goog.module.declareLegacyNamespace();
 
 
 const DefaultErrorStrategy = goog.require('org.antlr.v4.runtime.DefaultErrorStrategy');

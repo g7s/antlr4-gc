@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.InputMismatchException');
+goog.module.declareLegacyNamespace();
 
 
 const RecognitionException = goog.require('org.antlr.v4.runtime.RecognitionException');

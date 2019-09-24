@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.tree.ParseTree');
+goog.module.declareLegacyNamespace();
 
 
 const SyntaxTree = goog.require('org.antlr.v4.runtime.tree.SyntaxTree');

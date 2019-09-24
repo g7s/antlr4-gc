@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.LexerActionType');
+goog.module.declareLegacyNamespace();
 
 /**
  * Represents the serialization type of a {@link LexerAction}.

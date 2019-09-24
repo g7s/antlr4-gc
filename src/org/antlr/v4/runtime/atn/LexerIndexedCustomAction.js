@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.LexerIndexedCustomAction');
+goog.module.declareLegacyNamespace();
 
 
 const LexerAction = goog.require('org.antlr.v4.runtime.atn.LexerAction');

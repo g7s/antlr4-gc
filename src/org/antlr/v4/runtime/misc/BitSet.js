@@ -7,6 +7,7 @@
 **/
 
 goog.module('org.antlr.v4.runtime.misc.BitSet');
+goog.module.declareLegacyNamespace();
 
 
 /**

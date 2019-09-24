@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.ParserRuleContext');
+goog.module.declareLegacyNamespace();
 
 
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');

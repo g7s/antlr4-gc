@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.EmptyPredictionContext');
+goog.module.declareLegacyNamespace();
 
 
 const PredictionContext = goog.require('org.antlr.v4.runtime.atn.PredictionContext');

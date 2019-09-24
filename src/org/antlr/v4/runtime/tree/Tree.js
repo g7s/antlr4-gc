@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.tree.Tree');
+goog.module.declareLegacyNamespace();
 
 
 /**

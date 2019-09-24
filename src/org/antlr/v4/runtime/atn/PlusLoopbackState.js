@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.PlusLoopbackState');
+goog.module.declareLegacyNamespace();
 
 
 const DecisionState = goog.require('org.antlr.v4.runtime.atn.DecisionState');

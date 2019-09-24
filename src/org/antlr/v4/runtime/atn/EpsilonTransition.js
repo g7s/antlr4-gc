@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.EpsilonTransition');
+goog.module.declareLegacyNamespace();
 
 
 const Transition = goog.require('org.antlr.v4.runtime.atn.Transition');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.misc.IntervalSet');
+goog.module.declareLegacyNamespace();
 
 
 const IntSet = goog.require('org.antlr.v4.runtime.misc.IntSet');

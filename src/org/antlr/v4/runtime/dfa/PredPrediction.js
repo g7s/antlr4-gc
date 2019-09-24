@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.dfa.PredPrediction');
+goog.module.declareLegacyNamespace();
 
 
 /**

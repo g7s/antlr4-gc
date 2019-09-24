@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.CharStream');
+goog.module.declareLegacyNamespace();
 
 
 const IntStream = goog.require('org.antlr.v4.runtime.IntStream');

@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.CommonTokenFactory');
+goog.module.declareLegacyNamespace();
 
 
 const CommonToken = goog.require('org.antlr.v4.runtime.CommonToken');

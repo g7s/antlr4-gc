@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.ProxyErrorListener');
+goog.module.declareLegacyNamespace();
 
 
 const ANTLRErrorListener = goog.require('org.antlr.v4.runtime.ANTLRErrorListener');

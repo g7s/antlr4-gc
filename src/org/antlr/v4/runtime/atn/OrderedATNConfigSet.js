@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.OrderedATNConfigSet');
+goog.module.declareLegacyNamespace();
 
 
 const ATNConfigSet = goog.require('org.antlr.v4.runtime.atn.ATNConfigSet');

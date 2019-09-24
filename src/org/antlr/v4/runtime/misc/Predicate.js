@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.misc.Predicate');
+goog.module.declareLegacyNamespace();
 
 
 /**

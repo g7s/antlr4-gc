@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.CommonTokenStream');
+goog.module.declareLegacyNamespace();
 
 
 const BufferedTokenStream = goog.require('org.antlr.v4.runtime.BufferedTokenStream');

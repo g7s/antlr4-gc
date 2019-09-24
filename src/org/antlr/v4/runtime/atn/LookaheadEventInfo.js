@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.LookaheadEventInfo');
+goog.module.declareLegacyNamespace();
 
 
 const DecisionEventInfo = goog.require('org.antlr.v4.runtime.atn.DecisionEventInfo');

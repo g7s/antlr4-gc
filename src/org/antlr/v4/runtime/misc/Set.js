@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.misc.Set');
+goog.module.declareLegacyNamespace();
 
 
 const {find} = goog.require('goog.array');

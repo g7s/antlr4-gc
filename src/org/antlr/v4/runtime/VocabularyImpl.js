@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.VocabularyImpl');
+goog.module.declareLegacyNamespace();
 
 
 const Vocabulary = goog.require('org.antlr.v4.runtime.Vocabulary');

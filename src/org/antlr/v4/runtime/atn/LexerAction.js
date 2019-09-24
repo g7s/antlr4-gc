@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.LexerAction');
+goog.module.declareLegacyNamespace();
 
 
 /**

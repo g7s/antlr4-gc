@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.TokenFactory');
+goog.module.declareLegacyNamespace();
 
 
 /**

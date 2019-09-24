@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.ProfilingATNSimulator');
+goog.module.declareLegacyNamespace();
 
 
 const ATNSimulator = goog.require('org.antlr.v4.runtime.atn.ATNSimulator');

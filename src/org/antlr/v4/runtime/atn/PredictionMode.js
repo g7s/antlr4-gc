@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.atn.PredictionMode');
+goog.module.declareLegacyNamespace();
 
 
 const SemanticContext = goog.require('org.antlr.v4.runtime.atn.SemanticContext');

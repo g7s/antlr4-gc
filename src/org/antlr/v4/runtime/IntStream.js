@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.IntStream');
+goog.module.declareLegacyNamespace();
 
 
 /**

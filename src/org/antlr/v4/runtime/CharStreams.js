@@ -5,6 +5,7 @@
  */
 
 goog.module('org.antlr.v4.runtime.CharStreams');
+goog.module.declareLegacyNamespace();
 
 
 const CodePointCharStream = goog.require('org.antlr.v4.runtime.CodePointCharStream');
