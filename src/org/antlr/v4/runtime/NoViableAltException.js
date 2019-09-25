@@ -13,11 +13,11 @@ const RecognitionException = goog.require('org.antlr.v4.runtime.RecognitionExcep
 class NoViableAltException extends RecognitionException {
     /**
      * @param {org.antlr.v4.runtime.Parser} recognizer
-     * @param {org.antlr.v4.runtime.TokenStream} input
-     * @param {org.antlr.v4.runtime.Token} startToken
-     * @param {org.antlr.v4.runtime.Token} offendingToken
-     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} deadEndConfigs
-     * @param {org.antlr.v4.runtime.ParserRuleContext} ctx
+     * @param {org.antlr.v4.runtime.TokenStream=} input
+     * @param {org.antlr.v4.runtime.Token=} startToken
+     * @param {org.antlr.v4.runtime.Token=} offendingToken
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet=} deadEndConfigs
+     * @param {org.antlr.v4.runtime.ParserRuleContext=} ctx
      */
     constructor(recognizer, input, startToken, offendingToken, deadEndConfigs, ctx) {
         input = input || recognizer.getInputStream();

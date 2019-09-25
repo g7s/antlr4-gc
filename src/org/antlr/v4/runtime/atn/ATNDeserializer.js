@@ -62,7 +62,7 @@ for (var i = 0; i < 256; i++) {
  */
 class ATNDeserializer {
     /**
-     * @param {ATNDeserializationOptions} deserializationOptions
+     * @param {ATNDeserializationOptions=} deserializationOptions
      */
     constructor(deserializationOptions) {
         if (deserializationOptions == null) {
@@ -77,7 +77,7 @@ class ATNDeserializer {
     /**
      * @suppress {deprecated}
      * @param {string} str
-     * @return {ATN}
+     * @return {!ATN}
      */
     deserialize(str) {
         /**
