@@ -11,7 +11,7 @@ goog.module.declareLegacyNamespace();
 const Transition = goog.require('org.antlr.v4.runtime.atn.Transition');
 
 class ActionTransition extends Transition {
-	constructor(target, ruleIndex, actionIndex, isCtxDependent) {
+    constructor(target, ruleIndex, actionIndex, isCtxDependent) {
         super(target);
         /**
          * @type {number}
@@ -24,27 +24,27 @@ class ActionTransition extends Transition {
         /**
          * @type {boolean}
          */
-		this.isCtxDependent = goog.isDef(isCtxDependent) ? isCtxDependent : false;
-	}
+        this.isCtxDependent = goog.isDef(isCtxDependent) ? isCtxDependent : false;
+    }
 
-	getSerializationType() {
-		return Transition.ACTION;
-	}
+    getSerializationType() {
+        return Transition.ACTION;
+    }
 
-	isEpsilon() {
-		return true; // we are to be ignored by analysis 'cept for predicates
-	}
+    isEpsilon() {
+        return true; // we are to be ignored by analysis 'cept for predicates
+    }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return false;
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return false;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return "action_" + this.ruleIndex + ":" + this.actionIndex;
-	}
+    toString() {
+        return "action_" + this.ruleIndex + ":" + this.actionIndex;
+    }
 }
 
 

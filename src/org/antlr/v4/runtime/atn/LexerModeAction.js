@@ -23,70 +23,70 @@ const {format} = goog.require('goog.string');
  * @implements {LexerAction}
  */
 class LexerModeAction {
-	/**
-	 * Constructs a new {@code mode} action with the specified mode value.
+    /**
+     * Constructs a new {@code mode} action with the specified mode value.
      *
-	 * @param {number} mode The mode value to pass to {@link Lexer#mode}.
-	 */
-	constructor(mode) {
+     * @param {number} mode The mode value to pass to {@link Lexer#mode}.
+     */
+    constructor(mode) {
         /**
          * @private {number}
          */
-		this.mode = mode;
-	}
+        this.mode = mode;
+    }
 
-	/**
-	 * Get the lexer mode this action should transition the lexer to.
-	 *
-	 * @return {number} The lexer mode for this {@code mode} command.
-	 */
-	getMode() {
-		return this.mode;
-	}
+    /**
+     * Get the lexer mode this action should transition the lexer to.
+     *
+     * @return {number} The lexer mode for this {@code mode} command.
+     */
+    getMode() {
+        return this.mode;
+    }
 
-	getActionType() {
-		return LexerActionType.MODE;
-	}
+    getActionType() {
+        return LexerActionType.MODE;
+    }
 
-	isPositionDependent() {
-		return false;
-	}
+    isPositionDependent() {
+        return false;
+    }
 
-	execute(lexer) {
-		lexer.mode(this.mode);
-	}
+    execute(lexer) {
+        lexer.mode(this.mode);
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		var hash = MurmurHash.initialize();
-		hash = MurmurHash.update(hash, this.getActionType());
-		hash = MurmurHash.update(hash, this.mode);
-		return MurmurHash.finish(hash, 2);
-	}
+    hashCode() {
+        var hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, this.getActionType());
+        hash = MurmurHash.update(hash, this.mode);
+        return MurmurHash.finish(hash, 2);
+    }
 
     /**
      * @param {Object} obj
      * @return {boolean}
      */
-	equals(obj) {
-		if (obj === this) {
-			return true;
-		}
-		else if (!(obj instanceof LexerModeAction)) {
-			return false;
-		}
+    equals(obj) {
+        if (obj === this) {
+            return true;
+        }
+        else if (!(obj instanceof LexerModeAction)) {
+            return false;
+        }
 
-		return this.mode === obj.mode;
-	}
+        return this.mode === obj.mode;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return format("mode(%d)", this.mode);
-	}
+    toString() {
+        return format("mode(%d)", this.mode);
+    }
 }
 
 

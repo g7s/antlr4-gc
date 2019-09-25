@@ -17,24 +17,24 @@ const DecisionEventInfo = goog.require('org.antlr.v4.runtime.atn.DecisionEventIn
  * @since 4.3
  */
 class LookaheadEventInfo extends DecisionEventInfo {
-	/**
-	 * Constructs a new instance of the {@link LookaheadEventInfo} class with
-	 * the specified detailed lookahead information.
-	 *
-	 * @param {number} decision The decision number
-	 * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
+    /**
+     * Constructs a new instance of the {@link LookaheadEventInfo} class with
+     * the specified detailed lookahead information.
+     *
+     * @param {number} decision The decision number
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
      * configuration set containing the necessary information to determine
      * the result of a prediction, or {@code null} if the final configuration
      * set is not available
      * @param {number} predictedAlt
-	 * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
-	 * @param {number} startIndex The start index for the current prediction
-	 * @param {number} stopIndex The index at which the prediction was finally made
-	 * @param {boolean} fullCtx {@code true} if the current lookahead is part of an LL
-	 * prediction; otherwise, {@code false} if the current lookahead is part of
-	 * an SLL prediction
-	 */
-	constructor(decision, configs, predictedAlt, input, startIndex, stopIndex, fullCtx) {
+     * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
+     * @param {number} startIndex The start index for the current prediction
+     * @param {number} stopIndex The index at which the prediction was finally made
+     * @param {boolean} fullCtx {@code true} if the current lookahead is part of an LL
+     * prediction; otherwise, {@code false} if the current lookahead is part of
+     * an SLL prediction
+     */
+    constructor(decision, configs, predictedAlt, input, startIndex, stopIndex, fullCtx) {
         super(decision, configs, input, startIndex, stopIndex, fullCtx);
         /**
          * The alternative chosen by adaptivePredict(), not necessarily
@@ -44,8 +44,8 @@ class LookaheadEventInfo extends DecisionEventInfo {
          *
          * @type {number}
          */
-		this.predictedAlt = predictedAlt;
-	}
+        this.predictedAlt = predictedAlt;
+    }
 }
 
 

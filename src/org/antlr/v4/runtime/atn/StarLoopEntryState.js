@@ -32,9 +32,9 @@ class StarLoopEntryState extends DecisionState {
         this.isPrecedenceDecision = false;
     }
 
-	getStateType() {
-		return ATNState.STAR_LOOP_ENTRY;
-	}
+    getStateType() {
+        return ATNState.STAR_LOOP_ENTRY;
+    }
 }
 
 

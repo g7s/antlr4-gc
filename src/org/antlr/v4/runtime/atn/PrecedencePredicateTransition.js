@@ -26,34 +26,34 @@ class PrecedencePredicateTransition extends AbstractPredicateTransition {
         /**
          * @type {number}
          */
-		this.precedence = precedence;
-	}
+        this.precedence = precedence;
+    }
 
-	getSerializationType() {
-		return Transition.PRECEDENCE;
-	}
+    getSerializationType() {
+        return Transition.PRECEDENCE;
+    }
 
-	isEpsilon() {
-		return true;
-	}
+    isEpsilon() {
+        return true;
+    }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return false;
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return false;
+    }
 
     /**
      * @return {SemanticContext.PrecedencePredicate}
      */
-	getPredicate() {
-		return new SemanticContext.PrecedencePredicate(this.precedence);
-	}
+    getPredicate() {
+        return new SemanticContext.PrecedencePredicate(this.precedence);
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return this.precedence + " >= _p";
-	}
+    toString() {
+        return this.precedence + " >= _p";
+    }
 
 }
 

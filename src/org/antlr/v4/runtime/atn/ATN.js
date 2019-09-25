@@ -83,17 +83,17 @@ class ATN {
         this.modeToStartState = [];
     }
 
-	/**
+    /**
      * Compute the set of valid tokens that can occur starting in state {@code s}.
-	 * If {@code ctx} is null, the set of tokens will not include what can follow
-	 * the rule surrounding {@code s}. In other words, the set will be
-	 * restricted to tokens reachable staying within {@code s}'s rule.
+     * If {@code ctx} is null, the set of tokens will not include what can follow
+     * the rule surrounding {@code s}. In other words, the set will be
+     * restricted to tokens reachable staying within {@code s}'s rule.
      *
      * @param {org.antlr.v4.runtime.atn.ATNState} s
      * @param {org.antlr.v4.runtime.RuleContext=} ctx
      * @return {IntervalSet}
-	 */
-	nextTokens(s, ctx) {
+     */
+    nextTokens(s, ctx) {
         if (goog.isDef(ctx)) {
             var anal = new LL1Analyzer(this);
             var next = anal.LOOKC(s, ctx);
@@ -104,38 +104,38 @@ class ATN {
             s.nextTokenWithinRule.setReadonly(true);
             return s.nextTokenWithinRule;
         }
-	}
+    }
 
     /**
      * @param {org.antlr.v4.runtime.atn.ATNState} state
      * @return {void}
      */
-	addState(state) {
-		if (state != null) {
-			state.atn = this;
-			state.stateNumber = this.states.length;
-		}
+    addState(state) {
+        if (state != null) {
+            state.atn = this;
+            state.stateNumber = this.states.length;
+        }
 
-		this.states.push(state);
-	}
+        this.states.push(state);
+    }
 
     /**
      * @param {org.antlr.v4.runtime.atn.ATNState} state
      * @return {void}
      */
-	removeState(state) {
-		delete this.states[state.stateNumber]; // just free mem, don't shift states in list
-	}
+    removeState(state) {
+        delete this.states[state.stateNumber]; // just free mem, don't shift states in list
+    }
 
     /**
      * @param {org.antlr.v4.runtime.atn.DecisionState} s
      * @return {number}
      */
-	defineDecisionState(s) {
-		this.decisionToState.push(s);
-		s.decision = this.getNumberOfDecisions() - 1;
-		return s.decision;
-	}
+    defineDecisionState(s) {
+        this.decisionToState.push(s);
+        s.decision = this.getNumberOfDecisions() - 1;
+        return s.decision;
+    }
 
     /**
      * @param {number} decision
@@ -151,74 +151,74 @@ class ATN {
     /**
      * @return {number}
      */
-	getNumberOfDecisions() {
-		return this.decisionToState.length;
-	}
+    getNumberOfDecisions() {
+        return this.decisionToState.length;
+    }
 
-	/**
-	 * Computes the set of input symbols which could follow ATN state number
-	 * {@code stateNumber} in the specified full {@code context}. This method
-	 * considers the complete parser context, but does not evaluate semantic
-	 * predicates (i.e. all predicates encountered during the calculation are
-	 * assumed true). If a path in the ATN exists from the starting state to the
-	 * {@link RuleStopState} of the outermost context without matching any
-	 * symbols, {@link Token#EOF} is added to the returned set.
-	 *
-	 * <p>If {@code context} is {@code null}, it is treated as {@link ParserRuleContext#EMPTY}.</p>
-	 *
-	 * Note that this does NOT give you the set of all tokens that could
-	 * appear at a given token position in the input phrase.  In other words,
-	 * it does not answer:
-	 *
-	 *   "Given a specific partial input phrase, return the set of all tokens
-	 *    that can follow the last token in the input phrase."
-	 *
-	 * The big difference is that with just the input, the parser could
-	 * land right in the middle of a lookahead decision. Getting
+    /**
+     * Computes the set of input symbols which could follow ATN state number
+     * {@code stateNumber} in the specified full {@code context}. This method
+     * considers the complete parser context, but does not evaluate semantic
+     * predicates (i.e. all predicates encountered during the calculation are
+     * assumed true). If a path in the ATN exists from the starting state to the
+     * {@link RuleStopState} of the outermost context without matching any
+     * symbols, {@link Token#EOF} is added to the returned set.
+     *
+     * <p>If {@code context} is {@code null}, it is treated as {@link ParserRuleContext#EMPTY}.</p>
+     *
+     * Note that this does NOT give you the set of all tokens that could
+     * appear at a given token position in the input phrase.  In other words,
+     * it does not answer:
+     *
+     *   "Given a specific partial input phrase, return the set of all tokens
+     *    that can follow the last token in the input phrase."
+     *
+     * The big difference is that with just the input, the parser could
+     * land right in the middle of a lookahead decision. Getting
      * all *possible* tokens given a partial input stream is a separate
      * computation. See https://github.com/antlr/antlr4/issues/1428
-	 *
-	 * For this function, we are specifying an ATN state and call stack to compute
-	 * what token(s) can come next and specifically: outside of a lookahead decision.
-	 * That is what you want for error reporting and recovery upon parse error.
-	 *
-	 * @param {number} stateNumber the ATN state number
-	 * @param {org.antlr.v4.runtime.RuleContext} context the full parse context
-	 * @return {IntervalSet} The set of potentially valid input symbols which could follow the
-	 * specified state in the specified context.
-	 * @throws {Error} IllegalArgumentException if the ATN does not contain a state with
-	 * number {@code stateNumber}
-	 */
-	getExpectedTokens(stateNumber, context) {
-		if (stateNumber < 0 || stateNumber >= this.states.length) {
-			throw new Error("Invalid state number.");
-		}
+     *
+     * For this function, we are specifying an ATN state and call stack to compute
+     * what token(s) can come next and specifically: outside of a lookahead decision.
+     * That is what you want for error reporting and recovery upon parse error.
+     *
+     * @param {number} stateNumber the ATN state number
+     * @param {org.antlr.v4.runtime.RuleContext} context the full parse context
+     * @return {IntervalSet} The set of potentially valid input symbols which could follow the
+     * specified state in the specified context.
+     * @throws {Error} IllegalArgumentException if the ATN does not contain a state with
+     * number {@code stateNumber}
+     */
+    getExpectedTokens(stateNumber, context) {
+        if (stateNumber < 0 || stateNumber >= this.states.length) {
+            throw new Error("Invalid state number.");
+        }
 
-		var ctx = context;
-		var s = this.states[stateNumber];
-		var following = this.nextTokens(s);
-		if (!following.contains(Token.EPSILON)) {
-			return following;
-		}
+        var ctx = context;
+        var s = this.states[stateNumber];
+        var following = this.nextTokens(s);
+        if (!following.contains(Token.EPSILON)) {
+            return following;
+        }
 
-		var expected = new IntervalSet();
-		expected.addAll(following);
-		expected.remove(Token.EPSILON);
-		while (ctx != null && ctx.invokingState >= 0 && following.contains(Token.EPSILON)) {
+        var expected = new IntervalSet();
+        expected.addAll(following);
+        expected.remove(Token.EPSILON);
+        while (ctx != null && ctx.invokingState >= 0 && following.contains(Token.EPSILON)) {
             var invokingState = this.states[ctx.invokingState];
-			var rt = /** @type {org.antlr.v4.runtime.atn.RuleTransition} */ (invokingState.transition(0));
-			following = this.nextTokens(rt.followState);
-			expected.addAll(following);
-			expected.remove(Token.EPSILON);
-			ctx = ctx.parent;
-		}
+            var rt = /** @type {org.antlr.v4.runtime.atn.RuleTransition} */ (invokingState.transition(0));
+            following = this.nextTokens(rt.followState);
+            expected.addAll(following);
+            expected.remove(Token.EPSILON);
+            ctx = ctx.parent;
+        }
 
-		if (following.contains(Token.EPSILON)) {
-			expected.add(Token.EOF);
-		}
+        if (following.contains(Token.EPSILON)) {
+            expected.add(Token.EOF);
+        }
 
-		return expected;
-	}
+        return expected;
+    }
 }
 
 /**

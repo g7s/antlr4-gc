@@ -22,13 +22,13 @@ goog.module.declareLegacyNamespace();
  * @since 4.3
  */
 class DecisionInfo {
-	/**
-	 * Constructs a new instance of the {@link DecisionInfo} class to contain
-	 * statistics for a particular decision.
-	 *
-	 * @param {number} decision The decision number
-	 */
-	constructor(decision) {
+        /**
+         * Constructs a new instance of the {@link DecisionInfo} class to contain
+         * statistics for a particular decision.
+         *
+         * @param {number} decision The decision number
+         */
+        constructor(decision) {
         /**
          * The decision number, which is an index into {@link ATN#decisionToState}.
          *
@@ -261,25 +261,25 @@ class DecisionInfo {
          * @type {number}
          */
         this.LL_DFATransitions = 0;
-	}
+        }
 
     /**
      * @return {string}
      */
-	toString() {
-		return "{" +
-			   "decision=" + this.decision +
-			   ", contextSensitivities=" + this.contextSensitivities.length +
-			   ", errors=" + this.errors.length +
-			   ", ambiguities=" + this.ambiguities.length +
-			   ", SLL_lookahead=" + this.SLL_TotalLook +
-			   ", SLL_ATNTransitions=" + this.SLL_ATNTransitions +
-			   ", SLL_DFATransitions=" + this.SLL_DFATransitions +
-			   ", LL_Fallback=" + this.LL_Fallback +
-			   ", LL_lookahead=" + this.LL_TotalLook +
-			   ", LL_ATNTransitions=" + this.LL_ATNTransitions +
-			   '}';
-	}
+        toString() {
+                return "{" +
+                           "decision=" + this.decision +
+                           ", contextSensitivities=" + this.contextSensitivities.length +
+                           ", errors=" + this.errors.length +
+                           ", ambiguities=" + this.ambiguities.length +
+                           ", SLL_lookahead=" + this.SLL_TotalLook +
+                           ", SLL_ATNTransitions=" + this.SLL_ATNTransitions +
+                           ", SLL_DFATransitions=" + this.SLL_DFATransitions +
+                           ", LL_Fallback=" + this.LL_Fallback +
+                           ", LL_lookahead=" + this.LL_TotalLook +
+                           ", LL_ATNTransitions=" + this.LL_ATNTransitions +
+                           '}';
+        }
 }
 
 

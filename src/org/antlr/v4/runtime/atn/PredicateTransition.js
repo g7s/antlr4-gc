@@ -38,34 +38,34 @@ class PredicateTransition extends AbstractPredicateTransition {
         /**
          * @type {boolean}
          */
-		this.isCtxDependent = isCtxDependent;
-	}
+        this.isCtxDependent = isCtxDependent;
+    }
 
-	getSerializationType() {
-		return Transition.PREDICATE;
-	}
+    getSerializationType() {
+        return Transition.PREDICATE;
+    }
 
-	isEpsilon() {
+    isEpsilon() {
         return true;
     }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return false;
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return false;
+    }
 
     /**
      * @return {SemanticContext.Predicate}
      */
     getPredicate() {
-   		return new SemanticContext.Predicate(this.ruleIndex, this.predIndex, this.isCtxDependent);
-   	}
+           return new SemanticContext.Predicate(this.ruleIndex, this.predIndex, this.isCtxDependent);
+       }
 
     /**
      * @return {string}
      */
-	toString() {
-		return "pred_" + this.ruleIndex + ":" + this.predIndex;
-	}
+    toString() {
+        return "pred_" + this.ruleIndex + ":" + this.predIndex;
+    }
 }
 
 

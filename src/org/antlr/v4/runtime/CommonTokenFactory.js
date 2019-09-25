@@ -21,15 +21,15 @@ const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
  */
 class CommonTokenFactory {
     /**
-	 * Constructs a {@link CommonTokenFactory} with the specified value for
-	 * {@link #copyText}.
-	 *
-	 * <p>
-	 * When {@code copyText} is {@code false}, the {@link #DEFAULT} instance
-	 * should be used instead of constructing a new instance.</p>
-	 *
-	 * @param {boolean=} copyText The value for {@link #copyText}.
-	 */
+     * Constructs a {@link CommonTokenFactory} with the specified value for
+     * {@link #copyText}.
+     *
+     * <p>
+     * When {@code copyText} is {@code false}, the {@link #DEFAULT} instance
+     * should be used instead of constructing a new instance.</p>
+     *
+     * @param {boolean=} copyText The value for {@link #copyText}.
+     */
     constructor(copyText) {
         /**
          * Indicates whether {@link CommonToken#setText} should be called after

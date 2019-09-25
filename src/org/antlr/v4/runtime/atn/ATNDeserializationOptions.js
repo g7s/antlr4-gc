@@ -15,7 +15,7 @@ class ATNDeserializationOptions {
     /**
      * @param {ATNDeserializationOptions=} options
      */
-	constructor(options) {
+    constructor(options) {
         /**
          * @private {boolean}
          */
@@ -27,64 +27,64 @@ class ATNDeserializationOptions {
         /**
          * @private {boolean}
          */
-		this.generateRuleBypassTransitions = goog.isDef(options) ? options.generateRuleBypassTransitions : false;
-	}
+        this.generateRuleBypassTransitions = goog.isDef(options) ? options.generateRuleBypassTransitions : false;
+    }
 
     /**
      * @return {boolean}
      */
-	isReadOnly() {
-		return this.readOnly;
-	}
+    isReadOnly() {
+        return this.readOnly;
+    }
 
     /**
      * @return {void}
      */
-	makeReadOnly() {
-		this.readOnly = true;
-	}
+    makeReadOnly() {
+        this.readOnly = true;
+    }
 
     /**
      * @return {boolean}
      */
-	isVerifyATN() {
-		return this.verifyATN;
-	}
+    isVerifyATN() {
+        return this.verifyATN;
+    }
 
     /**
      * @param {boolean} verifyATN
      * @return {void}
      */
-	setVerifyATN(verifyATN) {
-		this.throwIfReadOnly();
-		this.verifyATN = verifyATN;
-	}
+    setVerifyATN(verifyATN) {
+        this.throwIfReadOnly();
+        this.verifyATN = verifyATN;
+    }
 
     /**
      * @return {boolean}
      */
-	isGenerateRuleBypassTransitions() {
-		return this.generateRuleBypassTransitions;
-	}
+    isGenerateRuleBypassTransitions() {
+        return this.generateRuleBypassTransitions;
+    }
 
     /**
      * @param {boolean} generateRuleBypassTransitions
      * @return {void}
      */
-	setGenerateRuleBypassTransitions(generateRuleBypassTransitions) {
-		this.throwIfReadOnly();
-		this.generateRuleBypassTransitions = generateRuleBypassTransitions;
-	}
+    setGenerateRuleBypassTransitions(generateRuleBypassTransitions) {
+        this.throwIfReadOnly();
+        this.generateRuleBypassTransitions = generateRuleBypassTransitions;
+    }
 
     /**
      * @protected
      * @return {void}
      */
-	throwIfReadOnly() {
-		if (this.isReadOnly()) {
-			throw new Error("The object is read only.");
-		}
-	}
+    throwIfReadOnly() {
+        if (this.isReadOnly()) {
+            throw new Error("The object is read only.");
+        }
+    }
 }
 
 

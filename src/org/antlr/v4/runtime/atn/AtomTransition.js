@@ -19,34 +19,34 @@ class AtomTransition extends Transition {
      * @param {org.antlr.v4.runtime.atn.ATNState} target
      * @param {number} label
      */
-	constructor(target, label) {
+    constructor(target, label) {
         super(target);
         /**
          * The token type or character value; or, signifies special label.
          *
          * @type {number}
          */
-		this.tlabel = label;
-	}
+        this.tlabel = label;
+    }
 
-	getSerializationType() {
-		return Transition.ATOM;
-	}
+    getSerializationType() {
+        return Transition.ATOM;
+    }
 
-	label() {
+    label() {
         return IntervalSet.of(this.tlabel);
     }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return this.tlabel === symbol;
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return this.tlabel === symbol;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return "" + this.tlabel;
-	}
+    toString() {
+        return "" + this.tlabel;
+    }
 }
 
 

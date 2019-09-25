@@ -171,24 +171,24 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * Match current input symbol against {@code ttype}. If the symbol type
-	 * matches, {@link ANTLRErrorStrategy#reportMatch} and {@link #consume} are
-	 * called to complete the match process.
-	 *
-	 * <p>If the symbol type does not match,
-	 * {@link ANTLRErrorStrategy#recoverInline} is called on the current error
-	 * strategy to attempt recovery. If {@link #getBuildParseTree} is
-	 * {@code true} and the token index of the symbol returned by
-	 * {@link ANTLRErrorStrategy#recoverInline} is -1, the symbol is added to
-	 * the parse tree by calling {@link #createErrorNode(ParserRuleContext, Token)} then
-	 * {@link ParserRuleContext#addErrorNode(ErrorNode)}.</p>
-	 *
-	 * @param {number} ttype the token type to match
-	 * @return {Token} the matched symbol
-	 * @throws {org.antlr.v4.runtime.RecognitionException} if the current input symbol did not match
-	 * {@code ttype} and the error strategy could not recover from the
-	 * mismatched symbol
-	 */
+     * Match current input symbol against {@code ttype}. If the symbol type
+     * matches, {@link ANTLRErrorStrategy#reportMatch} and {@link #consume} are
+     * called to complete the match process.
+     *
+     * <p>If the symbol type does not match,
+     * {@link ANTLRErrorStrategy#recoverInline} is called on the current error
+     * strategy to attempt recovery. If {@link #getBuildParseTree} is
+     * {@code true} and the token index of the symbol returned by
+     * {@link ANTLRErrorStrategy#recoverInline} is -1, the symbol is added to
+     * the parse tree by calling {@link #createErrorNode(ParserRuleContext, Token)} then
+     * {@link ParserRuleContext#addErrorNode(ErrorNode)}.</p>
+     *
+     * @param {number} ttype the token type to match
+     * @return {Token} the matched symbol
+     * @throws {org.antlr.v4.runtime.RecognitionException} if the current input symbol did not match
+     * {@code ttype} and the error strategy could not recover from the
+     * mismatched symbol
+     */
     match(ttype) {
         var t = this.getCurrentToken();
         if (t.getType() === ttype) {
@@ -209,23 +209,23 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * Match current input symbol as a wildcard. If the symbol type matches
-	 * (i.e. has a value greater than 0), {@link ANTLRErrorStrategy#reportMatch}
-	 * and {@link #consume} are called to complete the match process.
-	 *
-	 * <p>If the symbol type does not match,
-	 * {@link ANTLRErrorStrategy#recoverInline} is called on the current error
-	 * strategy to attempt recovery. If {@link #getBuildParseTree} is
-	 * {@code true} and the token index of the symbol returned by
-	 * {@link ANTLRErrorStrategy#recoverInline} is -1, the symbol is added to
-	 * the parse tree by calling {@link Parser#createErrorNode(ParserRuleContext, Token)}. then
+     * Match current input symbol as a wildcard. If the symbol type matches
+     * (i.e. has a value greater than 0), {@link ANTLRErrorStrategy#reportMatch}
+     * and {@link #consume} are called to complete the match process.
+     *
+     * <p>If the symbol type does not match,
+     * {@link ANTLRErrorStrategy#recoverInline} is called on the current error
+     * strategy to attempt recovery. If {@link #getBuildParseTree} is
+     * {@code true} and the token index of the symbol returned by
+     * {@link ANTLRErrorStrategy#recoverInline} is -1, the symbol is added to
+     * the parse tree by calling {@link Parser#createErrorNode(ParserRuleContext, Token)}. then
      * {@link ParserRuleContext#addErrorNode(ErrorNode)}</p>
-	 *
-	 * @return {Token} the matched symbol
-	 * @throws {org.antlr.v4.runtime.RecognitionException} if the current input symbol did not match
-	 * a wildcard and the error strategy could not recover from the mismatched
-	 * symbol
-	 */
+     *
+     * @return {Token} the matched symbol
+     * @throws {org.antlr.v4.runtime.RecognitionException} if the current input symbol did not match
+     * a wildcard and the error strategy could not recover from the mismatched
+     * symbol
+     */
     matchWildcard() {
         var t = this.getCurrentToken();
         if (t.getType() > 0) {
@@ -243,23 +243,23 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * Track the {@link ParserRuleContext} objects during the parse and hook
-	 * them up using the {@link ParserRuleContext#children} list so that it
-	 * forms a parse tree. The {@link ParserRuleContext} returned from the start
-	 * rule represents the root of the parse tree.
-	 *
-	 * <p>Note that if we are not building parse trees, rule contexts only point
-	 * upwards. When a rule exits, it returns the context but that gets garbage
-	 * collected if nobody holds a reference. It points upwards but nobody
-	 * points at it.</p>
-	 *
-	 * <p>When we build parse trees, we are adding all of these contexts to
-	 * {@link ParserRuleContext#children} list. Contexts are then not candidates
-	 * for garbage collection.</p>
+     * Track the {@link ParserRuleContext} objects during the parse and hook
+     * them up using the {@link ParserRuleContext#children} list so that it
+     * forms a parse tree. The {@link ParserRuleContext} returned from the start
+     * rule represents the root of the parse tree.
+     *
+     * <p>Note that if we are not building parse trees, rule contexts only point
+     * upwards. When a rule exits, it returns the context but that gets garbage
+     * collected if nobody holds a reference. It points upwards but nobody
+     * points at it.</p>
+     *
+     * <p>When we build parse trees, we are adding all of these contexts to
+     * {@link ParserRuleContext#children} list. Contexts are then not candidates
+     * for garbage collection.</p>
      *
      * @param {boolean} buildParseTrees
      * @return {void}
-	 */
+     */
     setBuildParseTree(buildParseTrees) {
         this._buildParseTrees = buildParseTrees;
     }
@@ -303,34 +303,34 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * Registers {@code listener} to receive events during the parsing process.
-	 *
-	 * <p>To support output-preserving grammar transformations (including but not
-	 * limited to left-recursion removal, automated left-factoring, and
-	 * optimized code generation), calls to listener methods during the parse
-	 * may differ substantially from calls made by
-	 * {@link ParseTreeWalker#DEFAULT} used after the parse is complete. In
-	 * particular, rule entry and exit events may occur in a different order
-	 * during the parse than after the parser. In addition, calls to certain
-	 * rule entry methods may be omitted.</p>
-	 *
-	 * <p>With the following specific exceptions, calls to listener events are
-	 * <em>deterministic</em>, i.e. for identical input the calls to listener
-	 * methods will be the same.</p>
-	 *
-	 * <ul>
-	 * <li>Alterations to the grammar used to generate code may change the
-	 * behavior of the listener calls.</li>
-	 * <li>Alterations to the command line options passed to ANTLR 4 when
-	 * generating the parser may change the behavior of the listener calls.</li>
-	 * <li>Changing the version of the ANTLR Tool used to generate the parser
-	 * may change the behavior of the listener calls.</li>
-	 * </ul>
-	 *
-	 * @param {ParseTreeListener} listener the listener to add
-	 * @return {void}
-	 * @throws {Error} NullPointerException if {@code} listener is {@code null}
-	 */
+     * Registers {@code listener} to receive events during the parsing process.
+     *
+     * <p>To support output-preserving grammar transformations (including but not
+     * limited to left-recursion removal, automated left-factoring, and
+     * optimized code generation), calls to listener methods during the parse
+     * may differ substantially from calls made by
+     * {@link ParseTreeWalker#DEFAULT} used after the parse is complete. In
+     * particular, rule entry and exit events may occur in a different order
+     * during the parse than after the parser. In addition, calls to certain
+     * rule entry methods may be omitted.</p>
+     *
+     * <p>With the following specific exceptions, calls to listener events are
+     * <em>deterministic</em>, i.e. for identical input the calls to listener
+     * methods will be the same.</p>
+     *
+     * <ul>
+     * <li>Alterations to the grammar used to generate code may change the
+     * behavior of the listener calls.</li>
+     * <li>Alterations to the command line options passed to ANTLR 4 when
+     * generating the parser may change the behavior of the listener calls.</li>
+     * <li>Changing the version of the ANTLR Tool used to generate the parser
+     * may change the behavior of the listener calls.</li>
+     * </ul>
+     *
+     * @param {ParseTreeListener} listener the listener to add
+     * @return {void}
+     * @throws {Error} NullPointerException if {@code} listener is {@code null}
+     */
     addParseListener(listener) {
         if (listener === null) {
             throw new Error("listener");
@@ -430,13 +430,13 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * The ATN with bypass alternatives is expensive to create so we create it
-	 * lazily.
-	 *
+     * The ATN with bypass alternatives is expensive to create so we create it
+     * lazily.
+     *
      * @return {ATN}
-	 * @throws {Error} UnsupportedOperationException if the current parser does not
-	 * implement the {@link #getSerializedATN()} method.
-	 */
+     * @throws {Error} UnsupportedOperationException if the current parser does not
+     * implement the {@link #getSerializedATN()} method.
+     */
     getATNWithBypassAlts() {
         var serializedAtn = this.getSerializedATN();
         if (serializedAtn === null) {
@@ -453,21 +453,21 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * The preferred method of getting a tree pattern. For example, here's a
-	 * sample use:
-	 *
-	 * <pre>
-	 * ParseTree t = parser.expr();
-	 * ParseTreePattern p = parser.compileParseTreePattern("&lt;ID&gt;+0", MyParser.RULE_expr);
-	 * ParseTreeMatch m = p.match(t);
-	 * String id = m.get("ID");
-	 * </pre>
+     * The preferred method of getting a tree pattern. For example, here's a
+     * sample use:
+     *
+     * <pre>
+     * ParseTree t = parser.expr();
+     * ParseTreePattern p = parser.compileParseTreePattern("&lt;ID&gt;+0", MyParser.RULE_expr);
+     * ParseTreeMatch m = p.match(t);
+     * String id = m.get("ID");
+     * </pre>
      *
      * @param {string} pattern
      * @param {number} patternRuleIndex
      * @param {Lexer=} lexer
      * @return {ParseTreePattern}
-	 */
+     */
     // compileParseTreePattern(pattern, patternRuleIndex, lexer) {
     //     if (lexer == null) {
     //         if (this.getTokenStream() !== null) {
@@ -559,28 +559,28 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * Consume and return the {@linkplain #getCurrentToken current symbol}.
-	 *
-	 * <p>E.g., given the following input with {@code A} being the current
-	 * lookahead symbol, this function moves the cursor to {@code B} and returns
-	 * {@code A}.</p>
-	 *
-	 * <pre>
-	 *  A B
-	 *  ^
-	 * </pre>
-	 *
-	 * If the parser is not in error recovery mode, the consumed symbol is added
-	 * to the parse tree using {@link ParserRuleContext#addChild(TerminalNode)}, and
-	 * {@link ParseTreeListener#visitTerminal} is called on any parse listeners.
-	 * If the parser <em>is</em> in error recovery mode, the consumed symbol is
-	 * added to the parse tree using {@link #createErrorNode(ParserRuleContext, Token)} then
+     * Consume and return the {@linkplain #getCurrentToken current symbol}.
+     *
+     * <p>E.g., given the following input with {@code A} being the current
+     * lookahead symbol, this function moves the cursor to {@code B} and returns
+     * {@code A}.</p>
+     *
+     * <pre>
+     *  A B
+     *  ^
+     * </pre>
+     *
+     * If the parser is not in error recovery mode, the consumed symbol is added
+     * to the parse tree using {@link ParserRuleContext#addChild(TerminalNode)}, and
+     * {@link ParseTreeListener#visitTerminal} is called on any parse listeners.
+     * If the parser <em>is</em> in error recovery mode, the consumed symbol is
+     * added to the parse tree using {@link #createErrorNode(ParserRuleContext, Token)} then
      * {@link ParserRuleContext#addErrorNode(ErrorNode)} and
-	 * {@link ParseTreeListener#visitErrorNode} is called on any parse
-	 * listeners.
+     * {@link ParseTreeListener#visitErrorNode} is called on any parse
+     * listeners.
      *
      * @return {Token}
-	 */
+     */
     consume() {
         var o = this.getCurrentToken();
         if (o.getType() !== Token.EOF) {
@@ -634,11 +634,11 @@ class Parser extends Recognizer {
      * @return {void}
      */
     addContextToParseTree() {
-		var parent = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (this._ctx.parent);
-		// add current context to parent if we have a parent
-		if (parent != null)	{
-			parent.addChild(this._ctx);
-		}
+        var parent = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (this._ctx.parent);
+        // add current context to parent if we have a parent
+        if (parent != null)	{
+            parent.addChild(this._ctx);
+        }
     }
 
     /**
@@ -728,12 +728,12 @@ class Parser extends Recognizer {
 
     /**
      * Like {@link #enterRule} but for recursive rules.
-	 * Make the current context the child of the incoming localctx.
+     * Make the current context the child of the incoming localctx.
      *
      * @param {org.antlr.v4.runtime.ParserRuleContext} localctx
      * @param {number} state
      * @param {number} ruleIndex
-	 */
+     */
     pushNewRecursionContext(localctx, state, ruleIndex) {
         var previous = this._ctx;
         previous.parent = localctx;
@@ -823,19 +823,19 @@ class Parser extends Recognizer {
     }
 
     /**
-	 * Checks whether or not {@code symbol} can follow the current state in the
-	 * ATN. The behavior of this method is equivalent to the following, but is
-	 * implemented such that the complete context-sensitive follow set does not
-	 * need to be explicitly constructed.
-	 *
-	 * <pre>
-	 * return getExpectedTokens().contains(symbol);
-	 * </pre>
-	 *
-	 * @param {number} symbol the symbol type to check
-	 * @return {boolean} {@code true} if {@code symbol} can follow the current state in
-	 * the ATN, otherwise {@code false}.
-	 */
+     * Checks whether or not {@code symbol} can follow the current state in the
+     * ATN. The behavior of this method is equivalent to the following, but is
+     * implemented such that the complete context-sensitive follow set does not
+     * need to be explicitly constructed.
+     *
+     * <pre>
+     * return getExpectedTokens().contains(symbol);
+     * </pre>
+     *
+     * @param {number} symbol the symbol type to check
+     * @return {boolean} {@code true} if {@code symbol} can follow the current state in
+     * the ATN, otherwise {@code false}.
+     */
     isExpectedToken(symbol) {
         var atn = this._interp.atn;
         var ctx = this._ctx;

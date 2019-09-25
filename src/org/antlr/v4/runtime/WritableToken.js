@@ -18,37 +18,37 @@ class WritableToken extends Token {
      * @param {string} text
      * @return {void}
      */
-	setText(text) {}
+    setText(text) {}
 
     /**
      * @param {number} ttype
      * @return {void}
      */
-	setType(ttype) {}
+    setType(ttype) {}
 
     /**
      * @param {number} line
      * @return {void}
      */
-	setLine(line) {}
+    setLine(line) {}
 
     /**
      * @param {number} pos
      * @return {void}
      */
-	setCharPositionInLine(pos) {}
+    setCharPositionInLine(pos) {}
 
     /**
      * @param {number} channel
      * @return {void}
      */
-	setChannel(channel) {}
+    setChannel(channel) {}
 
     /**
      * @param {number} index
      * @return {void}
      */
-	setTokenIndex(index) {}
+    setTokenIndex(index) {}
 };
 
 

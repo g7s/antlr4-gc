@@ -20,9 +20,9 @@ const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImp
  * @implements {org.antlr.v4.runtime.tree.ErrorNode}
  */
 class ErrorNodeImpl extends TerminalNodeImpl {
-	accept(visitor) {
-		return visitor.visitErrorNode(this);
-	}
+    accept(visitor) {
+        return visitor.visitErrorNode(this);
+    }
 }
 
 

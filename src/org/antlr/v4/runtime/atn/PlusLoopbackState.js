@@ -16,9 +16,9 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
  * one to the loop back to start of the block and one to exit.
  */
 class PlusLoopbackState extends DecisionState {
-	getStateType() {
-		return ATNState.PLUS_LOOP_BACK;
-	}
+    getStateType() {
+        return ATNState.PLUS_LOOP_BACK;
+    }
 }
 
 

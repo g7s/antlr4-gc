@@ -113,9 +113,9 @@ class SingletonPredictionContext extends PredictionContext {
      * @param {PredictionContext} parent
      * @param {number} returnState
      */
-	constructor(parent, returnState) {
-		super(parent != null ? PredictionContext.calculateHashCode(parent, returnState) : PredictionContext.calculateEmptyHashCode());
-		assert(returnState !== ATNState.INVALID_STATE_NUMBER);
+    constructor(parent, returnState) {
+        super(parent != null ? PredictionContext.calculateHashCode(parent, returnState) : PredictionContext.calculateEmptyHashCode());
+        assert(returnState !== ATNState.INVALID_STATE_NUMBER);
         /**
          * @type {PredictionContext}
          */
@@ -123,54 +123,54 @@ class SingletonPredictionContext extends PredictionContext {
         /**
          * @type {number}
          */
-		this.returnState = returnState;
-	}
+        this.returnState = returnState;
+    }
 
-	size() {
-		return 1;
-	}
+    size() {
+        return 1;
+    }
 
-	getParent(index) {
-		if (index !== 0) {
-            throw new Error('wrong argument');
-        }
-		return this.parent;
-	}
-
-	getReturnState(index) {
+    getParent(index) {
         if (index !== 0) {
             throw new Error('wrong argument');
         }
-		return this.returnState;
-	}
+        return this.parent;
+    }
 
-	equals(o) {
-		if (this === o) {
-			return true;
-		}
-		else if ( !(o instanceof SingletonPredictionContext) ) {
-			return false;
-		}
-		if (this.hashCode() !== o.hashCode()) {
-			return false; // can't be same if hash is different
-		}
-		return this.returnState === o.returnState &&
-			(this.parent != null && this.parent.equals(o.parent));
-	}
+    getReturnState(index) {
+        if (index !== 0) {
+            throw new Error('wrong argument');
+        }
+        return this.returnState;
+    }
+
+    equals(o) {
+        if (this === o) {
+            return true;
+        }
+        else if ( !(o instanceof SingletonPredictionContext) ) {
+            return false;
+        }
+        if (this.hashCode() !== o.hashCode()) {
+            return false; // can't be same if hash is different
+        }
+        return this.returnState === o.returnState &&
+            (this.parent != null && this.parent.equals(o.parent));
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		var up = this.parent != null ? this.parent.toString() : "";
-		if (up.length === 0) {
-			if (this.returnState === PredictionContext.EMPTY_RETURN_STATE) {
-				return "$";
-			}
-			return "" + this.returnState;
-		}
-		return this.returnState + " " + up;
-	}
+    toString() {
+        var up = this.parent != null ? this.parent.toString() : "";
+        if (up.length === 0) {
+            if (this.returnState === PredictionContext.EMPTY_RETURN_STATE) {
+                return "$";
+            }
+            return "" + this.returnState;
+        }
+        return this.returnState + " " + up;
+    }
 }
 
 /**
@@ -188,40 +188,40 @@ SingletonPredictionContext.create = function (parent, returnState) {
 
 
 class EmptyPredictionContext extends SingletonPredictionContext {
-	constructor() {
-		super(null, SingletonPredictionContext.EMPTY_RETURN_STATE);
-	}
+    constructor() {
+        super(null, SingletonPredictionContext.EMPTY_RETURN_STATE);
+    }
 
-	isEmpty() {
+    isEmpty() {
         return true;
     }
 
-	size() {
-		return 1;
-	}
+    size() {
+        return 1;
+    }
 
-	getParent(index) {
-		return null;
-	}
+    getParent(index) {
+        return null;
+    }
 
-	getReturnState(index) {
-		return this.returnState;
-	}
+    getReturnState(index) {
+        return this.returnState;
+    }
 
     /**
      * @param {Object} o
      * @return {boolean}
      */
-	equals(o) {
-		return this === o;
-	}
+    equals(o) {
+        return this === o;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return "$";
-	}
+    toString() {
+        return "$";
+    }
 }
 
 
@@ -230,7 +230,7 @@ class ArrayPredictionContext extends PredictionContext {
      * @param {!(SingletonPredictionContext|Array<PredictionContext>)} parents
      * @param {!Array<number>=} returnStates
      */
-	constructor(parents, returnStates) {
+    constructor(parents, returnStates) {
         if (!goog.isArray(parents)) {
             let spc = /** @type {!SingletonPredictionContext} */ (parents);
             parents = [spc.parent];
@@ -240,9 +240,9 @@ class ArrayPredictionContext extends PredictionContext {
         }
         parents = /** @type {!Array<PredictionContext>} */ (parents);
         returnStates = /** @type {!Array<number>} */ (returnStates);
-		super(PredictionContext.calculateHashCode(parents, returnStates));
-		assert(parents != null && parents.length > 0);
-		assert(returnStates != null && returnStates.length > 0);
+        super(PredictionContext.calculateHashCode(parents, returnStates));
+        assert(parents != null && parents.length > 0);
+        assert(returnStates != null && returnStates.length > 0);
         /**
          * Parent can be null only if full ctx mode and we make an array
          * from {@link #EMPTY} and non-empty. We merge {@link #EMPTY} by using null parent and
@@ -258,25 +258,25 @@ class ArrayPredictionContext extends PredictionContext {
          * @type {!Array<number>}
          */
         this.returnStates = returnStates;
-	}
+    }
 
-	isEmpty() {
-		// since EMPTY_RETURN_STATE can only appear in the last position, we
-		// don't need to verify that size==1
-		return this.returnStates[0] === PredictionContext.EMPTY_RETURN_STATE;
-	}
+    isEmpty() {
+        // since EMPTY_RETURN_STATE can only appear in the last position, we
+        // don't need to verify that size==1
+        return this.returnStates[0] === PredictionContext.EMPTY_RETURN_STATE;
+    }
 
-	size() {
-		return this.returnStates.length;
-	}
+    size() {
+        return this.returnStates.length;
+    }
 
-	getParent(index) {
-		return this.parents[index];
-	}
+    getParent(index) {
+        return this.parents[index];
+    }
 
-	getReturnState(index) {
-		return this.returnStates[index];
-	}
+    getReturnState(index) {
+        return this.returnStates[index];
+    }
 
 //	@Override
 //	public int findReturnState(int returnState) {
@@ -287,47 +287,47 @@ class ArrayPredictionContext extends PredictionContext {
      * @param {Object} o
      * @return {boolean}
      */
-	equals(o) {
-		if (this === o) {
-			return true;
-		}
-		else if ( !(o instanceof ArrayPredictionContext) ) {
-			return false;
-		}
+    equals(o) {
+        if (this === o) {
+            return true;
+        }
+        else if ( !(o instanceof ArrayPredictionContext) ) {
+            return false;
+        }
 
-		if (this.hashCode() !== o.hashCode()) {
-			return false; // can't be same if hash is different
-		}
+        if (this.hashCode() !== o.hashCode()) {
+            return false; // can't be same if hash is different
+        }
 
         return every(this.returnStates, (a, i) => a === o.returnStates[i]) &&
             every(this.parents, (a, i) => a.equals(o.parents[i]));
-	}
+    }
 
     /**
      * @return {string}
      */
     toString() {
-		if (this.isEmpty()) return "[]";
-		var buf = "";
-		buf += "[";
-		for (var i = 0; i < this.returnStates.length; i++) {
-			if (i > 0) buf += ", ";
-			if (this.returnStates[i] === PredictionContext.EMPTY_RETURN_STATE) {
-				buf += "$";
-				continue;
-			}
-			buf += this.returnStates[i];
-			if (this.parents[i] != null) {
-				buf += ' ';
-				buf += this.parents[i].toString();
-			}
-			else {
-				buf += "null";
-			}
-		}
-		buf += "]";
-		return buf;
-	}
+        if (this.isEmpty()) return "[]";
+        var buf = "";
+        buf += "[";
+        for (var i = 0; i < this.returnStates.length; i++) {
+            if (i > 0) buf += ", ";
+            if (this.returnStates[i] === PredictionContext.EMPTY_RETURN_STATE) {
+                buf += "$";
+                continue;
+            }
+            buf += this.returnStates[i];
+            if (this.parents[i] != null) {
+                buf += ' ';
+                buf += this.parents[i].toString();
+            }
+            else {
+                buf += "null";
+            }
+        }
+        buf += "]";
+        return buf;
+    }
 }
 
 /**

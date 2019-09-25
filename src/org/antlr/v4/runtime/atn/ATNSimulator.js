@@ -21,7 +21,7 @@ class ATNSimulator {
      * @param {org.antlr.v4.runtime.atn.ATN} atn
      * @param {org.antlr.v4.runtime.atn.PredictionContextCache} sharedContextCache
      */
-	constructor(atn, sharedContextCache) {
+    constructor(atn, sharedContextCache) {
         /**
          * @type {org.antlr.v4.runtime.atn.ATN}
          */
@@ -50,7 +50,7 @@ class ATNSimulator {
          * @protected {org.antlr.v4.runtime.atn.PredictionContextCache}
          */
         this.sharedContextCache = sharedContextCache;
-	}
+    }
 
     /**
      * @abstract
@@ -58,35 +58,35 @@ class ATNSimulator {
      */
     reset() {}
 
-	/**
-	 * Clear the DFA cache used by the current instance. Since the DFA cache may
-	 * be shared by multiple ATN simulators, this method may affect the
-	 * performance (but not accuracy) of other parsers which are being used
-	 * concurrently.
-	 *
-	 * @throws {Error} UnsupportedOperationException if the current instance does not
-	 * support clearing the DFA.
-	 *
-	 * @since 4.3
+    /**
+     * Clear the DFA cache used by the current instance. Since the DFA cache may
+     * be shared by multiple ATN simulators, this method may affect the
+     * performance (but not accuracy) of other parsers which are being used
+     * concurrently.
+     *
+     * @throws {Error} UnsupportedOperationException if the current instance does not
+     * support clearing the DFA.
+     *
+     * @since 4.3
      *
      * @return {void}
-	 */
-	clearDFA() {
-		throw new Error("This ATN simulator does not support clearing the DFA.");
-	}
+     */
+    clearDFA() {
+        throw new Error("This ATN simulator does not support clearing the DFA.");
+    }
 
     /**
      * @return {org.antlr.v4.runtime.atn.PredictionContextCache}
      */
-	getSharedContextCache() {
-		return this.sharedContextCache;
-	}
+    getSharedContextCache() {
+        return this.sharedContextCache;
+    }
 
     /**
      * @param {org.antlr.v4.runtime.atn.PredictionContext} context
      * @return {org.antlr.v4.runtime.atn.PredictionContext}
      */
-	getCachedContext(context) {
+    getCachedContext(context) {
         if (this.sharedContextCache == null) return context;
 
         /**
@@ -94,7 +94,7 @@ class ATNSimulator {
          */
         var visited = new Map();
         return PredictionContext.getCachedContext(context, this.sharedContextCache, visited);
-	}
+    }
 }
 
 

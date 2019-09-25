@@ -392,37 +392,37 @@ class DefaultErrorStrategy {
     }
 
     /**
-	 * This is called by {@link #reportError} when the exception is an
-	 * {@link InputMismatchException}.
-	 *
-	 * @see #reportError
-	 * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
+     * This is called by {@link #reportError} when the exception is an
+     * {@link InputMismatchException}.
+     *
+     * @see #reportError
+     * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
      * @param {InputMismatchException} e the recognition exception
      * @protected
-	 */
-	reportInputMismatch(recognizer, e) {
+     */
+    reportInputMismatch(recognizer, e) {
         let msg = "mismatched input " +
             this.getTokenErrorDisplay(e.getOffendingToken()) +
             " expecting " +
             e.getExpectedTokens().toStringWithVocabulary(recognizer.getVocabulary());
-		recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
-	}
+        recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
+    }
 
     /**
-	 * This is called by {@link #reportError} when the exception is a
-	 * {@link FailedPredicateException}.
-	 *
-	 * @see #reportError
-	 *
-	 * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
-	 * @param {FailedPredicateException} e the recognition exception
+     * This is called by {@link #reportError} when the exception is a
+     * {@link FailedPredicateException}.
+     *
+     * @see #reportError
+     *
+     * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
+     * @param {FailedPredicateException} e the recognition exception
      * @protected
-	 */
-	reportFailedPredicate(recognizer, e) {
-		let ruleName = recognizer.getRuleNames()[recognizer.getContext().getRuleIndex()];
-		let msg = "rule " + ruleName + " " + e.message;
-		recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
-	}
+     */
+    reportFailedPredicate(recognizer, e) {
+        let ruleName = recognizer.getRuleNames()[recognizer.getContext().getRuleIndex()];
+        let msg = "rule " + ruleName + " " + e.message;
+        recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
+    }
 
     /**
      * This method is called to report a syntax error which requires the removal
@@ -487,27 +487,27 @@ class DefaultErrorStrategy {
     }
 
     /**
-	 * This method implements the single-token insertion inline error recovery
-	 * strategy. It is called by {@link #recoverInline} if the single-token
-	 * deletion strategy fails to recover from the mismatched input. If this
-	 * method returns {@code true}, {@code recognizer} will be in error recovery
-	 * mode.
-	 *
-	 * <p>This method determines whether or not single-token insertion is viable by
-	 * checking if the {@code LA(1)} input symbol could be successfully matched
-	 * if it were instead the {@code LA(2)} symbol. If this method returns
-	 * {@code true}, the caller is responsible for creating and inserting a
-	 * token with the correct type to produce this behavior.</p>
-	 *
-	 * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
-	 * @return {boolean} {@code true} if single-token insertion is a viable recovery
-	 * strategy for the current mismatched input, otherwise {@code false}
+     * This method implements the single-token insertion inline error recovery
+     * strategy. It is called by {@link #recoverInline} if the single-token
+     * deletion strategy fails to recover from the mismatched input. If this
+     * method returns {@code true}, {@code recognizer} will be in error recovery
+     * mode.
+     *
+     * <p>This method determines whether or not single-token insertion is viable by
+     * checking if the {@code LA(1)} input symbol could be successfully matched
+     * if it were instead the {@code LA(2)} symbol. If this method returns
+     * {@code true}, the caller is responsible for creating and inserting a
+     * token with the correct type to produce this behavior.</p>
+     *
+     * @param {org.antlr.v4.runtime.Parser} recognizer the parser instance
+     * @return {boolean} {@code true} if single-token insertion is a viable recovery
+     * strategy for the current mismatched input, otherwise {@code false}
      * @protected
-	 */
-	singleTokenInsertion(recognizer) {
-		let currentSymbolType = recognizer.getInputStream().LA(1);
-		// if current token is consistent with what could come after current
-		// ATN state, then we know we're missing a token; error recovery
+     */
+    singleTokenInsertion(recognizer) {
+        let currentSymbolType = recognizer.getInputStream().LA(1);
+        // if current token is consistent with what could come after current
+        // ATN state, then we know we're missing a token; error recovery
         // is free to conjure up and insert the missing token
         /**
          * @type {org.antlr.v4.runtime.atn.ATNState}
@@ -524,13 +524,13 @@ class DefaultErrorStrategy {
         /**
          * @type {org.antlr.v4.runtime.misc.IntervalSet}
          */
-		let expectingAtLL2 = atn.nextTokens(next, recognizer.getContext());
-		if (expectingAtLL2.contains(currentSymbolType)) {
-			this.reportMissingToken(recognizer);
-			return true;
-		}
-		return false;
-	}
+        let expectingAtLL2 = atn.nextTokens(next, recognizer.getContext());
+        if (expectingAtLL2.contains(currentSymbolType)) {
+            this.reportMissingToken(recognizer);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * <p>The default implementation simply calls {@link #endErrorCondition} to
@@ -551,59 +551,59 @@ class DefaultErrorStrategy {
         this.endErrorCondition(recognizer);
     }
 
-	reportError(recognizer, e) {
-		// if we've already reported an error and have not matched a token
-		// yet successfully, don't report any errors.
-		if (this.inErrorRecoveryMode(recognizer)) {
-			return; // don't report spurious errors
-		}
-		this.beginErrorCondition(recognizer);
-		if (e instanceof NoViableAltException) {
-			this.reportNoViableAlternative(recognizer, e);
-		}
-		else if (e instanceof InputMismatchException) {
-			this.reportInputMismatch(recognizer, e);
-		}
-		else if (e instanceof FailedPredicateException) {
-			this.reportFailedPredicate(recognizer, e);
-		}
-		else {
-			console.error("unknown recognition error type: " + e.constructor.name);
-			recognizer.notifyErrorListeners(e.getOffendingToken(), e.message, e);
-		}
+    reportError(recognizer, e) {
+        // if we've already reported an error and have not matched a token
+        // yet successfully, don't report any errors.
+        if (this.inErrorRecoveryMode(recognizer)) {
+            return; // don't report spurious errors
+        }
+        this.beginErrorCondition(recognizer);
+        if (e instanceof NoViableAltException) {
+            this.reportNoViableAlternative(recognizer, e);
+        }
+        else if (e instanceof InputMismatchException) {
+            this.reportInputMismatch(recognizer, e);
+        }
+        else if (e instanceof FailedPredicateException) {
+            this.reportFailedPredicate(recognizer, e);
+        }
+        else {
+            console.error("unknown recognition error type: " + e.constructor.name);
+            recognizer.notifyErrorListeners(e.getOffendingToken(), e.message, e);
+        }
     }
 
-	recover(recognizer, e) {
-		if (this.lastErrorIndex === recognizer.getInputStream().index() &&
-			this.lastErrorStates != null &&
-			this.lastErrorStates.contains(recognizer.getState())) {
-			// uh oh, another error at same token index and previously-visited
-			// state in ATN; must be a case where LT(1) is in the recovery
-			// token set so nothing got consumed. Consume a single token
-			// at least to prevent an infinite loop; this is a failsafe.
+    recover(recognizer, e) {
+        if (this.lastErrorIndex === recognizer.getInputStream().index() &&
+            this.lastErrorStates != null &&
+            this.lastErrorStates.contains(recognizer.getState())) {
+            // uh oh, another error at same token index and previously-visited
+            // state in ATN; must be a case where LT(1) is in the recovery
+            // token set so nothing got consumed. Consume a single token
+            // at least to prevent an infinite loop; this is a failsafe.
             //			System.err.println("seen error condition before index="+
             //							   lastErrorIndex+", states="+lastErrorStates);
             //			System.err.println("FAILSAFE consumes "+recognizer.getTokenNames()[recognizer.getInputStream().LA(1)]);
-			recognizer.consume();
-		}
-		this.lastErrorIndex = recognizer.getInputStream().index();
-		if (this.lastErrorStates === null) {
+            recognizer.consume();
+        }
+        this.lastErrorIndex = recognizer.getInputStream().index();
+        if (this.lastErrorStates === null) {
             this.lastErrorStates = new IntervalSet();
         }
-		this.lastErrorStates.add(recognizer.getState());
-		let followSet = this.getErrorRecoverySet(recognizer);
-		this.consumeUntil(recognizer, followSet);
+        this.lastErrorStates.add(recognizer.getState());
+        let followSet = this.getErrorRecoverySet(recognizer);
+        this.consumeUntil(recognizer, followSet);
     }
 
-	sync(recognizer) {
+    sync(recognizer) {
         /**
          * @type {org.antlr.v4.runtime.atn.ATNState}
          */
-		let s = recognizer.getInterpreter().atn.states[recognizer.getState()];
-		// If already recovering, don't try to sync
-		if (this.inErrorRecoveryMode(recognizer)) {
-			return;
-		}
+        let s = recognizer.getInterpreter().atn.states[recognizer.getState()];
+        // If already recovering, don't try to sync
+        if (this.inErrorRecoveryMode(recognizer)) {
+            return;
+        }
 
         let tokens = /** @type {org.antlr.v4.runtime.TokenStream} */ (recognizer.getInputStream());
         let la = tokens.LA(1);
@@ -612,45 +612,45 @@ class DefaultErrorStrategy {
         /**
          * @type {org.antlr.v4.runtime.misc.IntervalSet}
          */
-		let nextTokens = recognizer.getATN().nextTokens(s);
-		if (nextTokens.contains(la)) {
-			// We are sure the token matches
-			this.nextTokensContext = null;
-			this.nextTokensState = ATNState.INVALID_STATE_NUMBER;
-			return;
-		}
+        let nextTokens = recognizer.getATN().nextTokens(s);
+        if (nextTokens.contains(la)) {
+            // We are sure the token matches
+            this.nextTokensContext = null;
+            this.nextTokensState = ATNState.INVALID_STATE_NUMBER;
+            return;
+        }
 
-		if (nextTokens.contains(Token.EPSILON)) {
-			if (this.nextTokensContext === null) {
-				// It's possible the next token won't match; information tracked
-				// by sync is restricted for performance.
-				this.nextTokensContext = recognizer.getContext();
-				this.nextTokensState = recognizer.getState();
-			}
-			return;
-		}
+        if (nextTokens.contains(Token.EPSILON)) {
+            if (this.nextTokensContext === null) {
+                // It's possible the next token won't match; information tracked
+                // by sync is restricted for performance.
+                this.nextTokensContext = recognizer.getContext();
+                this.nextTokensState = recognizer.getState();
+            }
+            return;
+        }
 
-		switch (s.getStateType()) {
-		    case ATNState.BLOCK_START:
-		    case ATNState.STAR_BLOCK_START:
-		    case ATNState.PLUS_BLOCK_START:
-		    case ATNState.STAR_LOOP_ENTRY:
+        switch (s.getStateType()) {
+            case ATNState.BLOCK_START:
+            case ATNState.STAR_BLOCK_START:
+            case ATNState.PLUS_BLOCK_START:
+            case ATNState.STAR_LOOP_ENTRY:
                 // report error and recover if possible
                 if (this.singleTokenDeletion(recognizer) !== null) {
                     return;
                 }
-			    throw new InputMismatchException(recognizer);
-		    case ATNState.PLUS_LOOP_BACK:
-		    case ATNState.STAR_LOOP_BACK:
+                throw new InputMismatchException(recognizer);
+            case ATNState.PLUS_LOOP_BACK:
+            case ATNState.STAR_LOOP_BACK:
                 this.reportUnwantedToken(recognizer);
                 let expecting = /** @type {org.antlr.v4.runtime.misc.IntervalSet} */ (recognizer.getExpectedTokens());
-			    let whatFollowsLoopIterationOrRule = /** @type {org.antlr.v4.runtime.misc.IntervalSet} */ (expecting.or(this.getErrorRecoverySet(recognizer)));
-			    this.consumeUntil(recognizer, whatFollowsLoopIterationOrRule);
-			    break;
-		    default:
-			    // do nothing if we can't identify the exact kind of ATN state
-			    break;
-		}
+                let whatFollowsLoopIterationOrRule = /** @type {org.antlr.v4.runtime.misc.IntervalSet} */ (expecting.or(this.getErrorRecoverySet(recognizer)));
+                this.consumeUntil(recognizer, whatFollowsLoopIterationOrRule);
+                break;
+            default:
+                // do nothing if we can't identify the exact kind of ATN state
+                break;
+        }
     }
 
     recoverInline(recognizer) {

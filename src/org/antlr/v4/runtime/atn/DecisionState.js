@@ -14,7 +14,7 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
  * @abstract
  */
 class DecisionState extends ATNState {
-	constructor() {
+    constructor() {
         super();
         /**
          * @type {number}

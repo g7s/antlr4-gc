@@ -26,9 +26,9 @@ class PlusBlockStartState extends BlockStartState {
         this.loopBackState = null;
     }
 
-	getStateType() {
-		return ATNState.PLUS_BLOCK_START;
-	}
+    getStateType() {
+        return ATNState.PLUS_BLOCK_START;
+    }
 }
 
 

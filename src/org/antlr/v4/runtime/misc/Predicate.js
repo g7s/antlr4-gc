@@ -17,7 +17,7 @@ class Predicate {
      * @param {T} t
      * @return {boolean}
      */
-	test(t) {}
+    test(t) {}
 }
 
 

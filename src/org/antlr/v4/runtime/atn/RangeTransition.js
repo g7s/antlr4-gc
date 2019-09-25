@@ -17,7 +17,7 @@ class RangeTransition extends Transition {
      * @param {number} from
      * @param {number} to
      */
-	constructor(target, from, to) {
+    constructor(target, from, to) {
         super(target);
         /**
          * @type {number}
@@ -26,27 +26,27 @@ class RangeTransition extends Transition {
         /**
          * @type {number}
          */
-		this.to = to;
-	}
+        this.to = to;
+    }
 
-	getSerializationType() {
-		return Transition.RANGE;
-	}
+    getSerializationType() {
+        return Transition.RANGE;
+    }
 
-	label() {
+    label() {
         return IntervalSet.of(this.from, this.to);
     }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return symbol >= this.from && symbol <= this.to;
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return symbol >= this.from && symbol <= this.to;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
+    toString() {
         return "'" + String.fromCodePoint(this.from) + ".." + String.fromCodePoint(this.to) + "'";
-	}
+    }
 }
 
 Transition.serializationTypes.set(RangeTransition, Transition.RANGE);

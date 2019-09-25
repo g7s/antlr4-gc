@@ -23,67 +23,67 @@ const {format} = goog.require('goog.string');
  * @implements {LexerAction}
  */
 class LexerTypeAction {
-	/**
-	 * Constructs a new {@code type} action with the specified token type value.
-	 * @param {number} type The type to assign to the token using {@link Lexer#setType}.
-	 */
-	constructor(type) {
+    /**
+     * Constructs a new {@code type} action with the specified token type value.
+     * @param {number} type The type to assign to the token using {@link Lexer#setType}.
+     */
+    constructor(type) {
         /**
          * @private {number}
          */
-		this.type = type;
-	}
+        this.type = type;
+    }
 
-	/**
-	 * Gets the type to assign to a token created by the lexer.
-	 * @return {number} The type to assign to a token created by the lexer.
-	 */
-	getType() {
-		return this.type;
-	}
+    /**
+     * Gets the type to assign to a token created by the lexer.
+     * @return {number} The type to assign to a token created by the lexer.
+     */
+    getType() {
+        return this.type;
+    }
 
-	getActionType() {
-		return LexerActionType.TYPE;
-	}
+    getActionType() {
+        return LexerActionType.TYPE;
+    }
 
-	isPositionDependent() {
-		return false;
-	}
+    isPositionDependent() {
+        return false;
+    }
 
-	execute(lexer) {
-		lexer.setType(this.type);
-	}
+    execute(lexer) {
+        lexer.setType(this.type);
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		var hash = MurmurHash.initialize();
-		hash = MurmurHash.update(hash, this.getActionType());
-		hash = MurmurHash.update(hash, this.type);
-		return MurmurHash.finish(hash, 2);
-	}
+    hashCode() {
+        var hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, this.getActionType());
+        hash = MurmurHash.update(hash, this.type);
+        return MurmurHash.finish(hash, 2);
+    }
 
     /**
      * @param {Object} obj
      * @return {boolean}
      */
-	equals(obj) {
-		if (obj === this) {
-			return true;
-		}
-		else if (!(obj instanceof LexerTypeAction)) {
-			return false;
-		}
-		return this.type === obj.type;
-	}
+    equals(obj) {
+        if (obj === this) {
+            return true;
+        }
+        else if (!(obj instanceof LexerTypeAction)) {
+            return false;
+        }
+        return this.type === obj.type;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return format("type(%d)", this.type);
-	}
+    toString() {
+        return format("type(%d)", this.type);
+    }
 }
 
 

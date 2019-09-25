@@ -37,15 +37,15 @@ const Token = goog.require('org.antlr.v4.runtime.Token');
  */
 class CommonTokenStream extends BufferedTokenStream {
     /**
-	 * Constructs a new {@link CommonTokenStream} using the specified token
-	 * source and filtering tokens to the specified channel. Only tokens whose
-	 * {@link Token#getChannel} matches {@code channel} or have the
-	 * {@link Token#getType} equal to {@link Token#EOF} will be returned by the
-	 * token stream lookahead methods.
-	 *
-	 * @param {!org.antlr.v4.runtime.TokenSource} tokenSource The token source.
-	 * @param {number=} channel The channel to use for filtering tokens.
-	 */
+     * Constructs a new {@link CommonTokenStream} using the specified token
+     * source and filtering tokens to the specified channel. Only tokens whose
+     * {@link Token#getChannel} matches {@code channel} or have the
+     * {@link Token#getType} equal to {@link Token#EOF} will be returned by the
+     * token stream lookahead methods.
+     *
+     * @param {!org.antlr.v4.runtime.TokenSource} tokenSource The token source.
+     * @param {number=} channel The channel to use for filtering tokens.
+     */
     constructor(tokenSource, channel) {
         super(tokenSource);
 
@@ -89,9 +89,9 @@ class CommonTokenStream extends BufferedTokenStream {
         // find k good tokens
         while (n < k) {
             // skip off-channel tokens, but make sure to not look past EOF
-			if (this.sync(i + 1)) {
-				i = this.nextTokenOnChannel(i + 1, this.channel);
-			}
+            if (this.sync(i + 1)) {
+                i = this.nextTokenOnChannel(i + 1, this.channel);
+            }
             n++;
         }
         return this.tokens[i];

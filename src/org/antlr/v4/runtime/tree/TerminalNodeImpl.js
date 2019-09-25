@@ -19,7 +19,7 @@ class TerminalNodeImpl {
     /**
      * @param {Token} symbol
      */
-	constructor(symbol) {
+    constructor(symbol) {
         /**
          * @type {Token}
          */
@@ -30,52 +30,52 @@ class TerminalNodeImpl {
         this.parent = null;
     }
 
-	getChild(i) {
+    getChild(i) {
         return null;
     }
 
-	getSymbol() {
+    getSymbol() {
         return this.symbol;
     }
 
-	getParent() {
+    getParent() {
         return this.parent;
     }
 
-	setParent(parent) {
-		this.parent = parent;
-	}
+    setParent(parent) {
+        this.parent = parent;
+    }
 
-	getPayload() {
+    getPayload() {
         return this.symbol;
     }
 
-	getSourceInterval() {
-		if (this.symbol == null) return Interval.INVALID;
-		var tokenIndex = this.symbol.getTokenIndex();
-		return new Interval(tokenIndex, tokenIndex);
-	}
+    getSourceInterval() {
+        if (this.symbol == null) return Interval.INVALID;
+        var tokenIndex = this.symbol.getTokenIndex();
+        return new Interval(tokenIndex, tokenIndex);
+    }
 
-	getChildCount() {
+    getChildCount() {
         return 0;
     }
 
-	accept(visitor) {
-		return visitor.visitTerminal(this);
-	}
+    accept(visitor) {
+        return visitor.visitTerminal(this);
+    }
 
-	getText() {
+    getText() {
         return this.symbol.getText() || "";
     }
 
-	toStringTree(parser) {
-		return this.toString();
-	}
+    toStringTree(parser) {
+        return this.toString();
+    }
 
-	toString() {
+    toString() {
         if (this.symbol.getType() === Token.EOF) return "<EOF>";
         return this.getText();
-	}
+    }
 }
 
 

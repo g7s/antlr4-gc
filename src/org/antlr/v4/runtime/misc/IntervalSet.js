@@ -62,7 +62,7 @@ class IntervalSet {
         if (this.readonly) {
             throw new Error("can't alter readonly IntervalSet");
         }
-		this.intervals = [];
+        this.intervals = [];
     }
 
     /**

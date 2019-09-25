@@ -14,22 +14,22 @@ class WildcardTransition extends Transition {
     /**
      * @param {org.antlr.v4.runtime.atn.ATNState} target
      */
-	constructor(target) { super(target); }
+    constructor(target) { super(target); }
 
-	getSerializationType() {
-		return Transition.WILDCARD;
-	}
+    getSerializationType() {
+        return Transition.WILDCARD;
+    }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return symbol >= minVocabSymbol && symbol <= maxVocabSymbol;
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return symbol >= minVocabSymbol && symbol <= maxVocabSymbol;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return ".";
-	}
+    toString() {
+        return ".";
+    }
 }
 
 Transition.serializationTypes.set(WildcardTransition, Transition.WILDCARD);

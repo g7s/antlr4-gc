@@ -25,27 +25,27 @@ const Pair = goog.require('org.antlr.v4.runtime.misc.Pair');
  */
 class ListTokenSource {
     /**
-	 * Constructs a new {@link ListTokenSource} instance from the specified
-	 * collection of {@link Token} objects and source name.
-	 *
-	 * @param {Array<org.antlr.v4.runtime.Token>} tokens The collection of {@link Token} objects to provide as a
-	 * {@link TokenSource}.
-	 * @param {?string} sourceName The name of the {@link TokenSource}. If this value is
-	 * {@code null}, {@link #getSourceName} will attempt to infer the name from
-	 * the next {@link Token} (or the previous token if the end of the input has
-	 * been reached).
-	 *
-	 * @throws {Error} NullPointerException if {@code tokens} is {@code null}
-	 */
+     * Constructs a new {@link ListTokenSource} instance from the specified
+     * collection of {@link Token} objects and source name.
+     *
+     * @param {Array<org.antlr.v4.runtime.Token>} tokens The collection of {@link Token} objects to provide as a
+     * {@link TokenSource}.
+     * @param {?string} sourceName The name of the {@link TokenSource}. If this value is
+     * {@code null}, {@link #getSourceName} will attempt to infer the name from
+     * the next {@link Token} (or the previous token if the end of the input has
+     * been reached).
+     *
+     * @throws {Error} NullPointerException if {@code tokens} is {@code null}
+     */
     constructor(tokens, sourceName) {
         if (tokens == null) {
             throw new Error("tokens cannot be null");
         }
         /**
-	     * The wrapped collection of {@link Token} objects to return.
+         * The wrapped collection of {@link Token} objects to return.
          *
          * @protected {Array<org.antlr.v4.runtime.Token>}
-	     */
+         */
         this.tokens = tokens;
         /**
          * The name of the input source. If this value is {@code null}, a call to

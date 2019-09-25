@@ -28,7 +28,7 @@ class Pair {
      * @param {A} a
      * @param {B} b
      */
-	constructor(a, b) {
+    constructor(a, b) {
         /**
          * @type {A}
          */
@@ -36,8 +36,8 @@ class Pair {
         /**
          * @type {B}
          */
-		this.b = b;
-	}
+        this.b = b;
+    }
 
     /**
      * @param {Object} obj
@@ -66,9 +66,9 @@ class Pair {
     /**
      * @return {string}
      */
-	toString() {
-		return format("(%s, %s)", this.a, this.b);
-	}
+    toString() {
+        return format("(%s, %s)", this.a, this.b);
+    }
 }
 
 

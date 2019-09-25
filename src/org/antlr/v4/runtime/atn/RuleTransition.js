@@ -17,7 +17,7 @@ class RuleTransition extends Transition {
      * @param {number} precedence
      * @param {org.antlr.v4.runtime.atn.ATNState} followState
      */
-	constructor(ruleStart, ruleIndex, precedence, followState) {
+    constructor(ruleStart, ruleIndex, precedence, followState) {
         super(ruleStart);
         /**
          * Ptr to the rule definition object for this rule ref
@@ -32,19 +32,19 @@ class RuleTransition extends Transition {
         /**
          * @type {org.antlr.v4.runtime.atn.ATNState}
          */
-		this.followState = followState;
-	}
+        this.followState = followState;
+    }
 
-	getSerializationType() {
-		return Transition.RULE;
-	}
+    getSerializationType() {
+        return Transition.RULE;
+    }
 
-	isEpsilon() {
+    isEpsilon() {
         return true;
     }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return false;
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return false;
     }
 }
 

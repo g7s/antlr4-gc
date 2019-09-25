@@ -355,20 +355,20 @@ class LexerATNSimulator extends ATNSimulator {
      * @return {number}
      */
     failOrAccept(prevAccept, input, reach, t) {
-		if (prevAccept.dfaState != null) {
-			var lexerActionExecutor = prevAccept.dfaState.lexerActionExecutor;
-			this.accept(input, lexerActionExecutor, this.startIndex,
-				prevAccept.index, prevAccept.line, prevAccept.charPos);
-			return prevAccept.dfaState.prediction;
-		}
-		else {
-			// if no accept and EOF is first char, return EOF
-			if (t === IntStream.EOF && input.index() === this.startIndex ) {
-				return Token.EOF;
-			}
+        if (prevAccept.dfaState != null) {
+            var lexerActionExecutor = prevAccept.dfaState.lexerActionExecutor;
+            this.accept(input, lexerActionExecutor, this.startIndex,
+                prevAccept.index, prevAccept.line, prevAccept.charPos);
+            return prevAccept.dfaState.prediction;
+        }
+        else {
+            // if no accept and EOF is first char, return EOF
+            if (t === IntStream.EOF && input.index() === this.startIndex ) {
+                return Token.EOF;
+            }
 
-			throw new LexerNoViableAltException(this.recog, input, this.startIndex, reach);
-		}
+            throw new LexerNoViableAltException(this.recog, input, this.startIndex, reach);
+        }
     }
 
     /**
@@ -430,18 +430,18 @@ class LexerATNSimulator extends ATNSimulator {
      * @return {void}
      */
     accept(input, lexerActionExecutor, startIndex, index, line, charPos) {
-		if (LexerATNSimulator.debug) {
-			console.log(format("ACTION %s\n", lexerActionExecutor.toString()));
-		}
+        if (LexerATNSimulator.debug) {
+            console.log(format("ACTION %s\n", lexerActionExecutor.toString()));
+        }
 
-		// seek to after last char in token
-		input.seek(index);
-		this.line = line;
-		this.charPositionInLine = charPos;
+        // seek to after last char in token
+        input.seek(index);
+        this.line = line;
+        this.charPositionInLine = charPos;
 
-		if (lexerActionExecutor != null && this.recog != null) {
-			lexerActionExecutor.execute(this.recog, input, startIndex);
-		}
+        if (lexerActionExecutor != null && this.recog != null) {
+            lexerActionExecutor.execute(this.recog, input, startIndex);
+        }
     }
 
     /**
@@ -464,14 +464,14 @@ class LexerATNSimulator extends ATNSimulator {
      * @return {org.antlr.v4.runtime.atn.ATNConfigSet}
      */
     computeStartState(input, p) {
-		var initialContext = PredictionContext.EMPTY;
-		var configs = new OrderedATNConfigSet();
-		for (var i = 0; i < p.getNumberOfTransitions(); i++) {
-			var target = p.transition(i).target;
-			var c = new LexerATNConfig(target, i + 1, initialContext);
-			this.closure(input, c, configs, false, false, false);
-		}
-		return configs;
+        var initialContext = PredictionContext.EMPTY;
+        var configs = new OrderedATNConfigSet();
+        for (var i = 0; i < p.getNumberOfTransitions(); i++) {
+            var target = p.transition(i).target;
+            var c = new LexerATNConfig(target, i + 1, initialContext);
+            this.closure(input, c, configs, false, false, false);
+        }
+        return configs;
     }
 
     /**
@@ -562,94 +562,94 @@ class LexerATNSimulator extends ATNSimulator {
      * @param {boolean} treatEofAsEpsilon
      * @return {LexerATNConfig}
      */
-	getEpsilonTarget(input, config, t, configs, speculative, treatEofAsEpsilon) {
+    getEpsilonTarget(input, config, t, configs, speculative, treatEofAsEpsilon) {
         /**
          * @type {LexerATNConfig}
          */
-		var c = null;
-		switch (t.getSerializationType()) {
-			case Transition.RULE:
+        var c = null;
+        switch (t.getSerializationType()) {
+            case Transition.RULE:
                 var ruleTransition = /** @type {org.antlr.v4.runtime.atn.RuleTransition} */ (t);
-				var newContext =
-					SingletonPredictionContext.create(config.context, ruleTransition.followState.stateNumber);
-				c = new LexerATNConfig(config, t.target, newContext);
-				break;
+                var newContext =
+                    SingletonPredictionContext.create(config.context, ruleTransition.followState.stateNumber);
+                c = new LexerATNConfig(config, t.target, newContext);
+                break;
 
-			case Transition.PRECEDENCE:
-				throw new Error("Precedence predicates are not supported in lexers.");
+            case Transition.PRECEDENCE:
+                throw new Error("Precedence predicates are not supported in lexers.");
 
-			case Transition.PREDICATE:
-				/*  Track traversing semantic predicates. If we traverse,
-				 we cannot add a DFA state for this "reach" computation
-				 because the DFA would not test the predicate again in the
-				 future. Rather than creating collections of semantic predicates
-				 like v3 and testing them on prediction, v4 will test them on the
-				 fly all the time using the ATN not the DFA. This is slower but
-				 semantically it's not used that often. One of the key elements to
-				 this predicate mechanism is not adding DFA states that see
-				 predicates immediately afterwards in the ATN. For example,
-				 a : ID {p1}? | ID {p2}? ;
-				 should create the start state for rule 'a' (to save start state
-				 competition), but should not create target of ID state. The
-				 collection of ATN states the following ID references includes
-				 states reached by traversing predicates. Since this is when we
-				 test them, we cannot cash the DFA state target of ID.
-			 */
+            case Transition.PREDICATE:
+                /*  Track traversing semantic predicates. If we traverse,
+                 we cannot add a DFA state for this "reach" computation
+                 because the DFA would not test the predicate again in the
+                 future. Rather than creating collections of semantic predicates
+                 like v3 and testing them on prediction, v4 will test them on the
+                 fly all the time using the ATN not the DFA. This is slower but
+                 semantically it's not used that often. One of the key elements to
+                 this predicate mechanism is not adding DFA states that see
+                 predicates immediately afterwards in the ATN. For example,
+                 a : ID {p1}? | ID {p2}? ;
+                 should create the start state for rule 'a' (to save start state
+                 competition), but should not create target of ID state. The
+                 collection of ATN states the following ID references includes
+                 states reached by traversing predicates. Since this is when we
+                 test them, we cannot cash the DFA state target of ID.
+             */
                 var pt = /** @type {org.antlr.v4.runtime.atn.PredicateTransition} */ (t);
-				if (LexerATNSimulator.debug) {
-					console.log("EVAL rule " + pt.ruleIndex + ":" + pt.predIndex);
-				}
-				configs.hasSemanticContext = true;
-				if (this.evaluatePredicate(input, pt.ruleIndex, pt.predIndex, speculative)) {
-					c = new LexerATNConfig(config, pt.target);
-				}
-				break;
+                if (LexerATNSimulator.debug) {
+                    console.log("EVAL rule " + pt.ruleIndex + ":" + pt.predIndex);
+                }
+                configs.hasSemanticContext = true;
+                if (this.evaluatePredicate(input, pt.ruleIndex, pt.predIndex, speculative)) {
+                    c = new LexerATNConfig(config, pt.target);
+                }
+                break;
 
-			case Transition.ACTION:
-				if (config.context == null || config.context.hasEmptyPath()) {
-					// execute actions anywhere in the start rule for a token.
-					//
-					// TODO: if the entry rule is invoked recursively, some
-					// actions may be executed during the recursive call. The
-					// problem can appear when hasEmptyPath() is true but
-					// isEmpty() is false. In this case, the config needs to be
-					// split into two contexts - one with just the empty path
-					// and another with everything but the empty path.
-					// Unfortunately, the current algorithm does not allow
-					// getEpsilonTarget to return two configurations, so
-					// additional modifications are needed before we can support
+            case Transition.ACTION:
+                if (config.context == null || config.context.hasEmptyPath()) {
+                    // execute actions anywhere in the start rule for a token.
+                    //
+                    // TODO: if the entry rule is invoked recursively, some
+                    // actions may be executed during the recursive call. The
+                    // problem can appear when hasEmptyPath() is true but
+                    // isEmpty() is false. In this case, the config needs to be
+                    // split into two contexts - one with just the empty path
+                    // and another with everything but the empty path.
+                    // Unfortunately, the current algorithm does not allow
+                    // getEpsilonTarget to return two configurations, so
+                    // additional modifications are needed before we can support
                     // the split operation.
                     var at = /** @type {org.antlr.v4.runtime.atn.ActionTransition} */ (t);
-					var lexerActionExecutor = LexerActionExecutor.append(
+                    var lexerActionExecutor = LexerActionExecutor.append(
                         config.getLexerActionExecutor(),
                         this.atn.lexerActions[at.actionIndex]);
-					c = new LexerATNConfig(config, at.target, lexerActionExecutor);
-					break;
-				}
-				else {
-					// ignore actions in referenced rules
-					c = new LexerATNConfig(config, t.target);
-					break;
-				}
+                    c = new LexerATNConfig(config, at.target, lexerActionExecutor);
+                    break;
+                }
+                else {
+                    // ignore actions in referenced rules
+                    c = new LexerATNConfig(config, t.target);
+                    break;
+                }
 
-			case Transition.EPSILON:
-				c = new LexerATNConfig(config, t.target);
-				break;
+            case Transition.EPSILON:
+                c = new LexerATNConfig(config, t.target);
+                break;
 
-			case Transition.ATOM:
-			case Transition.RANGE:
-			case Transition.SET:
-				if (treatEofAsEpsilon) {
-					if (t.matches(CharStream.EOF, Lexer.MIN_CHAR_VALUE, Lexer.MAX_CHAR_VALUE)) {
-						c = new LexerATNConfig(config, t.target);
-						break;
-					}
-				}
+            case Transition.ATOM:
+            case Transition.RANGE:
+            case Transition.SET:
+                if (treatEofAsEpsilon) {
+                    if (t.matches(CharStream.EOF, Lexer.MIN_CHAR_VALUE, Lexer.MAX_CHAR_VALUE)) {
+                        c = new LexerATNConfig(config, t.target);
+                        break;
+                    }
+                }
 
-				break;
-		}
+                break;
+        }
 
-		return c;
+        return c;
     }
 
     /**
@@ -760,7 +760,7 @@ class LexerATNSimulator extends ATNSimulator {
         }
         p.edges[t - LexerATNSimulator.MIN_DFA_EDGE] = q; // connect
 
-		return q;
+        return q;
     }
 
     /** Add a new DFA state if there isn't one with this set of

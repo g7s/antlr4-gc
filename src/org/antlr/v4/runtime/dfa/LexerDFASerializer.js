@@ -15,16 +15,16 @@ class LexerDFASerializer extends DFASerializer {
     /**
      * @param {org.antlr.v4.runtime.dfa.DFA} dfa
      */
-	constructor(dfa) {
-		super(dfa, VocabularyImpl.EMPTY_VOCABULARY);
-	}
+    constructor(dfa) {
+        super(dfa, VocabularyImpl.EMPTY_VOCABULARY);
+    }
 
     /**
      * @override
      */
-	getEdgeLabel(i) {
+    getEdgeLabel(i) {
         return ("'" + String.fromCodePoint(i) + "'");
-	}
+    }
 }
 
 

@@ -26,40 +26,40 @@ class Transition {
     /**
      * @param {org.antlr.v4.runtime.atn.ATNState} target
      */
-	constructor(target) {
-		if (target == null) {
-			throw new Error("target cannot be null.");
-		}
+    constructor(target) {
+        if (target == null) {
+            throw new Error("target cannot be null.");
+        }
         /**
          * The target of this transition.
          * @type {org.antlr.v4.runtime.atn.ATNState}
          */
-		this.target = target;
-	}
+        this.target = target;
+    }
 
     /**
      * @abstract
      * @return {number}
      */
-	getSerializationType() {}
+    getSerializationType() {}
 
-	/**
-	 * Determines if the transition is an "epsilon" transition.
-	 *
-	 * <p>The default implementation returns {@code false}.</p>
-	 *
-	 * @return {boolean} {@code true} if traversing this transition in the ATN does not
-	 * consume an input symbol; otherwise, {@code false} if traversing this
-	 * transition consumes (matches) an input symbol.
-	 */
-	isEpsilon() {
-		return false;
-	}
+    /**
+     * Determines if the transition is an "epsilon" transition.
+     *
+     * <p>The default implementation returns {@code false}.</p>
+     *
+     * @return {boolean} {@code true} if traversing this transition in the ATN does not
+     * consume an input symbol; otherwise, {@code false} if traversing this
+     * transition consumes (matches) an input symbol.
+     */
+    isEpsilon() {
+        return false;
+    }
 
     /**
      * @return {org.antlr.v4.runtime.misc.IntervalSet}
      */
-	label() {
+    label() {
         return null;
     }
 
@@ -70,7 +70,7 @@ class Transition {
      * @param {number} maxVocabSymbol
      * @return {boolean}
      */
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {}
 }
 
 // constants for serialization

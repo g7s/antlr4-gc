@@ -23,9 +23,9 @@ class RuleStartState extends ATNState {
         this.isLeftRecursiveRule = false;
     }
 
-	getStateType() {
-		return ATNState.RULE_START;
-	}
+    getStateType() {
+        return ATNState.RULE_START;
+    }
 }
 
 

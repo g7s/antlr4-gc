@@ -21,7 +21,7 @@ class OrderedATNConfigSet extends ATNConfigSet {
         this.configLookup = new Set(
             (o) => o == null ? 0 : o.hashCode(),
             (o1, o2) => o1 == null ? o2 == null : o1.equals(o2));
-	}
+    }
 }
 
 

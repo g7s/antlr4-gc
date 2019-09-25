@@ -19,9 +19,9 @@ class AbstractPredicateTransition extends Transition {
     /**
      * @param {org.antlr.v4.runtime.atn.ATNState} target
      */
-	constructor(target) {
-		super(target);
-	}
+    constructor(target) {
+        super(target);
+    }
 }
 
 

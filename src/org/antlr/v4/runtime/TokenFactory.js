@@ -17,10 +17,10 @@ goog.module.declareLegacyNamespace();
  * @template T
  */
 class TokenFactory {
-	/**
-      * This is the method used to create tokens in the lexer and in the
-	 * error handling strategy. If text!=null, than the start and stop positions
-	 * are wiped to -1 in the text override is set in the CommonToken.
+      /**
+       * This is the method used to create tokens in the lexer and in the
+       * error handling strategy. If text!=null, than the start and stop positions
+       * are wiped to -1 in the text override is set in the CommonToken.
        *
        * @param {!org.antlr.v4.runtime.misc.Pair<org.antlr.v4.runtime.TokenSource, org.antlr.v4.runtime.CharStream>} source
        * @param {number} type
@@ -31,8 +31,8 @@ class TokenFactory {
        * @param {number} line
        * @param {number} charPositionInLine
        * @return {T}
-	 */
-	create(source, type, text, channel, start, stop, line, charPositionInLine) {}
+       */
+      create(source, type, text, channel, start, stop, line, charPositionInLine) {}
 };
 
 

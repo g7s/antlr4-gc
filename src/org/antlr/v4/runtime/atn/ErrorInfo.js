@@ -22,24 +22,24 @@ const DecisionEventInfo = goog.require('org.antlr.v4.runtime.atn.DecisionEventIn
  * @since 4.3
  */
 class ErrorInfo extends DecisionEventInfo {
-	/**
-	 * Constructs a new instance of the {@link ErrorInfo} class with the
-	 * specified detailed syntax error information.
-	 *
-	 * @param {number} decision The decision number
-	 * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
+    /**
+     * Constructs a new instance of the {@link ErrorInfo} class with the
+     * specified detailed syntax error information.
+     *
+     * @param {number} decision The decision number
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
      * configuration set reached during prediction prior to reaching the
      * {@link ATNSimulator#ERROR} state
-	 * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
-	 * @param {number} startIndex The start index for the current prediction
-	 * @param {number} stopIndex The index at which the syntax error was identified
-	 * @param {boolean} fullCtx {@code true} if the syntax error was identified during LL
-	 * prediction; otherwise, {@code false} if the syntax error was identified
-	 * during SLL prediction
-	 */
-	constructor(decision, configs, input, startIndex, stopIndex, fullCtx) {
-		super(decision, configs, input, startIndex, stopIndex, fullCtx);
-	}
+     * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
+     * @param {number} startIndex The start index for the current prediction
+     * @param {number} stopIndex The index at which the syntax error was identified
+     * @param {boolean} fullCtx {@code true} if the syntax error was identified during LL
+     * prediction; otherwise, {@code false} if the syntax error was identified
+     * during SLL prediction
+     */
+    constructor(decision, configs, input, startIndex, stopIndex, fullCtx) {
+        super(decision, configs, input, startIndex, stopIndex, fullCtx);
+    }
 }
 
 

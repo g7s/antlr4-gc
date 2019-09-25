@@ -137,34 +137,34 @@ class Lexer extends Recognizer {
     }
 
     nextToken() {
-		if (this._input == null) {
-			throw new Error("nextToken requires a non-null input stream.");
-		}
+        if (this._input == null) {
+            throw new Error("nextToken requires a non-null input stream.");
+        }
 
-		// Mark start location in char stream so unbuffered streams are
-		// guaranteed at least have text of current token
-		var tokenStartMarker = this._input.mark();
-		try {
-			outer:
-			while (true) {
-				if (this._hitEOF) {
-					this.emitEOF();
-					return this._token;
-				}
+        // Mark start location in char stream so unbuffered streams are
+        // guaranteed at least have text of current token
+        var tokenStartMarker = this._input.mark();
+        try {
+            outer:
+            while (true) {
+                if (this._hitEOF) {
+                    this.emitEOF();
+                    return this._token;
+                }
 
-				this._token = null;
-				this._channel = Token.DEFAULT_CHANNEL;
-				this._tokenStartCharIndex = this._input.index();
-				this._tokenStartCharPositionInLine = this.getInterpreter().getCharPositionInLine();
-				this._tokenStartLine = this.getInterpreter().getLine();
-				this._text = null;
-				do {
-					this._type = Token.INVALID_TYPE;
-					var ttype;
-					try {
-						ttype = this.getInterpreter().match(this._input, this._mode);
-					}
-					catch (e) {
+                this._token = null;
+                this._channel = Token.DEFAULT_CHANNEL;
+                this._tokenStartCharIndex = this._input.index();
+                this._tokenStartCharPositionInLine = this.getInterpreter().getCharPositionInLine();
+                this._tokenStartLine = this.getInterpreter().getLine();
+                this._text = null;
+                do {
+                    this._type = Token.INVALID_TYPE;
+                    var ttype;
+                    try {
+                        ttype = this.getInterpreter().match(this._input, this._mode);
+                    }
+                    catch (e) {
                         if (e instanceof LexerNoViableAltException) {
                             this.notifyListeners(e);		// report error
                             this.recover(e);
@@ -172,24 +172,24 @@ class Lexer extends Recognizer {
                         } else {
                             throw e;
                         }
-					}
-					if (this._input.LA(1) === IntStream.EOF) {
-						this._hitEOF = true;
-					}
-					if (this._type === Token.INVALID_TYPE) this._type = ttype;
-					if (this._type === Lexer.SKIP) {
-						continue outer;
-					}
-				} while (this._type === Lexer.MORE);
-				this.emit();
-				return this._token;
-			}
-		}
-		finally {
-			// make sure we release marker after match or
-			// unbuffered char stream will keep buffering
-			this._input.release(tokenStartMarker);
-		}
+                    }
+                    if (this._input.LA(1) === IntStream.EOF) {
+                        this._hitEOF = true;
+                    }
+                    if (this._type === Token.INVALID_TYPE) this._type = ttype;
+                    if (this._type === Lexer.SKIP) {
+                        continue outer;
+                    }
+                } while (this._type === Lexer.MORE);
+                this.emit();
+                return this._token;
+            }
+        }
+        finally {
+            // make sure we release marker after match or
+            // unbuffered char stream will keep buffering
+            this._input.release(tokenStartMarker);
+        }
     }
 
     /**

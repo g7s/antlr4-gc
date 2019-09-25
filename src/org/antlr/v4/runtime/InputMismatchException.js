@@ -20,11 +20,11 @@ class InputMismatchException extends RecognitionException {
      * @param {number=} state
      * @param {org.antlr.v4.runtime.ParserRuleContext=} ctx
      */
-	constructor(recognizer, state, ctx) {
-		super("", recognizer, recognizer.getInputStream(), ctx || recognizer.getContext());
-		if (state) this.setOffendingState(state);
-		this.setOffendingToken(recognizer.getCurrentToken());
-	}
+    constructor(recognizer, state, ctx) {
+        super("", recognizer, recognizer.getInputStream(), ctx || recognizer.getContext());
+        if (state) this.setOffendingState(state);
+        this.setOffendingToken(recognizer.getCurrentToken());
+    }
 };
 
 

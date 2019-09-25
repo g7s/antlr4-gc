@@ -29,22 +29,22 @@ const DecisionEventInfo = goog.require('org.antlr.v4.runtime.atn.DecisionEventIn
  * @since 4.3
  */
 class ContextSensitivityInfo extends DecisionEventInfo {
-	/**
-	 * Constructs a new instance of the {@link ContextSensitivityInfo} class
-	 * with the specified detailed context sensitivity information.
-	 *
-	 * @param {number} decision The decision number
-	 * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
+    /**
+     * Constructs a new instance of the {@link ContextSensitivityInfo} class
+     * with the specified detailed context sensitivity information.
+     *
+     * @param {number} decision The decision number
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
      * configuration set containing the unique alternative identified by
      * full-context prediction
-	 * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
-	 * @param {number} startIndex The start index for the current prediction
-	 * @param {number} stopIndex The index at which the context sensitivity was
-	 * identified during full-context prediction
-	 */
-	constructor(decision, configs, input, startIndex, stopIndex) {
-		super(decision, configs, input, startIndex, stopIndex, true);
-	}
+     * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
+     * @param {number} startIndex The start index for the current prediction
+     * @param {number} stopIndex The index at which the context sensitivity was
+     * identified during full-context prediction
+     */
+    constructor(decision, configs, input, startIndex, stopIndex) {
+        super(decision, configs, input, startIndex, stopIndex, true);
+    }
 }
 
 

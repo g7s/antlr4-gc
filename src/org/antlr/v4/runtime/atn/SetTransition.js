@@ -21,33 +21,33 @@ class SetTransition extends Transition {
      * @param {org.antlr.v4.runtime.atn.ATNState} target
      * @param {IntervalSet} set
      */
-	constructor(target, set) {
-		super(target);
+    constructor(target, set) {
+        super(target);
         if (set == null) set = IntervalSet.of(Token.INVALID_TYPE);
         /**
          * @type {IntervalSet}
          */
-		this.set = set;
-	}
+        this.set = set;
+    }
 
-	getSerializationType() {
-		return Transition.SET;
-	}
+    getSerializationType() {
+        return Transition.SET;
+    }
 
-	label() {
+    label() {
         return this.set;
     }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return this.set.contains(symbol);
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return this.set.contains(symbol);
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return this.set.toString();
-	}
+    toString() {
+        return this.set.toString();
+    }
 }
 
 Transition.serializationTypes.set(SetTransition, Transition.SET);

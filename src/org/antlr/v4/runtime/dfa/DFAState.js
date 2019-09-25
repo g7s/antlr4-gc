@@ -43,7 +43,7 @@ class DFAState {
     /**
      * @param {ATNConfigSet|number=} o
      */
-	constructor(o) {
+    constructor(o) {
         /**
          * @type {number}
          */
@@ -107,51 +107,51 @@ class DFAState {
         }
     }
 
-	/**
+    /**
      * Get the set of all alts mentioned by all ATN configurations in this
-	 * DFA state.
+     * DFA state.
      *
      * @return {?Set.<number>}
-	 */
-	getAltSet() {
+     */
+    getAltSet() {
         var alts = new Set();
         for (const c of this.configs) {
             alts.add(c.alt);
         }
-		if (alts.size === 0) return null;
-		return alts;
-	}
+        if (alts.size === 0) return null;
+        return alts;
+    }
 
-	/**
-	 * Two {@link DFAState} instances are equal if their ATN configuration sets
-	 * are the same. This method is used to see if a state already exists.
-	 *
-	 * <p>Because the number of alternatives and number of ATN configurations are
-	 * finite, there is a finite number of DFA states that can be processed.
-	 * This is necessary to show that the algorithm terminates.</p>
-	 *
-	 * <p>Cannot test the DFA state numbers here because in
-	 * {@link ParserATNSimulator#addDFAState} we need to know if any other state
-	 * exists that has this exact set of ATN configurations. The
-	 * {@link #stateNumber} is irrelevant.</p>
+    /**
+     * Two {@link DFAState} instances are equal if their ATN configuration sets
+     * are the same. This method is used to see if a state already exists.
+     *
+     * <p>Because the number of alternatives and number of ATN configurations are
+     * finite, there is a finite number of DFA states that can be processed.
+     * This is necessary to show that the algorithm terminates.</p>
+     *
+     * <p>Cannot test the DFA state numbers here because in
+     * {@link ParserATNSimulator#addDFAState} we need to know if any other state
+     * exists that has this exact set of ATN configurations. The
+     * {@link #stateNumber} is irrelevant.</p>
      *
      * @param {Object} o
      * @return {boolean}
-	 */
-	equals(o) {
-		// compare set of ATN configurations in this set with other
-		if (this === o) return true;
-		if (!(o instanceof DFAState)) {
-			return false;
-		}
-		// TODO (sam): what to do when configs==null?
-		return this.configs.equals(o.configs);
-	}
+     */
+    equals(o) {
+        // compare set of ATN configurations in this set with other
+        if (this === o) return true;
+        if (!(o instanceof DFAState)) {
+            return false;
+        }
+        // TODO (sam): what to do when configs==null?
+        return this.configs.equals(o.configs);
+    }
 
     /**
      * @return {string}
      */
-	toString() {
+    toString() {
         var str = "" + this.stateNumber + ":" + this.configs;
         if (this.isAcceptState) {
             str += "=>";
@@ -162,8 +162,8 @@ class DFAState {
                 str += this.prediction;
             }
         }
-		return str;
-	}
+        return str;
+    }
 }
 
 exports = DFAState;

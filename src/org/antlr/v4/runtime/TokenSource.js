@@ -26,72 +26,72 @@ goog.module.declareLegacyNamespace();
  * @interface
  */
 class TokenSource {
-	/**
-	 * Return a {@link Token} object from your input stream (usually a
-	 * {@link CharStream}). Do not fail/return upon lexing error; keep chewing
-	 * on the characters until you get a good one; errors are not passed through
-	 * to the parser.
+    /**
+     * Return a {@link Token} object from your input stream (usually a
+     * {@link CharStream}). Do not fail/return upon lexing error; keep chewing
+     * on the characters until you get a good one; errors are not passed through
+     * to the parser.
      *
      * @return {org.antlr.v4.runtime.Token}
-	 */
-	nextToken() {}
+     */
+    nextToken() {}
 
-	/**
-	 * Get the line number for the current position in the input stream. The
-	 * first line in the input is line 1.
-	 *
-	 * @return {number} The line number for the current position in the input stream, or
-	 * 0 if the current token source does not track line numbers.
-	 */
-	getLine() {}
+    /**
+     * Get the line number for the current position in the input stream. The
+     * first line in the input is line 1.
+     *
+     * @return {number} The line number for the current position in the input stream, or
+     * 0 if the current token source does not track line numbers.
+     */
+    getLine() {}
 
-	/**
-	 * Get the index into the current line for the current position in the input
-	 * stream. The first character on a line has position 0.
-	 *
-	 * @return {number} The line number for the current position in the input stream, or
-	 * -1 if the current token source does not track character positions.
-	 */
-	getCharPositionInLine() {}
+    /**
+     * Get the index into the current line for the current position in the input
+     * stream. The first character on a line has position 0.
+     *
+     * @return {number} The line number for the current position in the input stream, or
+     * -1 if the current token source does not track character positions.
+     */
+    getCharPositionInLine() {}
 
-	/**
-	 * Get the {@link CharStream} from which this token source is currently
-	 * providing tokens.
-	 *
-	 * @return {org.antlr.v4.runtime.CharStream} The {@link CharStream}
+    /**
+     * Get the {@link CharStream} from which this token source is currently
+     * providing tokens.
+     *
+     * @return {org.antlr.v4.runtime.CharStream} The {@link CharStream}
      * associated with the current position in the input, or {@code null} if no
      * input stream is available for the token
-	 * source.
-	 */
-	getInputStream() {}
+     * source.
+     */
+    getInputStream() {}
 
-	/**
-	 * Gets the name of the underlying input source. This method returns a
-	 * non-null, non-empty string. If such a name is not known, this method
-	 * returns {@link IntStream#UNKNOWN_SOURCE_NAME}.
+    /**
+     * Gets the name of the underlying input source. This method returns a
+     * non-null, non-empty string. If such a name is not known, this method
+     * returns {@link IntStream#UNKNOWN_SOURCE_NAME}.
      *
      * @return {string}
-	 */
-	getSourceName() {}
+     */
+    getSourceName() {}
 
-	/**
-	 * Set the {@link TokenFactory} this token source should use for creating
-	 * {@link Token} objects from the input.
-	 *
-	 * @param {org.antlr.v4.runtime.TokenFactory<?>} factory The {@link TokenFactory}
+    /**
+     * Set the {@link TokenFactory} this token source should use for creating
+     * {@link Token} objects from the input.
+     *
+     * @param {org.antlr.v4.runtime.TokenFactory<?>} factory The {@link TokenFactory}
      * to use for creating tokens.
      * @return {void}
-	 */
-	setTokenFactory(factory) {}
+     */
+    setTokenFactory(factory) {}
 
-	/**
-	 * Gets the {@link TokenFactory} this token source is currently using for
-	 * creating {@link Token} objects from the input.
-	 *
-	 * @return {org.antlr.v4.runtime.TokenFactory<?>} The {@link TokenFactory}
+    /**
+     * Gets the {@link TokenFactory} this token source is currently using for
+     * creating {@link Token} objects from the input.
+     *
+     * @return {org.antlr.v4.runtime.TokenFactory<?>} The {@link TokenFactory}
      * currently used by this token source.
-	 */
-	getTokenFactory() {}
+     */
+    getTokenFactory() {}
 };
 
 

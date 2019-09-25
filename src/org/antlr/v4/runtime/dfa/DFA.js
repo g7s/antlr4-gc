@@ -38,25 +38,25 @@ class DFA {
         /**
          * @type {number}
          */
-		this.decision = decision || 0;
-		var precedenceDfa = false;
-		if (atnStartState instanceof StarLoopEntryState) {
-			if (atnStartState.isPrecedenceDecision) {
-				precedenceDfa = true;
+        this.decision = decision || 0;
+        var precedenceDfa = false;
+        if (atnStartState instanceof StarLoopEntryState) {
+            if (atnStartState.isPrecedenceDecision) {
+                precedenceDfa = true;
                 var precedenceState = new DFAState(new ATNConfigSet());
                 /**
                  * @type {Array<DFAState>}
                  */
-				precedenceState.edges = [];
-				precedenceState.isAcceptState = false;
-				precedenceState.requiresFullContext = false;
-				this.s0 = precedenceState;
-			}
-		}
+                precedenceState.edges = [];
+                precedenceState.isAcceptState = false;
+                precedenceState.requiresFullContext = false;
+                this.s0 = precedenceState;
+            }
+        }
         /**
          * @type {boolean}
          */
-		this.precedenceDfa = precedenceDfa;
+        this.precedenceDfa = precedenceDfa;
     }
 
     /**

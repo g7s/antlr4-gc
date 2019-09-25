@@ -16,26 +16,26 @@ class NotSetTransition extends SetTransition {
      * @param {org.antlr.v4.runtime.atn.ATNState} target
      * @param {org.antlr.v4.runtime.misc.IntervalSet} set
      */
-	constructor(target, set) {
-		super(target, set);
-	}
+    constructor(target, set) {
+        super(target, set);
+    }
 
-	getSerializationType() {
-		return Transition.NOT_SET;
-	}
+    getSerializationType() {
+        return Transition.NOT_SET;
+    }
 
-	matches(symbol, minVocabSymbol, maxVocabSymbol) {
-		return symbol >= minVocabSymbol
-			&& symbol <= maxVocabSymbol
-			&& !super.matches(symbol, minVocabSymbol, maxVocabSymbol);
-	}
+    matches(symbol, minVocabSymbol, maxVocabSymbol) {
+        return symbol >= minVocabSymbol
+            && symbol <= maxVocabSymbol
+            && !super.matches(symbol, minVocabSymbol, maxVocabSymbol);
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return '~' + super.toString();
-	}
+    toString() {
+        return '~' + super.toString();
+    }
 }
 
 

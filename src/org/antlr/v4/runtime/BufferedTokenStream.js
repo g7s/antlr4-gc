@@ -233,8 +233,8 @@ class BufferedTokenStream {
         if (k === 0) return null;
         if (k < 0) return this.LB(-k);
 
-		var i = this.p + k - 1;
-		this.sync(i);
+        var i = this.p + k - 1;
+        this.sync(i);
         if (i >= this.size()) { // return EOF token
             // EOF must be last token
             return this.tokens[this.size() - 1];

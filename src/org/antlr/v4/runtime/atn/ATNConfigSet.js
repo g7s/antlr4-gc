@@ -144,56 +144,56 @@ class ATNConfigSet {
         }
     }
 
-	/**
-	 * Adding a new config means merging contexts with existing configs for
-	 * {@code (s, i, pi, _)}, where {@code s} is the
-	 * {@link ATNConfig#state}, {@code i} is the {@link ATNConfig#alt}, and
-	 * {@code pi} is the {@link ATNConfig#semanticContext}. We use
-	 * {@code (s,i,pi)} as key.
-	 *
-	 * <p>This method updates {@link #dipsIntoOuterContext} and
-	 * {@link #hasSemanticContext} when necessary.</p>
+    /**
+     * Adding a new config means merging contexts with existing configs for
+     * {@code (s, i, pi, _)}, where {@code s} is the
+     * {@link ATNConfig#state}, {@code i} is the {@link ATNConfig#alt}, and
+     * {@code pi} is the {@link ATNConfig#semanticContext}. We use
+     * {@code (s,i,pi)} as key.
+     *
+     * <p>This method updates {@link #dipsIntoOuterContext} and
+     * {@link #hasSemanticContext} when necessary.</p>
      *
      * @param {org.antlr.v4.runtime.atn.ATNConfig} config
      * @param {Map<Pair<PredictionContext, PredictionContext>, PredictionContext>=} mergeCache
      * @return {boolean}
-	 */
-	add(config, mergeCache) {
-		if (this.readonly) throw new Error("This set is readonly");
-		if (config.semanticContext !== SemanticContext.NONE) {
-			this.hasSemanticContext = true;
-		}
-		if (config.getOuterContextDepth() > 0) {
-			this.dipsIntoOuterContext = true;
-		}
+     */
+    add(config, mergeCache) {
+        if (this.readonly) throw new Error("This set is readonly");
+        if (config.semanticContext !== SemanticContext.NONE) {
+            this.hasSemanticContext = true;
+        }
+        if (config.getOuterContextDepth() > 0) {
+            this.dipsIntoOuterContext = true;
+        }
         var existing = this.configLookup.get(config);
         if (goog.isNull(existing)) {
             this.configLookup.add(config);
         }
-		if (existing === config) { // we added this new one
-			this.cachedHashCode = -1;
-			this.configs.push(config);  // track order here
-			return true;
-		}
-		// a previous (s,i,pi,_), merge with it and save result
-		var rootIsWildcard = !this.fullCtx;
-		var merged = PredictionContext.merge(existing.context, config.context, rootIsWildcard, mergeCache || null);
-		// no need to check for existing.context, config.context in cache
-		// since only way to create new graphs is "call rule" and here. We
-		// cache at both places.
-		existing.reachesIntoOuterContext =
-			Math.max(existing.reachesIntoOuterContext, config.reachesIntoOuterContext);
+        if (existing === config) { // we added this new one
+            this.cachedHashCode = -1;
+            this.configs.push(config);  // track order here
+            return true;
+        }
+        // a previous (s,i,pi,_), merge with it and save result
+        var rootIsWildcard = !this.fullCtx;
+        var merged = PredictionContext.merge(existing.context, config.context, rootIsWildcard, mergeCache || null);
+        // no need to check for existing.context, config.context in cache
+        // since only way to create new graphs is "call rule" and here. We
+        // cache at both places.
+        existing.reachesIntoOuterContext =
+            Math.max(existing.reachesIntoOuterContext, config.reachesIntoOuterContext);
 
-		// make sure to preserve the precedence filter suppression during the merge
-		if (config.isPrecedenceFilterSuppressed()) {
-			existing.setPrecedenceFilterSuppressed(true);
-		}
+        // make sure to preserve the precedence filter suppression during the merge
+        if (config.isPrecedenceFilterSuppressed()) {
+            existing.setPrecedenceFilterSuppressed(true);
+        }
 
-		existing.context = merged; // replace context; no need to alt mapping
-		return true;
-	}
+        existing.context = merged; // replace context; no need to alt mapping
+        return true;
+    }
 
-	/**
+    /**
      * Return a List holding list of configs
      *
      * @return {Array<org.antlr.v4.runtime.atn.ATNConfig>}
@@ -205,55 +205,55 @@ class ATNConfigSet {
     /**
      * @return {Set<org.antlr.v4.runtime.atn.ATNState>}
      */
-	getStates() {
+    getStates() {
         /**
          * @type {Set<org.antlr.v4.runtime.atn.ATNState>}
          */
-		var states = new Set();
-		for (const c of this.configs) {
-			states.add(c.state);
-		}
-		return states;
-	}
+        var states = new Set();
+        for (const c of this.configs) {
+            states.add(c.state);
+        }
+        return states;
+    }
 
-	/**
-	 * Gets the complete set of represented alternatives for the configuration
-	 * set.
-	 *
-	 * @return {BitSet} the set of represented alternatives in this configuration set
-	 *
-	 * @since 4.3
-	 */
-	getAlts() {
-		var alts = new BitSet();
-		for (const c of this.configs) {
-			alts.set(c.alt);
-		}
-		return alts;
-	}
+    /**
+     * Gets the complete set of represented alternatives for the configuration
+     * set.
+     *
+     * @return {BitSet} the set of represented alternatives in this configuration set
+     *
+     * @since 4.3
+     */
+    getAlts() {
+        var alts = new BitSet();
+        for (const c of this.configs) {
+            alts.set(c.alt);
+        }
+        return alts;
+    }
 
     /**
      * @return {!Array<SemanticContext>}
      */
-	getPredicates() {
+    getPredicates() {
         /**
          * @type {!Array<SemanticContext>}
          */
-		var preds = [];
-		for (const c of this.configs) {
-			if (c.semanticContext !== SemanticContext.NONE) {
-				preds.push(c.semanticContext);
-			}
-		}
-		return preds;
-	}
+        var preds = [];
+        for (const c of this.configs) {
+            if (c.semanticContext !== SemanticContext.NONE) {
+                preds.push(c.semanticContext);
+            }
+        }
+        return preds;
+    }
 
     /**
      *
      * @param {number} i
      * @return {org.antlr.v4.runtime.atn.ATNConfig}
      */
-	get(i) {
+    get(i) {
         return this.configs[i];
     }
 
@@ -261,119 +261,119 @@ class ATNConfigSet {
      * @param {org.antlr.v4.runtime.atn.ATNSimulator} interpreter
      * @return {void}
      */
-	optimizeConfigs(interpreter) {
-		if (this.readonly) throw new Error("This set is readonly");
-		if (this.configLookup.isEmpty()) return;
+    optimizeConfigs(interpreter) {
+        if (this.readonly) throw new Error("This set is readonly");
+        if (this.configLookup.isEmpty()) return;
 
-		for (const config of this.configs) {
+        for (const config of this.configs) {
 //			int before = PredictionContext.getAllContextNodes(config.context).size();
-			config.context = interpreter.getCachedContext(config.context);
+            config.context = interpreter.getCachedContext(config.context);
 //			int after = PredictionContext.getAllContextNodes(config.context).size();
 //			System.out.println("configs "+before+"->"+after);
-		}
-	}
+        }
+    }
 
     /**
      * @param {!Array<org.antlr.v4.runtime.atn.ATNConfig>|!org.antlr.v4.runtime.atn.ATNConfigSet} coll
      * @return {boolean}
      */
-	addAll(coll) {
-		for (const c of coll) {
+    addAll(coll) {
+        for (const c of coll) {
             this.add(c);
         }
-		return false;
-	}
+        return false;
+    }
 
     /**
      * @param {Object} o
      * @return {boolean}
      */
-	equals(o) {
-		if (o === this) {
-			return true;
-		}
-		else if (!(o instanceof ATNConfigSet)) {
-			return false;
-		}
+    equals(o) {
+        if (o === this) {
+            return true;
+        }
+        else if (!(o instanceof ATNConfigSet)) {
+            return false;
+        }
 
 //		System.out.print("equals " + this + ", " + o+" = ");
         return this.configs != null &&
             every(this.configs, (c, i) => c.equals(o.configs[i])) &&
-			this.fullCtx === o.fullCtx &&
-			this.uniqueAlt === o.uniqueAlt &&
-			this.conflictingAlts === o.conflictingAlts &&
-			this.hasSemanticContext === o.hasSemanticContext &&
-			this.dipsIntoOuterContext === o.dipsIntoOuterContext;
-	}
+            this.fullCtx === o.fullCtx &&
+            this.uniqueAlt === o.uniqueAlt &&
+            this.conflictingAlts === o.conflictingAlts &&
+            this.hasSemanticContext === o.hasSemanticContext &&
+            this.dipsIntoOuterContext === o.dipsIntoOuterContext;
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		if (this.isReadonly()) {
-			if (this.cachedHashCode === -1) {
-				this.cachedHashCode = configsHashCode(this.configs);
-			}
-			return this.cachedHashCode;
-		}
-		return configsHashCode(this.configs);
-	}
+    hashCode() {
+        if (this.isReadonly()) {
+            if (this.cachedHashCode === -1) {
+                this.cachedHashCode = configsHashCode(this.configs);
+            }
+            return this.cachedHashCode;
+        }
+        return configsHashCode(this.configs);
+    }
 
-	size() {
-		return this.configs.length;
-	}
+    size() {
+        return this.configs.length;
+    }
 
-	isEmpty() {
-		return this.size() === 0;
-	}
+    isEmpty() {
+        return this.size() === 0;
+    }
 
-	contains(o) {
-		if (this.readonly) {
-			throw new Error("This method is not implemented for readonly sets.");
-		}
+    contains(o) {
+        if (this.readonly) {
+            throw new Error("This method is not implemented for readonly sets.");
+        }
 
-		return this.configLookup.contains(o);
-	}
+        return this.configLookup.contains(o);
+    }
 
     [Symbol.iterator]() {
         return this.configs[Symbol.iterator];
     }
 
-	clear() {
-		if (this.readonly) throw new Error("This set is readonly");
-		this.configs = [];
-		this.cachedHashCode = -1;
-		this.configLookup.clear();
-	}
+    clear() {
+        if (this.readonly) throw new Error("This set is readonly");
+        this.configs = [];
+        this.cachedHashCode = -1;
+        this.configLookup.clear();
+    }
 
     /**
      * @return {boolean}
      */
-	isReadonly() {
-		return this.readonly;
-	}
+    isReadonly() {
+        return this.readonly;
+    }
 
     /**
      * @param {boolean} readonly
      * @return {void}
      */
-	setReadonly(readonly) {
-		this.readonly = readonly;
+    setReadonly(readonly) {
+        this.readonly = readonly;
         readonly && this.configLookup.clear(); // can't mod, no need for lookup cache
-	}
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		var buf = "";
-		buf += "[" + this.elements().join(", ") + "]";
-		if (this.hasSemanticContext) buf += (",hasSemanticContext=" + this.hasSemanticContext);
-		if (this.uniqueAlt !== ATN.INVALID_ALT_NUMBER) buf += (",uniqueAlt=" + this.uniqueAlt);
-		if (this.conflictingAlts != null) buf += (",conflictingAlts=" + this.conflictingAlts);
-		if (this.dipsIntoOuterContext) buf += ",dipsIntoOuterContext";
-		return buf;
-	}
+    toString() {
+        var buf = "";
+        buf += "[" + this.elements().join(", ") + "]";
+        if (this.hasSemanticContext) buf += (",hasSemanticContext=" + this.hasSemanticContext);
+        if (this.uniqueAlt !== ATN.INVALID_ALT_NUMBER) buf += (",uniqueAlt=" + this.uniqueAlt);
+        if (this.conflictingAlts != null) buf += (",conflictingAlts=" + this.conflictingAlts);
+        if (this.dipsIntoOuterContext) buf += ",dipsIntoOuterContext";
+        return buf;
+    }
 }
 
 

@@ -224,23 +224,23 @@ class CommonToken {
      * @return {string}
      */
     toString(r) {
-		var channelStr = "";
-		if (this.channel > 0) {
-			channelStr = ",channel=" + this.channel;
-		}
-		var txt = this.getText();
-		if (txt != null) {
-			txt = txt.replace("\n","\\n");
-			txt = txt.replace("\r","\\r");
-			txt = txt.replace("\t","\\t");
-		}
-		else {
-			txt = "<no text>";
-		}
-		var typeString = "" + this.type;
-		if (r != null) {
-			typeString = r.getVocabulary().getDisplayName(this.type);
-		}
+        var channelStr = "";
+        if (this.channel > 0) {
+            channelStr = ",channel=" + this.channel;
+        }
+        var txt = this.getText();
+        if (txt != null) {
+            txt = txt.replace("\n","\\n");
+            txt = txt.replace("\r","\\r");
+            txt = txt.replace("\t","\\t");
+        }
+        else {
+            txt = "<no text>";
+        }
+        var typeString = "" + this.type;
+        if (r != null) {
+            typeString = r.getVocabulary().getDisplayName(this.type);
+        }
         return "[@"+this.getTokenIndex()+","+this.start+":"+this.stop+"='"+txt+"',<"+typeString+">"+channelStr+","+this.line+":"+this.getCharPositionInLine()+"]";
     }
 

@@ -38,7 +38,7 @@ class ParseTreeProperty {
      * @param {org.antlr.v4.runtime.tree.ParseTree} node
      * @return {V}
      */
-	get(node) {
+    get(node) {
         return this.annotations.get(node);
     }
 
@@ -47,7 +47,7 @@ class ParseTreeProperty {
      * @param {V} value
      * @return {void}
      */
-	put(node, value) {
+    put(node, value) {
         this.annotations.set(node, value);
     }
 
@@ -55,7 +55,7 @@ class ParseTreeProperty {
      * @param {org.antlr.v4.runtime.tree.ParseTree} node
      * @return {V}
      */
-	removeFrom(node) {
+    removeFrom(node) {
         return this.annotations.delete(node);
     }
 }

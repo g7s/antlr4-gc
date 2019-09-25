@@ -25,41 +25,41 @@ const {format} = goog.require('goog.string');
  * @implements {LexerAction}
  */
 class LexerMoreAction {
-	getActionType() {
-		return LexerActionType.MORE;
-	}
+    getActionType() {
+        return LexerActionType.MORE;
+    }
 
-	isPositionDependent() {
-		return false;
-	}
+    isPositionDependent() {
+        return false;
+    }
 
-	execute(lexer) {
-		lexer.more();
-	}
+    execute(lexer) {
+        lexer.more();
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		var hash = MurmurHash.initialize();
-		hash = MurmurHash.update(hash, this.getActionType());
-		return MurmurHash.finish(hash, 1);
-	}
+    hashCode() {
+        var hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, this.getActionType());
+        return MurmurHash.finish(hash, 1);
+    }
 
     /**
      * @param {Object} obj
      * @return {boolean}
      */
     equals(obj) {
-		return obj === this;
-	}
+        return obj === this;
+    }
 
     /**
      * @return {string}
      */
     toString() {
-		return "more";
-	}
+        return "more";
+    }
 }
 
 /**

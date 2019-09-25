@@ -255,24 +255,24 @@ class ATNDeserializer {
         }
 
         //
-		// EDGES
-		//
-		var nedges = ATNDeserializer.toInt(data[p++]);
-		for (var i = 0; i < nedges; i++) {
-			var src = ATNDeserializer.toInt(data[p]);
-			var trg = ATNDeserializer.toInt(data[p + 1]);
-			var ttype = ATNDeserializer.toInt(data[p + 2]);
-			var arg1 = ATNDeserializer.toInt(data[p + 3]);
-			var arg2 = ATNDeserializer.toInt(data[p + 4]);
-			var arg3 = ATNDeserializer.toInt(data[p + 5]);
-			var trans = this.edgeFactory(atn, ttype, src, trg, arg1, arg2, arg3, sets);
+        // EDGES
+        //
+        var nedges = ATNDeserializer.toInt(data[p++]);
+        for (var i = 0; i < nedges; i++) {
+            var src = ATNDeserializer.toInt(data[p]);
+            var trg = ATNDeserializer.toInt(data[p + 1]);
+            var ttype = ATNDeserializer.toInt(data[p + 2]);
+            var arg1 = ATNDeserializer.toInt(data[p + 3]);
+            var arg2 = ATNDeserializer.toInt(data[p + 4]);
+            var arg3 = ATNDeserializer.toInt(data[p + 5]);
+            var trans = this.edgeFactory(atn, ttype, src, trg, arg1, arg2, arg3, sets);
 //			System.out.println("EDGE "+trans.getClass().getSimpleName()+" "+
 //							   src+"->"+trg+
 //					   " "+Transition.serializationNames[ttype]+
 //					   " "+arg1+","+arg2+","+arg3);
-			var srcState = atn.states[src];
-			srcState.addTransition(trans);
-			p += 6;
+            var srcState = atn.states[src];
+            srcState.addTransition(trans);
+            p += 6;
         }
 
         // edges for rule stop states can be derived, so they aren't serialized
@@ -658,41 +658,41 @@ class ATNDeserializer {
      * @return {Transition}
      */
     edgeFactory(atn, type, src, trg, arg1, arg2, arg3, sets) {
-		var target = atn.states[trg];
-		switch (type) {
-			case Transition.EPSILON : return new EpsilonTransition(target);
-			case Transition.RANGE :
-				if (arg3 !== 0) {
-					return new RangeTransition(target, Token.EOF, arg2);
-				}
-				else {
-					return new RangeTransition(target, arg1, arg2);
-				}
-			case Transition.RULE :
+        var target = atn.states[trg];
+        switch (type) {
+            case Transition.EPSILON : return new EpsilonTransition(target);
+            case Transition.RANGE :
+                if (arg3 !== 0) {
+                    return new RangeTransition(target, Token.EOF, arg2);
+                }
+                else {
+                    return new RangeTransition(target, arg1, arg2);
+                }
+            case Transition.RULE :
                 var rss = /** @type {RuleStartState} */ (atn.states[arg1]);
-				var rt = new RuleTransition(rss, arg2, arg3, target);
-				return rt;
-			case Transition.PREDICATE :
-				var pt = new PredicateTransition(target, arg1, arg2, arg3 !== 0);
-				return pt;
-			case Transition.PRECEDENCE:
-				return new PrecedencePredicateTransition(target, arg1);
-			case Transition.ATOM :
-				if (arg3 != 0) {
-					return new AtomTransition(target, Token.EOF);
-				}
-				else {
-					return new AtomTransition(target, arg1);
-				}
-			case Transition.ACTION :
-				var a = new ActionTransition(target, arg1, arg2, arg3 !== 0);
-				return a;
-			case Transition.SET : return new SetTransition(target, sets[arg1]);
-			case Transition.NOT_SET : return new NotSetTransition(target, sets[arg1]);
-			case Transition.WILDCARD : return new WildcardTransition(target);
-		}
+                var rt = new RuleTransition(rss, arg2, arg3, target);
+                return rt;
+            case Transition.PREDICATE :
+                var pt = new PredicateTransition(target, arg1, arg2, arg3 !== 0);
+                return pt;
+            case Transition.PRECEDENCE:
+                return new PrecedencePredicateTransition(target, arg1);
+            case Transition.ATOM :
+                if (arg3 != 0) {
+                    return new AtomTransition(target, Token.EOF);
+                }
+                else {
+                    return new AtomTransition(target, arg1);
+                }
+            case Transition.ACTION :
+                var a = new ActionTransition(target, arg1, arg2, arg3 !== 0);
+                return a;
+            case Transition.SET : return new SetTransition(target, sets[arg1]);
+            case Transition.NOT_SET : return new NotSetTransition(target, sets[arg1]);
+            case Transition.WILDCARD : return new WildcardTransition(target);
+        }
 
-		throw new Error("The specified transition type is not valid.");
+        throw new Error("The specified transition type is not valid.");
     }
 
     /**

@@ -28,16 +28,16 @@ const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
  * @implements {LexerAction}
  */
 class LexerCustomAction {
-	/**
-	 * Constructs a custom lexer action with the specified rule and action
-	 * indexes.
-	 *
-	 * @param {number} ruleIndex The rule index to use for calls to
-	 * {@link Recognizer#action}.
-	 * @param {number} actionIndex The action index to use for calls to
-	 * {@link Recognizer#action}.
-	 */
-	constructor(ruleIndex, actionIndex) {
+    /**
+     * Constructs a custom lexer action with the specified rule and action
+     * indexes.
+     *
+     * @param {number} ruleIndex The rule index to use for calls to
+     * {@link Recognizer#action}.
+     * @param {number} actionIndex The action index to use for calls to
+     * {@link Recognizer#action}.
+     */
+    constructor(ruleIndex, actionIndex) {
         /**
          * @private {number}
          */
@@ -45,65 +45,65 @@ class LexerCustomAction {
         /**
          * @private {number}
          */
-		this.actionIndex = actionIndex;
-	}
+        this.actionIndex = actionIndex;
+    }
 
-	/**
-	 * Gets the rule index to use for calls to {@link Recognizer#action}.
-	 *
-	 * @return {number} The rule index for the custom action.
-	 */
-	getRuleIndex() {
-		return this.ruleIndex;
-	}
+    /**
+     * Gets the rule index to use for calls to {@link Recognizer#action}.
+     *
+     * @return {number} The rule index for the custom action.
+     */
+    getRuleIndex() {
+        return this.ruleIndex;
+    }
 
-	/**
-	 * Gets the action index to use for calls to {@link Recognizer#action}.
-	 *
-	 * @return {number} The action index for the custom action.
-	 */
-	getActionIndex() {
-		return this.actionIndex;
-	}
+    /**
+     * Gets the action index to use for calls to {@link Recognizer#action}.
+     *
+     * @return {number} The action index for the custom action.
+     */
+    getActionIndex() {
+        return this.actionIndex;
+    }
 
-	getActionType() {
-		return LexerActionType.CUSTOM;
-	}
+    getActionType() {
+        return LexerActionType.CUSTOM;
+    }
 
-	isPositionDependent() {
-		return true;
-	}
+    isPositionDependent() {
+        return true;
+    }
 
-	execute(lexer) {
-		lexer.action(null, this.ruleIndex, this.actionIndex);
-	}
+    execute(lexer) {
+        lexer.action(null, this.ruleIndex, this.actionIndex);
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		var hash = MurmurHash.initialize();
-		hash = MurmurHash.update(hash, this.getActionType());
-		hash = MurmurHash.update(hash, this.ruleIndex);
-		hash = MurmurHash.update(hash, this.actionIndex);
-		return MurmurHash.finish(hash, 3);
-	}
+    hashCode() {
+        var hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, this.getActionType());
+        hash = MurmurHash.update(hash, this.ruleIndex);
+        hash = MurmurHash.update(hash, this.actionIndex);
+        return MurmurHash.finish(hash, 3);
+    }
 
     /**
      * @param {Object} obj
      * @return {boolean}
      */
     equals(obj) {
-		if (obj === this) {
-			return true;
-		}
-		else if (!(obj instanceof LexerCustomAction)) {
-			return false;
-		}
+        if (obj === this) {
+            return true;
+        }
+        else if (!(obj instanceof LexerCustomAction)) {
+            return false;
+        }
 
-		return this.ruleIndex === obj.ruleIndex
-			&& this.actionIndex === obj.actionIndex;
-	}
+        return this.ruleIndex === obj.ruleIndex
+            && this.actionIndex === obj.actionIndex;
+    }
 }
 
 

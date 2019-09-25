@@ -102,38 +102,38 @@ class ATNConfig {
         }
     }
 
-	/**
-	 * This method gets the value of the {@link #reachesIntoOuterContext} field
-	 * as it existed prior to the introduction of the
-	 * {@link #isPrecedenceFilterSuppressed} method.
+    /**
+     * This method gets the value of the {@link #reachesIntoOuterContext} field
+     * as it existed prior to the introduction of the
+     * {@link #isPrecedenceFilterSuppressed} method.
      *
      * @return {number}
-	 */
-	getOuterContextDepth() {
-		return this.reachesIntoOuterContext & ~ATNConfig.SUPPRESS_PRECEDENCE_FILTER;
-	}
+     */
+    getOuterContextDepth() {
+        return this.reachesIntoOuterContext & ~ATNConfig.SUPPRESS_PRECEDENCE_FILTER;
+    }
 
     /**
      * @return {boolean}
      */
-	isPrecedenceFilterSuppressed() {
-		return (this.reachesIntoOuterContext & ATNConfig.SUPPRESS_PRECEDENCE_FILTER) !== 0;
-	}
+    isPrecedenceFilterSuppressed() {
+        return (this.reachesIntoOuterContext & ATNConfig.SUPPRESS_PRECEDENCE_FILTER) !== 0;
+    }
 
     /**
      * @param {boolean} value
      * @return {void}
      */
-	setPrecedenceFilterSuppressed(value) {
-		if (value) {
-			this.reachesIntoOuterContext |= 0x40000000;
-		}
-		else {
-			this.reachesIntoOuterContext &= ~ATNConfig.SUPPRESS_PRECEDENCE_FILTER;
-		}
-	}
+    setPrecedenceFilterSuppressed(value) {
+        if (value) {
+            this.reachesIntoOuterContext |= 0x40000000;
+        }
+        else {
+            this.reachesIntoOuterContext &= ~ATNConfig.SUPPRESS_PRECEDENCE_FILTER;
+        }
+    }
 
-	/**
+    /**
      * An ATN configuration is equal to another if both have
      * the same state, they predict the same alternative, and
      * syntactic/semantic contexts are the same.
@@ -142,42 +142,42 @@ class ATNConfig {
      * @return {boolean}
      */
     equals(o) {
-		if (!(o instanceof ATNConfig)) {
-			return false;
-		}
+        if (!(o instanceof ATNConfig)) {
+            return false;
+        }
 
-		if (this === o) {
-			return true;
-		}
-		else if (goog.isNull(o)) {
-			return false;
-		}
+        if (this === o) {
+            return true;
+        }
+        else if (goog.isNull(o)) {
+            return false;
+        }
 
-		return this.state.stateNumber === o.state.stateNumber
-			&& this.alt === o.alt
-			&& (this.context === o.context || (this.context != null && this.context.equals(o.context)))
-			&& this.semanticContext.equals(o.semanticContext)
-			&& this.isPrecedenceFilterSuppressed() === o.isPrecedenceFilterSuppressed();
-	}
+        return this.state.stateNumber === o.state.stateNumber
+            && this.alt === o.alt
+            && (this.context === o.context || (this.context != null && this.context.equals(o.context)))
+            && this.semanticContext.equals(o.semanticContext)
+            && this.isPrecedenceFilterSuppressed() === o.isPrecedenceFilterSuppressed();
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		var hashCode = MurmurHash.initialize(7);
-		hashCode = MurmurHash.update(hashCode, this.state.stateNumber);
-		hashCode = MurmurHash.update(hashCode, this.alt);
-		hashCode = MurmurHash.update(hashCode, this.context);
-		hashCode = MurmurHash.update(hashCode, this.semanticContext);
-		hashCode = MurmurHash.finish(hashCode, 4);
-		return hashCode;
-	}
+    hashCode() {
+        var hashCode = MurmurHash.initialize(7);
+        hashCode = MurmurHash.update(hashCode, this.state.stateNumber);
+        hashCode = MurmurHash.update(hashCode, this.alt);
+        hashCode = MurmurHash.update(hashCode, this.context);
+        hashCode = MurmurHash.update(hashCode, this.semanticContext);
+        hashCode = MurmurHash.finish(hashCode, 4);
+        return hashCode;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return "(" + this.state + "," + this.alt +
+    toString() {
+        return "(" + this.state + "," + this.alt +
             (this.context!==null ? ",[" + this.context.toString() + "]" : "") +
             (this.semanticContext !== SemanticContext.NONE ?
                 ("," + this.semanticContext.toString())

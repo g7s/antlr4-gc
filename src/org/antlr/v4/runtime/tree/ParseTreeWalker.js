@@ -18,13 +18,13 @@ class ParseTreeWalker {
      * @return {void}
      */
     walk(listener, t) {
-		if (t instanceof ErrorNode) {
-			listener.visitErrorNode(t);
-			return;
-		}
-		else if (t instanceof TerminalNode) {
-			listener.visitTerminal(t);
-			return;
+        if (t instanceof ErrorNode) {
+            listener.visitErrorNode(t);
+            return;
+        }
+        else if (t instanceof TerminalNode) {
+            listener.visitTerminal(t);
+            return;
         }
         var r = /** @type {org.antlr.v4.runtime.tree.RuleNode} */ (t);
         this.enterRule(listener, r);
@@ -32,20 +32,20 @@ class ParseTreeWalker {
         for (var i = 0; i < n; i++) {
             this.walk(listener, r.getChild(i));
         }
-		this.exitRule(listener, r);
+        this.exitRule(listener, r);
     }
 
-	/**
-	 * The discovery of a rule node, involves sending two events: the generic
-	 * {@link ParseTreeListener#enterEveryRule} and a
-	 * {@link RuleContext}-specific event. First we trigger the generic and then
-	 * the rule specific. We to them in reverse order upon finishing the node.
+    /**
+     * The discovery of a rule node, involves sending two events: the generic
+     * {@link ParseTreeListener#enterEveryRule} and a
+     * {@link RuleContext}-specific event. First we trigger the generic and then
+     * the rule specific. We to them in reverse order upon finishing the node.
      *
      * @protected
      * @param {org.antlr.v4.runtime.tree.ParseTreeListener} listener
      * @param {org.antlr.v4.runtime.tree.RuleNode} r
      * @return {void}
-	 */
+     */
     enterRule(listener, r) {
         var ctx = /** @type {org.antlr.v4.runtime.ParserRuleContext} */ (r.getRuleContext());
         listener.enterEveryRule(ctx);

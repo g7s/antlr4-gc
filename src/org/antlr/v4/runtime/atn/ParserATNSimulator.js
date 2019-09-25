@@ -335,109 +335,109 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {number}
      */
     adaptivePredict(input, decision, outerContext) {
-		if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions)  {
-			console.log("adaptivePredict decision "+decision+
-								   " exec LA(1)=="+this.getLookaheadName(input)+
+        if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions)  {
+            console.log("adaptivePredict decision "+decision+
+                                   " exec LA(1)=="+this.getLookaheadName(input)+
                                    " line "+input.LT(1).getLine()+":"+
                                    input.LT(1).getCharPositionInLine());
-		}
+        }
 
-		this._input = input;
-		this._startIndex = input.index();
-		this._outerContext = outerContext;
-		var dfa = this.decisionToDFA[decision];
-		this._dfa = dfa;
+        this._input = input;
+        this._startIndex = input.index();
+        this._outerContext = outerContext;
+        var dfa = this.decisionToDFA[decision];
+        this._dfa = dfa;
 
-		var m = input.mark();
-		var index = this._startIndex;
+        var m = input.mark();
+        var index = this._startIndex;
 
-		// Now we are certain to have a specific decision's DFA
-		// But, do we still need an initial state?
-		try {
+        // Now we are certain to have a specific decision's DFA
+        // But, do we still need an initial state?
+        try {
             /**
              * @type {DFAState}
              */
-			var s0;
-			if (dfa.isPrecedenceDfa()) {
-				// the start state for a precedence DFA depends on the current
-				// parser precedence, and is provided by a DFA method.
-				s0 = dfa.getPrecedenceStartState(this.parser.getPrecedence());
-			}
-			else {
-				// the start state for a "regular" DFA is just s0
-				s0 = dfa.s0;
-			}
+            var s0;
+            if (dfa.isPrecedenceDfa()) {
+                // the start state for a precedence DFA depends on the current
+                // parser precedence, and is provided by a DFA method.
+                s0 = dfa.getPrecedenceStartState(this.parser.getPrecedence());
+            }
+            else {
+                // the start state for a "regular" DFA is just s0
+                s0 = dfa.s0;
+            }
 
-			if (s0 == null) {
-				if (outerContext == null) outerContext = ParserRuleContext.EMPTY;
-				if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions)  {
-					console.log("predictATN decision "+dfa.decision+
-									   " exec LA(1)=="+this.getLookaheadName(input) +
-									   ", outerContext="+outerContext.toInfoString(this.parser));
-				}
+            if (s0 == null) {
+                if (outerContext == null) outerContext = ParserRuleContext.EMPTY;
+                if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions)  {
+                    console.log("predictATN decision "+dfa.decision+
+                                       " exec LA(1)=="+this.getLookaheadName(input) +
+                                       ", outerContext="+outerContext.toInfoString(this.parser));
+                }
 
                 var fullCtx = false;
-				var s0_closure =
-					this.computeStartState(dfa.atnStartState, ParserRuleContext.EMPTY, fullCtx);
+                var s0_closure =
+                    this.computeStartState(dfa.atnStartState, ParserRuleContext.EMPTY, fullCtx);
 
-				if (dfa.isPrecedenceDfa()) {
-					/* If this is a precedence DFA, we use applyPrecedenceFilter
-					 * to convert the computed start state to a precedence start
-					 * state. We then use DFA.setPrecedenceStartState to set the
-					 * appropriate start state for the precedence level rather
-					 * than simply setting DFA.s0.
-					 */
-					dfa.s0.configs = s0_closure; // not used for prediction but useful to know start configs anyway
-					s0_closure = this.applyPrecedenceFilter(s0_closure);
-					s0 = this.addDFAState(dfa, new DFAState(s0_closure));
-					dfa.setPrecedenceStartState(this.parser.getPrecedence(), s0);
-				}
-				else {
-					s0 = this.addDFAState(dfa, new DFAState(s0_closure));
-					dfa.s0 = s0;
-				}
-			}
+                if (dfa.isPrecedenceDfa()) {
+                    /* If this is a precedence DFA, we use applyPrecedenceFilter
+                     * to convert the computed start state to a precedence start
+                     * state. We then use DFA.setPrecedenceStartState to set the
+                     * appropriate start state for the precedence level rather
+                     * than simply setting DFA.s0.
+                     */
+                    dfa.s0.configs = s0_closure; // not used for prediction but useful to know start configs anyway
+                    s0_closure = this.applyPrecedenceFilter(s0_closure);
+                    s0 = this.addDFAState(dfa, new DFAState(s0_closure));
+                    dfa.setPrecedenceStartState(this.parser.getPrecedence(), s0);
+                }
+                else {
+                    s0 = this.addDFAState(dfa, new DFAState(s0_closure));
+                    dfa.s0 = s0;
+                }
+            }
 
-			var alt = this.execATN(dfa, s0, input, index, outerContext);
-			if (ParserATNSimulator.debug) console.log("DFA after predictATN: "+dfa.toString(this.parser.getVocabulary()));
-			return alt;
-		}
-		finally {
-			this.mergeCache = null; // wack cache after each prediction
-			this._dfa = null;
-			input.seek(index);
-			input.release(m);
-		}
+            var alt = this.execATN(dfa, s0, input, index, outerContext);
+            if (ParserATNSimulator.debug) console.log("DFA after predictATN: "+dfa.toString(this.parser.getVocabulary()));
+            return alt;
+        }
+        finally {
+            this.mergeCache = null; // wack cache after each prediction
+            this._dfa = null;
+            input.seek(index);
+            input.release(m);
+        }
     }
 
     /**
      * Performs ATN simulation to compute a predicted alternative based
-	 * upon the remaining input, but also updates the DFA cache to avoid
-	 * having to traverse the ATN again for the same input sequence.
-	 There are some key conditions we're looking for after computing a new
-	 set of ATN configs (proposed DFA state):
-	       * if the set is empty, there is no viable alternative for current symbol
-	       * does the state uniquely predict an alternative?
-	       * does the state have a conflict that would prevent us from
-	         putting it on the work list?
-	 We also have some key operations to do:
-	       * add an edge from previous DFA state to potentially new DFA state, D,
-	         upon current symbol but only if adding to work list, which means in all
-	         cases except no viable alternative (and possibly non-greedy decisions?)
-	       * collecting predicates and adding semantic context to DFA accept states
-	       * adding rule context to context-sensitive DFA accept states
-	       * consuming an input symbol
-	       * reporting a conflict
-	       * reporting an ambiguity
-	       * reporting a context sensitivity
-	       * reporting insufficient predicates
-	 cover these cases:
-	    dead end
-	    single alt
-	    single alt + preds
-	    conflict
+     * upon the remaining input, but also updates the DFA cache to avoid
+     * having to traverse the ATN again for the same input sequence.
+     There are some key conditions we're looking for after computing a new
+     set of ATN configs (proposed DFA state):
+           * if the set is empty, there is no viable alternative for current symbol
+           * does the state uniquely predict an alternative?
+           * does the state have a conflict that would prevent us from
+             putting it on the work list?
+     We also have some key operations to do:
+           * add an edge from previous DFA state to potentially new DFA state, D,
+             upon current symbol but only if adding to work list, which means in all
+             cases except no viable alternative (and possibly non-greedy decisions?)
+           * collecting predicates and adding semantic context to DFA accept states
+           * adding rule context to context-sensitive DFA accept states
+           * consuming an input symbol
+           * reporting a conflict
+           * reporting an ambiguity
+           * reporting a context sensitivity
+           * reporting insufficient predicates
+     cover these cases:
+        dead end
+        single alt
+        single alt + preds
+        conflict
         conflict + preds
-	 */
+     */
     /**
      * @param {DFA} dfa
      * @param {DFAState} s0
@@ -446,115 +446,115 @@ class ParserATNSimulator extends ATNSimulator {
      * @param {org.antlr.v4.runtime.ParserRuleContext} outerContext
      * @return {number}
      */
-	execATN(dfa, s0, input, startIndex, outerContext) {
-		if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions) {
-			console.log("execATN decision "+dfa.decision+
-							   " exec LA(1)=="+this.getLookaheadName(input)+
-							   " line "+input.LT(1).getLine()+":"+input.LT(1).getCharPositionInLine());
-		}
+    execATN(dfa, s0, input, startIndex, outerContext) {
+        if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions) {
+            console.log("execATN decision "+dfa.decision+
+                               " exec LA(1)=="+this.getLookaheadName(input)+
+                               " line "+input.LT(1).getLine()+":"+input.LT(1).getCharPositionInLine());
+        }
 
         /**
          * @type {DFAState}
          */
-		var previousD = s0;
+        var previousD = s0;
 
-		if (ParserATNSimulator.debug) console.log("s0 = "+s0);
+        if (ParserATNSimulator.debug) console.log("s0 = "+s0);
 
-		var t = input.LA(1);
+        var t = input.LA(1);
 
         while (true) { // while more work
             /**
              * @type {DFAState}
              */
-			var D = this.getExistingTargetState(previousD, t);
-			if (D == null) {
-				D = this.computeTargetState(dfa, previousD, t);
-			}
+            var D = this.getExistingTargetState(previousD, t);
+            if (D == null) {
+                D = this.computeTargetState(dfa, previousD, t);
+            }
 
-			if (D == ATNSimulator.ERROR) {
-				// if any configs in previous dipped into outer context, that
-				// means that input up to t actually finished entry rule
-				// at least for SLL decision. Full LL doesn't dip into outer
-				// so don't need special case.
-				// We will get an error no matter what so delay until after
-				// decision; better error message. Also, no reachable target
-				// ATN states in SLL implies LL will also get nowhere.
-				// If conflict in states that dip out, choose min since we
-				// will get error no matter what.
-				var e = this.noViableAlt(input, outerContext, previousD.configs, startIndex);
-				input.seek(startIndex);
-				var alt = this.getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previousD.configs, outerContext);
-				if (alt !== ATN.INVALID_ALT_NUMBER) {
-					return alt;
-				}
-				throw e;
-			}
+            if (D == ATNSimulator.ERROR) {
+                // if any configs in previous dipped into outer context, that
+                // means that input up to t actually finished entry rule
+                // at least for SLL decision. Full LL doesn't dip into outer
+                // so don't need special case.
+                // We will get an error no matter what so delay until after
+                // decision; better error message. Also, no reachable target
+                // ATN states in SLL implies LL will also get nowhere.
+                // If conflict in states that dip out, choose min since we
+                // will get error no matter what.
+                var e = this.noViableAlt(input, outerContext, previousD.configs, startIndex);
+                input.seek(startIndex);
+                var alt = this.getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previousD.configs, outerContext);
+                if (alt !== ATN.INVALID_ALT_NUMBER) {
+                    return alt;
+                }
+                throw e;
+            }
 
-			if (D.requiresFullContext && this.mode != PredictionMode.SLL) {
+            if (D.requiresFullContext && this.mode != PredictionMode.SLL) {
                 // IF PREDS, MIGHT RESOLVE TO SINGLE ALT => SLL (or syntax error)
                 /**
                  * @type {BitSet}
                  */
-				var conflictingAlts = D.configs.conflictingAlts;
-				if (D.predicates != null) {
-					if (ParserATNSimulator.debug) console.log("DFA state has preds in DFA sim LL failover");
-					var conflictIndex = input.index();
-					if (conflictIndex != startIndex) {
-						input.seek(startIndex);
-					}
+                var conflictingAlts = D.configs.conflictingAlts;
+                if (D.predicates != null) {
+                    if (ParserATNSimulator.debug) console.log("DFA state has preds in DFA sim LL failover");
+                    var conflictIndex = input.index();
+                    if (conflictIndex != startIndex) {
+                        input.seek(startIndex);
+                    }
 
-					conflictingAlts = this.evalSemanticContextToAlts(D.predicates, outerContext, true);
-					if (conflictingAlts.cardinality() === 1) {
-						if (ParserATNSimulator.debug) console.log("Full LL avoided");
-						return conflictingAlts.ntz();
-					}
+                    conflictingAlts = this.evalSemanticContextToAlts(D.predicates, outerContext, true);
+                    if (conflictingAlts.cardinality() === 1) {
+                        if (ParserATNSimulator.debug) console.log("Full LL avoided");
+                        return conflictingAlts.ntz();
+                    }
 
-					if (conflictIndex != startIndex) {
-						// restore the index so reporting the fallback to full
-						// context occurs with the index at the correct spot
-						input.seek(conflictIndex);
-					}
-				}
+                    if (conflictIndex != startIndex) {
+                        // restore the index so reporting the fallback to full
+                        // context occurs with the index at the correct spot
+                        input.seek(conflictIndex);
+                    }
+                }
 
                 if (ParserATNSimulator.dfa_debug) console.log("ctx sensitive state "+outerContext+" in "+D);
                 var fullCtx = true;
-				var s0_closure = this.computeStartState(dfa.atnStartState, outerContext, fullCtx);
-				this.reportAttemptingFullContext(dfa, conflictingAlts, D.configs, startIndex, input.index());
-				var alt = this.execATNWithFullContext(dfa, D, s0_closure, input, startIndex, outerContext);
-				return alt;
-			}
+                var s0_closure = this.computeStartState(dfa.atnStartState, outerContext, fullCtx);
+                this.reportAttemptingFullContext(dfa, conflictingAlts, D.configs, startIndex, input.index());
+                var alt = this.execATNWithFullContext(dfa, D, s0_closure, input, startIndex, outerContext);
+                return alt;
+            }
 
-			if (D.isAcceptState) {
-				if (D.predicates == null) {
-					return D.prediction;
-				}
+            if (D.isAcceptState) {
+                if (D.predicates == null) {
+                    return D.prediction;
+                }
 
-				var stopIndex = input.index();
+                var stopIndex = input.index();
                 input.seek(startIndex);
                 /**
                  * @type {BitSet}
                  */
-				var alts = this.evalSemanticContextToAlts(D.predicates, outerContext, true);
-				switch (alts.cardinality()) {
-				case 0:
-					throw this.noViableAlt(input, outerContext, D.configs, startIndex);
-				case 1:
-					return alts.ntz();
-				default:
-					// report ambiguity after predicate evaluation to make sure the correct
-					// set of ambig alts is reported.
-					this.reportAmbiguity(dfa, D, startIndex, stopIndex, false, alts, D.configs);
-					return alts.ntz();
-				}
-			}
+                var alts = this.evalSemanticContextToAlts(D.predicates, outerContext, true);
+                switch (alts.cardinality()) {
+                case 0:
+                    throw this.noViableAlt(input, outerContext, D.configs, startIndex);
+                case 1:
+                    return alts.ntz();
+                default:
+                    // report ambiguity after predicate evaluation to make sure the correct
+                    // set of ambig alts is reported.
+                    this.reportAmbiguity(dfa, D, startIndex, stopIndex, false, alts, D.configs);
+                    return alts.ntz();
+                }
+            }
 
-			previousD = D;
+            previousD = D;
 
-			if (t != IntStream.EOF) {
-				input.consume();
-				t = input.LA(1);
-			}
-		}
+            if (t != IntStream.EOF) {
+                input.consume();
+                t = input.LA(1);
+            }
+        }
     }
 
     /**
@@ -691,125 +691,125 @@ class ParserATNSimulator extends ATNSimulator {
      * @param {ParserRuleContext} outerContext
      * @return {number}
      */
-	execATNWithFullContext(dfa, D, s0, input, startIndex, outerContext) {
-		if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions) {
-			console.log("execATNWithFullContext "+s0);
-		}
-		var fullCtx = true;
+    execATNWithFullContext(dfa, D, s0, input, startIndex, outerContext) {
+        if (ParserATNSimulator.debug || ParserATNSimulator.debug_list_atn_decisions) {
+            console.log("execATNWithFullContext "+s0);
+        }
+        var fullCtx = true;
         var foundExactAmbig = false;
         /**
          * @type {ATNConfigSet}
          */
-		var reach = null;
-		var previous = s0;
-		input.seek(startIndex);
+        var reach = null;
+        var previous = s0;
+        input.seek(startIndex);
         var t = input.LA(1);
         /**
          * @type {number}
          */
-		var predictedAlt;
-		while (true) { // while more work
+        var predictedAlt;
+        while (true) { // while more work
 //			console.log("LL REACH "+getLookaheadName(input)+
 //							   " from configs.size="+previous.size()+
 //							   " line "+input.LT(1).getLine()+":"+input.LT(1).getCharPositionInLine());
-			reach = this.computeReachSet(previous, t, fullCtx);
-			if (reach == null) {
-				// if any configs in previous dipped into outer context, that
-				// means that input up to t actually finished entry rule
-				// at least for LL decision. Full LL doesn't dip into outer
-				// so don't need special case.
-				// We will get an error no matter what so delay until after
-				// decision; better error message. Also, no reachable target
-				// ATN states in SLL implies LL will also get nowhere.
-				// If conflict in states that dip out, choose min since we
-				// will get error no matter what.
-				var e = this.noViableAlt(input, outerContext, previous, startIndex);
-				input.seek(startIndex);
-				var alt = this.getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previous, outerContext);
-				if (alt !== ATN.INVALID_ALT_NUMBER) {
-					return alt;
-				}
-				throw e;
-			}
+            reach = this.computeReachSet(previous, t, fullCtx);
+            if (reach == null) {
+                // if any configs in previous dipped into outer context, that
+                // means that input up to t actually finished entry rule
+                // at least for LL decision. Full LL doesn't dip into outer
+                // so don't need special case.
+                // We will get an error no matter what so delay until after
+                // decision; better error message. Also, no reachable target
+                // ATN states in SLL implies LL will also get nowhere.
+                // If conflict in states that dip out, choose min since we
+                // will get error no matter what.
+                var e = this.noViableAlt(input, outerContext, previous, startIndex);
+                input.seek(startIndex);
+                var alt = this.getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(previous, outerContext);
+                if (alt !== ATN.INVALID_ALT_NUMBER) {
+                    return alt;
+                }
+                throw e;
+            }
 
-			var altSubSets = PredictionMode.getConflictingAltSubsets(reach);
-			if (ParserATNSimulator.debug) {
-				console.log("LL altSubSets="+altSubSets+
-								   ", predict="+PredictionMode.getUniqueAlt(altSubSets)+
-								   ", resolvesToJustOneViableAlt="+
-									   PredictionMode.resolvesToJustOneViableAlt(altSubSets));
-			}
+            var altSubSets = PredictionMode.getConflictingAltSubsets(reach);
+            if (ParserATNSimulator.debug) {
+                console.log("LL altSubSets="+altSubSets+
+                                   ", predict="+PredictionMode.getUniqueAlt(altSubSets)+
+                                   ", resolvesToJustOneViableAlt="+
+                                       PredictionMode.resolvesToJustOneViableAlt(altSubSets));
+            }
 
 //			console.log("altSubSets: "+altSubSets);
 //			System.err.println("reach="+reach+", "+reach.conflictingAlts);
-			reach.uniqueAlt = ParserATNSimulator.getUniqueAlt(reach);
-			// unique prediction?
-			if (reach.uniqueAlt !== ATN.INVALID_ALT_NUMBER) {
-				predictedAlt = reach.uniqueAlt;
-				break;
-			}
-			if (this.mode !== PredictionMode.LL_EXACT_AMBIG_DETECTION) {
-				predictedAlt = PredictionMode.resolvesToJustOneViableAlt(altSubSets);
-				if (predictedAlt !== ATN.INVALID_ALT_NUMBER) {
-					break;
-				}
-			}
-			else {
-				// In exact ambiguity mode, we never try to terminate early.
-				// Just keeps scarfing until we know what the conflict is
-				if ( PredictionMode.allSubsetsConflict(altSubSets) &&
-					 PredictionMode.allSubsetsEqual(altSubSets) )
-				{
-					foundExactAmbig = true;
-					predictedAlt = PredictionMode.getSingleViableAlt(altSubSets);
-					break;
-				}
-				// else there are multiple non-conflicting subsets or
-				// we're not sure what the ambiguity is yet.
-				// So, keep going.
-			}
+            reach.uniqueAlt = ParserATNSimulator.getUniqueAlt(reach);
+            // unique prediction?
+            if (reach.uniqueAlt !== ATN.INVALID_ALT_NUMBER) {
+                predictedAlt = reach.uniqueAlt;
+                break;
+            }
+            if (this.mode !== PredictionMode.LL_EXACT_AMBIG_DETECTION) {
+                predictedAlt = PredictionMode.resolvesToJustOneViableAlt(altSubSets);
+                if (predictedAlt !== ATN.INVALID_ALT_NUMBER) {
+                    break;
+                }
+            }
+            else {
+                // In exact ambiguity mode, we never try to terminate early.
+                // Just keeps scarfing until we know what the conflict is
+                if ( PredictionMode.allSubsetsConflict(altSubSets) &&
+                     PredictionMode.allSubsetsEqual(altSubSets) )
+                {
+                    foundExactAmbig = true;
+                    predictedAlt = PredictionMode.getSingleViableAlt(altSubSets);
+                    break;
+                }
+                // else there are multiple non-conflicting subsets or
+                // we're not sure what the ambiguity is yet.
+                // So, keep going.
+            }
 
-			previous = reach;
-			if (t !== IntStream.EOF) {
-				input.consume();
-				t = input.LA(1);
-			}
-		}
+            previous = reach;
+            if (t !== IntStream.EOF) {
+                input.consume();
+                t = input.LA(1);
+            }
+        }
 
-		// If the configuration set uniquely predicts an alternative,
-		// without conflict, then we know that it's a full LL decision
-		// not SLL.
-		if (reach.uniqueAlt !== ATN.INVALID_ALT_NUMBER) {
-			this.reportContextSensitivity(dfa, predictedAlt, reach, startIndex, input.index());
-			return predictedAlt;
-		}
+        // If the configuration set uniquely predicts an alternative,
+        // without conflict, then we know that it's a full LL decision
+        // not SLL.
+        if (reach.uniqueAlt !== ATN.INVALID_ALT_NUMBER) {
+            this.reportContextSensitivity(dfa, predictedAlt, reach, startIndex, input.index());
+            return predictedAlt;
+        }
 
-		// We do not check predicates here because we have checked them
-		// on-the-fly when doing full context prediction.
+        // We do not check predicates here because we have checked them
+        // on-the-fly when doing full context prediction.
 
-		/*
-		In non-exact ambiguity detection mode, we might	actually be able to
-		detect an exact ambiguity, but I'm not going to spend the cycles
-		needed to check. We only emit ambiguity warnings in exact ambiguity
-		mode.
-		For example, we might know that we have conflicting configurations.
-		But, that does not mean that there is no way forward without a
-		conflict. It's possible to have nonconflicting alt subsets as in:
-		   LL altSubSets=[{1, 2}, {1, 2}, {1}, {1, 2}]
-		from
-		   [(17,1,[5 $]), (13,1,[5 10 $]), (21,1,[5 10 $]), (11,1,[$]),
-			(13,2,[5 10 $]), (21,2,[5 10 $]), (11,2,[$])]
-		In this case, (17,1,[5 $]) indicates there is some next sequence that
-		would resolve this without conflict to alternative 1. Any other viable
-		next sequence, however, is associated with a conflict.  We stop
-		looking for input because no amount of further lookahead will alter
-		the fact that we should predict alternative 1.  We just can't say for
-		sure that there is an ambiguity without looking further.
-		*/
-		this.reportAmbiguity(dfa, D, startIndex, input.index(), foundExactAmbig,
-						    reach.getAlts(), reach);
+        /*
+        In non-exact ambiguity detection mode, we might	actually be able to
+        detect an exact ambiguity, but I'm not going to spend the cycles
+        needed to check. We only emit ambiguity warnings in exact ambiguity
+        mode.
+        For example, we might know that we have conflicting configurations.
+        But, that does not mean that there is no way forward without a
+        conflict. It's possible to have nonconflicting alt subsets as in:
+           LL altSubSets=[{1, 2}, {1, 2}, {1}, {1, 2}]
+        from
+           [(17,1,[5 $]), (13,1,[5 10 $]), (21,1,[5 10 $]), (11,1,[$]),
+            (13,2,[5 10 $]), (21,2,[5 10 $]), (11,2,[$])]
+        In this case, (17,1,[5 $]) indicates there is some next sequence that
+        would resolve this without conflict to alternative 1. Any other viable
+        next sequence, however, is associated with a conflict.  We stop
+        looking for input because no amount of further lookahead will alter
+        the fact that we should predict alternative 1.  We just can't say for
+        sure that there is an ambiguity without looking further.
+        */
+        this.reportAmbiguity(dfa, D, startIndex, input.index(), foundExactAmbig,
+                            reach.getAlts(), reach);
 
-		return predictedAlt;
+        return predictedAlt;
     }
 
     /**
@@ -820,145 +820,145 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {ATNConfigSet}
      */
     computeReachSet(closure, t, fullCtx) {
-		if (ParserATNSimulator.debug)
-			console.log("in computeReachSet, starting closure: " + closure);
+        if (ParserATNSimulator.debug)
+            console.log("in computeReachSet, starting closure: " + closure);
 
-		if (this.mergeCache == null) {
+        if (this.mergeCache == null) {
             /**
              * @type {Map<Pair<PredictionContext, PredictionContext>, PredictionContext>}
              */
-			this.mergeCache = new Map();
-		}
+            this.mergeCache = new Map();
+        }
 
-		var intermediate = new ATNConfigSet(fullCtx);
+        var intermediate = new ATNConfigSet(fullCtx);
 
         /**
          * Configurations already in a rule stop state indicate reaching the end
-		 * of the decision rule (local context) or end of the start rule (full
-		 * context). Once reached, these configurations are never updated by a
-		 * closure operation, so they are handled separately for the performance
-		 * advantage of having a smaller intermediate set when calling closure.
-		 *
-		 * For full-context reach operations, separate handling is required to
-		 * ensure that the alternative matching the longest overall sequence is
-		 * chosen when multiple such configurations can match the input.
+         * of the decision rule (local context) or end of the start rule (full
+         * context). Once reached, these configurations are never updated by a
+         * closure operation, so they are handled separately for the performance
+         * advantage of having a smaller intermediate set when calling closure.
+         *
+         * For full-context reach operations, separate handling is required to
+         * ensure that the alternative matching the longest overall sequence is
+         * chosen when multiple such configurations can match the input.
          *
          * @type {Array<ATNConfig>}
-		 */
-		var skippedStopStates = null;
+         */
+        var skippedStopStates = null;
 
-		// First figure out where we can reach on input t
-		for (const c of closure) {
-			if (ParserATNSimulator.debug) console.log("testing "+this.getTokenName(t)+" at "+c.toString());
+        // First figure out where we can reach on input t
+        for (const c of closure) {
+            if (ParserATNSimulator.debug) console.log("testing "+this.getTokenName(t)+" at "+c.toString());
 
-			if (c.state instanceof RuleStopState) {
-				assert(c.context.isEmpty());
-				if (fullCtx || t === IntStream.EOF) {
-					if (skippedStopStates == null) {
-						skippedStopStates = [];
-					}
-					skippedStopStates.push(c);
-				}
-				continue;
-			}
+            if (c.state instanceof RuleStopState) {
+                assert(c.context.isEmpty());
+                if (fullCtx || t === IntStream.EOF) {
+                    if (skippedStopStates == null) {
+                        skippedStopStates = [];
+                    }
+                    skippedStopStates.push(c);
+                }
+                continue;
+            }
 
-			var n = c.state.getNumberOfTransitions();
+            var n = c.state.getNumberOfTransitions();
             for (var ti = 0; ti < n; ti++) {               // for each transition
                 /**
                  * @type {org.antlr.v4.runtime.atn.Transition}
                  */
-				var trans = c.state.transition(ti);
-				var target = this.getReachableTarget(trans, t);
-				if (target != null) {
-					intermediate.add(new ATNConfig(c, target), this.mergeCache);
-				}
-			}
-		}
+                var trans = c.state.transition(ti);
+                var target = this.getReachableTarget(trans, t);
+                if (target != null) {
+                    intermediate.add(new ATNConfig(c, target), this.mergeCache);
+                }
+            }
+        }
 
-		// Now figure out where the reach operation can take us...
+        // Now figure out where the reach operation can take us...
 
         /**
          * @type {ATNConfigSet}
          */
-		var reach = null;
+        var reach = null;
 
-		/* This block optimizes the reach operation for intermediate sets which
-		 * trivially indicate a termination state for the overall
-		 * adaptivePredict operation.
-		 *
-		 * The conditions assume that intermediate
-		 * contains all configurations relevant to the reach set, but this
-		 * condition is not true when one or more configurations have been
-		 * withheld in skippedStopStates, or when the current symbol is EOF.
-		 */
-		if (skippedStopStates == null && t !== Token.EOF) {
-			if (intermediate.size() === 1) {
-				// Don't pursue the closure if there is just one state.
-				// It can only have one alternative; just add to result
-				// Also don't pursue the closure if there is unique alternative
-				// among the configurations.
-				reach = intermediate;
-			}
-			else if (ParserATNSimulator.getUniqueAlt(intermediate) !== ATN.INVALID_ALT_NUMBER) {
-				// Also don't pursue the closure if there is unique alternative
-				// among the configurations.
-				reach = intermediate;
-			}
-		}
+        /* This block optimizes the reach operation for intermediate sets which
+         * trivially indicate a termination state for the overall
+         * adaptivePredict operation.
+         *
+         * The conditions assume that intermediate
+         * contains all configurations relevant to the reach set, but this
+         * condition is not true when one or more configurations have been
+         * withheld in skippedStopStates, or when the current symbol is EOF.
+         */
+        if (skippedStopStates == null && t !== Token.EOF) {
+            if (intermediate.size() === 1) {
+                // Don't pursue the closure if there is just one state.
+                // It can only have one alternative; just add to result
+                // Also don't pursue the closure if there is unique alternative
+                // among the configurations.
+                reach = intermediate;
+            }
+            else if (ParserATNSimulator.getUniqueAlt(intermediate) !== ATN.INVALID_ALT_NUMBER) {
+                // Also don't pursue the closure if there is unique alternative
+                // among the configurations.
+                reach = intermediate;
+            }
+        }
 
-		/* If the reach set could not be trivially determined, perform a closure
-		 * operation on the intermediate set to compute its initial value.
-		 */
-		if (reach == null) {
+        /* If the reach set could not be trivially determined, perform a closure
+         * operation on the intermediate set to compute its initial value.
+         */
+        if (reach == null) {
             reach = /** @type {!ATNConfigSet} */ (new ATNConfigSet(fullCtx));
             /**
              * @type {!Set<ATNConfig>}
              */
-			var closureBusy = new Set();
-			var treatEofAsEpsilon = t === Token.EOF;
-			for (const c of intermediate) {
-				this.closure(c, reach, closureBusy, false, fullCtx, treatEofAsEpsilon);
-			}
-		}
+            var closureBusy = new Set();
+            var treatEofAsEpsilon = t === Token.EOF;
+            for (const c of intermediate) {
+                this.closure(c, reach, closureBusy, false, fullCtx, treatEofAsEpsilon);
+            }
+        }
 
-		if (t === IntStream.EOF) {
-			/* After consuming EOF no additional input is possible, so we are
-			 * only interested in configurations which reached the end of the
-			 * decision rule (local context) or end of the start rule (full
-			 * context). Update reach to contain only these configurations. This
-			 * handles both explicit EOF transitions in the grammar and implicit
-			 * EOF transitions following the end of the decision or start rule.
-			 *
-			 * When reach==intermediate, no closure operation was performed. In
-			 * this case, removeAllConfigsNotInRuleStopState needs to check for
-			 * reachable rule stop states as well as configurations already in
-			 * a rule stop state.
-			 *
-			 * This is handled before the configurations in skippedStopStates,
-			 * because any configurations potentially added from that list are
-			 * already guaranteed to meet this condition whether or not it's
-			 * required.
-			 */
-			reach = this.removeAllConfigsNotInRuleStopState(reach, reach === intermediate);
-		}
+        if (t === IntStream.EOF) {
+            /* After consuming EOF no additional input is possible, so we are
+             * only interested in configurations which reached the end of the
+             * decision rule (local context) or end of the start rule (full
+             * context). Update reach to contain only these configurations. This
+             * handles both explicit EOF transitions in the grammar and implicit
+             * EOF transitions following the end of the decision or start rule.
+             *
+             * When reach==intermediate, no closure operation was performed. In
+             * this case, removeAllConfigsNotInRuleStopState needs to check for
+             * reachable rule stop states as well as configurations already in
+             * a rule stop state.
+             *
+             * This is handled before the configurations in skippedStopStates,
+             * because any configurations potentially added from that list are
+             * already guaranteed to meet this condition whether or not it's
+             * required.
+             */
+            reach = this.removeAllConfigsNotInRuleStopState(reach, reach === intermediate);
+        }
 
-		/* If skippedStopStates is not null, then it contains at least one
-		 * configuration. For full-context reach operations, these
-		 * configurations reached the end of the start rule, in which case we
-		 * only add them back to reach if no configuration during the current
-		 * closure operation reached such a state. This ensures adaptivePredict
-		 * chooses an alternative matching the longest overall sequence when
-		 * multiple alternatives are viable.
-		 */
-		if (skippedStopStates != null && (!fullCtx || !PredictionMode.hasConfigInRuleStopState(reach))) {
+        /* If skippedStopStates is not null, then it contains at least one
+         * configuration. For full-context reach operations, these
+         * configurations reached the end of the start rule, in which case we
+         * only add them back to reach if no configuration during the current
+         * closure operation reached such a state. This ensures adaptivePredict
+         * chooses an alternative matching the longest overall sequence when
+         * multiple alternatives are viable.
+         */
+        if (skippedStopStates != null && (!fullCtx || !PredictionMode.hasConfigInRuleStopState(reach))) {
             assert(skippedStopStates.length > 0);
-			for (const c of skippedStopStates) {
-				reach.add(c, this.mergeCache);
-			}
-		}
+            for (const c of skippedStopStates) {
+                reach.add(c, this.mergeCache);
+            }
+        }
 
-		if (reach.isEmpty()) return null;
-		return reach;
+        if (reach.isEmpty()) return null;
+        return reach;
     }
 
     /**
@@ -1017,109 +1017,109 @@ class ParserATNSimulator extends ATNSimulator {
      */
     computeStartState(p, ctx, fullCtx) {
         // always at least the implicit call to start rule
-		var initialContext = PredictionContext.fromRuleContext(this.atn, ctx);
-		var configs = new ATNConfigSet(fullCtx);
+        var initialContext = PredictionContext.fromRuleContext(this.atn, ctx);
+        var configs = new ATNConfigSet(fullCtx);
 
-		for (var i = 0; i < p.getNumberOfTransitions(); i++) {
-			var target = p.transition(i).target;
+        for (var i = 0; i < p.getNumberOfTransitions(); i++) {
+            var target = p.transition(i).target;
             var c = new ATNConfig(target, i + 1, initialContext);
             /**
              * @type {Set<ATNConfig>}
              */
-			var closureBusy = new Set();
-			this.closure(c, configs, closureBusy, true, fullCtx, false);
-		}
+            var closureBusy = new Set();
+            this.closure(c, configs, closureBusy, true, fullCtx, false);
+        }
 
-		return configs;
+        return configs;
     }
 
     /* parrt internal source braindump that doesn't mess up
-	 * external API spec.
-		context-sensitive in that they can only be properly evaluated
-		in the context of the proper prec argument. Without pruning,
-		these predicates are normal predicates evaluated when we reach
-		conflict state (or unique prediction). As we cannot evaluate
-		these predicates out of context, the resulting conflict leads
-		to full LL evaluation and nonlinear prediction which shows up
-		very clearly with fairly large expressions.
-		Example grammar:
-		e : e '*' e
-		  | e '+' e
-		  | INT
-		  ;
-		We convert that to the following:
-		e[int prec]
-			:   INT
-				( {3>=prec}? '*' e[4]
-				| {2>=prec}? '+' e[3]
-				)*
-			;
-		The (..)* loop has a decision for the inner block as well as
-		an enter or exit decision, which is what concerns us here. At
-		the 1st + of input 1+2+3, the loop entry sees both predicates
-		and the loop exit also sees both predicates by falling off the
-		edge of e.  This is because we have no stack information with
-		SLL and find the follow of e, which will hit the return states
-		inside the loop after e[4] and e[3], which brings it back to
-		the enter or exit decision. In this case, we know that we
-		cannot evaluate those predicates because we have fallen off
-		the edge of the stack and will in general not know which prec
-		parameter is the right one to use in the predicate.
-		Because we have special information, that these are precedence
-		predicates, we can resolve them without failing over to full
-		LL despite their context sensitive nature. We make an
-		assumption that prec[-1] <= prec[0], meaning that the current
-		precedence level is greater than or equal to the precedence
-		level of recursive invocations above us in the stack. For
-		example, if predicate {3>=prec}? is true of the current prec,
-		then one option is to enter the loop to match it now. The
-		other option is to exit the loop and the left recursive rule
-		to match the current operator in rule invocation further up
-		the stack. But, we know that all of those prec are lower or
-		the same value and so we can decide to enter the loop instead
-		of matching it later. That means we can strip out the other
-		configuration for the exit branch.
-		So imagine we have (14,1,$,{2>=prec}?) and then
-		(14,2,$-dipsIntoOuterContext,{2>=prec}?). The optimization
-		allows us to collapse these two configurations. We know that
-		if {2>=prec}? is true for the current prec parameter, it will
-		also be true for any prec from an invoking e call, indicated
-		by dipsIntoOuterContext. As the predicates are both true, we
-		have the option to evaluate them early in the decision start
-		state. We do this by stripping both predicates and choosing to
-		enter the loop as it is consistent with the notion of operator
-		precedence. It's also how the full LL conflict resolution
-		would work.
-		The solution requires a different DFA start state for each
-		precedence level.
-		The basic filter mechanism is to remove configurations of the
-		form (p, 2, pi) if (p, 1, pi) exists for the same p and pi. In
-		other words, for the same ATN state and predicate context,
-		remove any configuration associated with an exit branch if
-		there is a configuration associated with the enter branch.
-		It's also the case that the filter evaluates precedence
-		predicates and resolves conflicts according to precedence
-		levels. For example, for input 1+2+3 at the first +, we see
-		prediction filtering
-		[(11,1,[$],{3>=prec}?), (14,1,[$],{2>=prec}?), (5,2,[$],up=1),
-		 (11,2,[$],up=1), (14,2,[$],up=1)],hasSemanticContext=true,dipsIntoOuterContext
-		to
-		[(11,1,[$]), (14,1,[$]), (5,2,[$],up=1)],dipsIntoOuterContext
-		This filters because {3>=prec}? evals to true and collapses
-		(11,1,[$],{3>=prec}?) and (11,2,[$],up=1) since early conflict
-		resolution based upon rules of operator precedence fits with
-		our usual match first alt upon conflict.
-		We noticed a problem where a recursive call resets precedence
-		to 0. Sam's fix: each config has flag indicating if it has
-		returned from an expr[0] call. then just don't filter any
-		config with that flag set. flag is carried along in
-		closure(). so to avoid adding field, set bit just under sign
-		bit of dipsIntoOuterContext (SUPPRESS_PRECEDENCE_FILTER).
-		With the change you filter "unless (p, 2, pi) was reached
-		after leaving the rule stop state of the LR rule containing
-		state p, corresponding to a rule invocation with precedence
-		level 0"
-	 */
+     * external API spec.
+        context-sensitive in that they can only be properly evaluated
+        in the context of the proper prec argument. Without pruning,
+        these predicates are normal predicates evaluated when we reach
+        conflict state (or unique prediction). As we cannot evaluate
+        these predicates out of context, the resulting conflict leads
+        to full LL evaluation and nonlinear prediction which shows up
+        very clearly with fairly large expressions.
+        Example grammar:
+        e : e '*' e
+          | e '+' e
+          | INT
+          ;
+        We convert that to the following:
+        e[int prec]
+            :   INT
+                ( {3>=prec}? '*' e[4]
+                | {2>=prec}? '+' e[3]
+                )*
+            ;
+        The (..)* loop has a decision for the inner block as well as
+        an enter or exit decision, which is what concerns us here. At
+        the 1st + of input 1+2+3, the loop entry sees both predicates
+        and the loop exit also sees both predicates by falling off the
+        edge of e.  This is because we have no stack information with
+        SLL and find the follow of e, which will hit the return states
+        inside the loop after e[4] and e[3], which brings it back to
+        the enter or exit decision. In this case, we know that we
+        cannot evaluate those predicates because we have fallen off
+        the edge of the stack and will in general not know which prec
+        parameter is the right one to use in the predicate.
+        Because we have special information, that these are precedence
+        predicates, we can resolve them without failing over to full
+        LL despite their context sensitive nature. We make an
+        assumption that prec[-1] <= prec[0], meaning that the current
+        precedence level is greater than or equal to the precedence
+        level of recursive invocations above us in the stack. For
+        example, if predicate {3>=prec}? is true of the current prec,
+        then one option is to enter the loop to match it now. The
+        other option is to exit the loop and the left recursive rule
+        to match the current operator in rule invocation further up
+        the stack. But, we know that all of those prec are lower or
+        the same value and so we can decide to enter the loop instead
+        of matching it later. That means we can strip out the other
+        configuration for the exit branch.
+        So imagine we have (14,1,$,{2>=prec}?) and then
+        (14,2,$-dipsIntoOuterContext,{2>=prec}?). The optimization
+        allows us to collapse these two configurations. We know that
+        if {2>=prec}? is true for the current prec parameter, it will
+        also be true for any prec from an invoking e call, indicated
+        by dipsIntoOuterContext. As the predicates are both true, we
+        have the option to evaluate them early in the decision start
+        state. We do this by stripping both predicates and choosing to
+        enter the loop as it is consistent with the notion of operator
+        precedence. It's also how the full LL conflict resolution
+        would work.
+        The solution requires a different DFA start state for each
+        precedence level.
+        The basic filter mechanism is to remove configurations of the
+        form (p, 2, pi) if (p, 1, pi) exists for the same p and pi. In
+        other words, for the same ATN state and predicate context,
+        remove any configuration associated with an exit branch if
+        there is a configuration associated with the enter branch.
+        It's also the case that the filter evaluates precedence
+        predicates and resolves conflicts according to precedence
+        levels. For example, for input 1+2+3 at the first +, we see
+        prediction filtering
+        [(11,1,[$],{3>=prec}?), (14,1,[$],{2>=prec}?), (5,2,[$],up=1),
+         (11,2,[$],up=1), (14,2,[$],up=1)],hasSemanticContext=true,dipsIntoOuterContext
+        to
+        [(11,1,[$]), (14,1,[$]), (5,2,[$],up=1)],dipsIntoOuterContext
+        This filters because {3>=prec}? evals to true and collapses
+        (11,1,[$],{3>=prec}?) and (11,2,[$],up=1) since early conflict
+        resolution based upon rules of operator precedence fits with
+        our usual match first alt upon conflict.
+        We noticed a problem where a recursive call resets precedence
+        to 0. Sam's fix: each config has flag indicating if it has
+        returned from an expr[0] call. then just don't filter any
+        config with that flag set. flag is carried along in
+        closure(). so to avoid adding field, set bit just under sign
+        bit of dipsIntoOuterContext (SUPPRESS_PRECEDENCE_FILTER).
+        With the change you filter "unless (p, 2, pi) was reached
+        after leaving the rule stop state of the LR rule containing
+        state p, corresponding to a rule invocation with precedence
+        level 0"
+     */
 
     /**
      * This method transforms the start state computed by
@@ -1255,47 +1255,47 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {Array<SemanticContext>}
      */
     getPredsForAmbigAlts(ambigAlts, configs, nalts) {
-		// REACH=[1|1|[]|0:0, 1|2|[]|0:1]
-		/* altToPred starts as an array of all null contexts. The entry at index i
-		 * corresponds to alternative i. altToPred[i] may have one of three values:
-		 *   1. null: no ATNConfig c is found such that c.alt==i
-		 *   2. SemanticContext.NONE: At least one ATNConfig c exists such that
-		 *      c.alt==i and c.semanticContext==SemanticContext.NONE. In other words,
-		 *      alt i has at least one unpredicated config.
-		 *   3. Non-NONE Semantic Context: There exists at least one, and for all
-		 *      ATNConfig c such that c.alt==i, c.semanticContext!=SemanticContext.NONE.
-		 *
-		 * From this, it is clear that NONE||anything==NONE.
-		 */
+        // REACH=[1|1|[]|0:0, 1|2|[]|0:1]
+        /* altToPred starts as an array of all null contexts. The entry at index i
+         * corresponds to alternative i. altToPred[i] may have one of three values:
+         *   1. null: no ATNConfig c is found such that c.alt==i
+         *   2. SemanticContext.NONE: At least one ATNConfig c exists such that
+         *      c.alt==i and c.semanticContext==SemanticContext.NONE. In other words,
+         *      alt i has at least one unpredicated config.
+         *   3. Non-NONE Semantic Context: There exists at least one, and for all
+         *      ATNConfig c such that c.alt==i, c.semanticContext!=SemanticContext.NONE.
+         *
+         * From this, it is clear that NONE||anything==NONE.
+         */
         /**
          * @type {Array<SemanticContext>}
          */
-		var altToPred = [];
-		for (const c of (configs || [])) {
-			if (ambigAlts.get(c.alt)) {
-				altToPred[c.alt] = SemanticContext.or(altToPred[c.alt], c.semanticContext);
-			}
-		}
+        var altToPred = [];
+        for (const c of (configs || [])) {
+            if (ambigAlts.get(c.alt)) {
+                altToPred[c.alt] = SemanticContext.or(altToPred[c.alt], c.semanticContext);
+            }
+        }
 
-		var nPredAlts = 0;
-		for (var i = 1; i <= nalts; i++) {
-			if (altToPred[i] == null) {
-				altToPred[i] = SemanticContext.NONE;
-			}
-			else if (altToPred[i] !== SemanticContext.NONE) {
-				nPredAlts++;
-			}
-		}
+        var nPredAlts = 0;
+        for (var i = 1; i <= nalts; i++) {
+            if (altToPred[i] == null) {
+                altToPred[i] = SemanticContext.NONE;
+            }
+            else if (altToPred[i] !== SemanticContext.NONE) {
+                nPredAlts++;
+            }
+        }
 
 //		// Optimize away p||p and p&&p TODO: optimize() was a no-op
 //		for (int i = 0; i < altToPred.length; i++) {
 //			altToPred[i] = altToPred[i].optimize();
 //		}
 
-		// nonambig alts are null in altToPred
-		if (nPredAlts === 0) altToPred = null;
-		if (ParserATNSimulator.debug) console.log("getPredsForAmbigAlts result ["+altToPred.join(", ")+"]");
-		return altToPred;
+        // nonambig alts are null in altToPred
+        if (nPredAlts === 0) altToPred = null;
+        if (ParserATNSimulator.debug) console.log("getPredsForAmbigAlts result ["+altToPred.join(", ")+"]");
+        return altToPred;
     }
 
     /**
@@ -1308,91 +1308,91 @@ class ParserATNSimulator extends ATNSimulator {
         /**
          * @type {!Array<PredPrediction>}
          */
-		var pairs = [];
-		var containsPredicate = false;
-		for (var i = 1; i < altToPred.length; i++) {
-			var pred = altToPred[i];
+        var pairs = [];
+        var containsPredicate = false;
+        for (var i = 1; i < altToPred.length; i++) {
+            var pred = altToPred[i];
 
-			// unpredicated is indicated by SemanticContext.NONE
-			assert(pred != null);
+            // unpredicated is indicated by SemanticContext.NONE
+            assert(pred != null);
 
-			if (ambigAlts != null && ambigAlts.get(i)) {
-				pairs.push(new PredPrediction(pred, i));
-			}
-			if (pred !== SemanticContext.NONE) containsPredicate = true;
-		}
+            if (ambigAlts != null && ambigAlts.get(i)) {
+                pairs.push(new PredPrediction(pred, i));
+            }
+            if (pred !== SemanticContext.NONE) containsPredicate = true;
+        }
 
-		if (!containsPredicate) {
-			return null;
-		}
+        if (!containsPredicate) {
+            return null;
+        }
 
 //		System.out.println(Arrays.toString(altToPred)+"->"+pairs);
-		return pairs;
+        return pairs;
     }
 
     /**
-	 * This method is used to improve the localization of error messages by
-	 * choosing an alternative rather than throwing a
-	 * {@link NoViableAltException} in particular prediction scenarios where the
-	 * {@link #ERROR} state was reached during ATN simulation.
-	 *
-	 * <p>
-	 * The default implementation of this method uses the following
-	 * algorithm to identify an ATN configuration which successfully parsed the
-	 * decision entry rule. Choosing such an alternative ensures that the
-	 * {@link ParserRuleContext} returned by the calling rule will be complete
-	 * and valid, and the syntax error will be reported later at a more
-	 * localized location.</p>
-	 *
-	 * <ul>
-	 * <li>If a syntactically valid path or paths reach the end of the decision rule and
-	 * they are semantically valid if predicated, return the min associated alt.</li>
-	 * <li>Else, if a semantically invalid but syntactically valid path exist
-	 * or paths exist, return the minimum associated alt.
-	 * </li>
-	 * <li>Otherwise, return {@link ATN#INVALID_ALT_NUMBER}.</li>
-	 * </ul>
-	 *
-	 * <p>
-	 * In some scenarios, the algorithm described above could predict an
-	 * alternative which will result in a {@link FailedPredicateException} in
-	 * the parser. Specifically, this could occur if the <em>only</em> configuration
-	 * capable of successfully parsing to the end of the decision rule is
-	 * blocked by a semantic predicate. By choosing this alternative within
-	 * {@link #adaptivePredict} instead of throwing a
-	 * {@link NoViableAltException}, the resulting
-	 * {@link FailedPredicateException} in the parser will identify the specific
-	 * predicate which is preventing the parser from successfully parsing the
-	 * decision rule, which helps developers identify and correct logic errors
-	 * in semantic predicates.
-	 * </p>
-	 *
+     * This method is used to improve the localization of error messages by
+     * choosing an alternative rather than throwing a
+     * {@link NoViableAltException} in particular prediction scenarios where the
+     * {@link #ERROR} state was reached during ATN simulation.
+     *
+     * <p>
+     * The default implementation of this method uses the following
+     * algorithm to identify an ATN configuration which successfully parsed the
+     * decision entry rule. Choosing such an alternative ensures that the
+     * {@link ParserRuleContext} returned by the calling rule will be complete
+     * and valid, and the syntax error will be reported later at a more
+     * localized location.</p>
+     *
+     * <ul>
+     * <li>If a syntactically valid path or paths reach the end of the decision rule and
+     * they are semantically valid if predicated, return the min associated alt.</li>
+     * <li>Else, if a semantically invalid but syntactically valid path exist
+     * or paths exist, return the minimum associated alt.
+     * </li>
+     * <li>Otherwise, return {@link ATN#INVALID_ALT_NUMBER}.</li>
+     * </ul>
+     *
+     * <p>
+     * In some scenarios, the algorithm described above could predict an
+     * alternative which will result in a {@link FailedPredicateException} in
+     * the parser. Specifically, this could occur if the <em>only</em> configuration
+     * capable of successfully parsing to the end of the decision rule is
+     * blocked by a semantic predicate. By choosing this alternative within
+     * {@link #adaptivePredict} instead of throwing a
+     * {@link NoViableAltException}, the resulting
+     * {@link FailedPredicateException} in the parser will identify the specific
+     * predicate which is preventing the parser from successfully parsing the
+     * decision rule, which helps developers identify and correct logic errors
+     * in semantic predicates.
+     * </p>
+     *
      * @protected
-	 * @param {!ATNConfigSet} configs The ATN configurations which were valid immediately before
-	 * the {@link #ERROR} state was reached
-	 * @param {ParserRuleContext} outerContext The is the \gamma_0 initial parser context from the paper
-	 * or the parser stack at the instant before prediction commences.
-	 *
-	 * @return {number} The value to return from {@link #adaptivePredict}, or
-	 * {@link ATN#INVALID_ALT_NUMBER} if a suitable alternative was not
-	 * identified and {@link #adaptivePredict} should report an error instead.
-	 */
-	getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(configs, outerContext) {
-		var sets = this.splitAccordingToSemanticValidity(configs, outerContext);
-		var semValidConfigs = sets.a;
-		var semInvalidConfigs = sets.b;
-		var alt = this.getAltThatFinishedDecisionEntryRule(semValidConfigs);
-		if (alt !== ATN.INVALID_ALT_NUMBER) { // semantically/syntactically viable path exists
-			return alt;
-		}
-		// Is there a syntactically valid path with a failed pred?
-		if (semInvalidConfigs.size() > 0) {
-			alt = this.getAltThatFinishedDecisionEntryRule(semInvalidConfigs);
-			if (alt !== ATN.INVALID_ALT_NUMBER) { // syntactically viable path exists
-				return alt;
-			}
-		}
-		return ATN.INVALID_ALT_NUMBER;
+     * @param {!ATNConfigSet} configs The ATN configurations which were valid immediately before
+     * the {@link #ERROR} state was reached
+     * @param {ParserRuleContext} outerContext The is the \gamma_0 initial parser context from the paper
+     * or the parser stack at the instant before prediction commences.
+     *
+     * @return {number} The value to return from {@link #adaptivePredict}, or
+     * {@link ATN#INVALID_ALT_NUMBER} if a suitable alternative was not
+     * identified and {@link #adaptivePredict} should report an error instead.
+     */
+    getSynValidOrSemInvalidAltThatFinishedDecisionEntryRule(configs, outerContext) {
+        var sets = this.splitAccordingToSemanticValidity(configs, outerContext);
+        var semValidConfigs = sets.a;
+        var semInvalidConfigs = sets.b;
+        var alt = this.getAltThatFinishedDecisionEntryRule(semValidConfigs);
+        if (alt !== ATN.INVALID_ALT_NUMBER) { // semantically/syntactically viable path exists
+            return alt;
+        }
+        // Is there a syntactically valid path with a failed pred?
+        if (semInvalidConfigs.size() > 0) {
+            alt = this.getAltThatFinishedDecisionEntryRule(semInvalidConfigs);
+            if (alt !== ATN.INVALID_ALT_NUMBER) { // syntactically viable path exists
+                return alt;
+            }
+        }
+        return ATN.INVALID_ALT_NUMBER;
     }
 
     /**
@@ -1448,44 +1448,44 @@ class ParserATNSimulator extends ATNSimulator {
 
     /**
      * Look through a list of predicate/alt pairs, returning alts for the
-	 * pairs that win. A {@code NONE} predicate indicates an alt containing an
-	 * unpredicated config which behaves as "always true." If !complete
-	 * then we stop at the first predicate that evaluates to true. This
-	 * includes pairs with null predicates.
+     * pairs that win. A {@code NONE} predicate indicates an alt containing an
+     * unpredicated config which behaves as "always true." If !complete
+     * then we stop at the first predicate that evaluates to true. This
+     * includes pairs with null predicates.
      *
      * @protected
      * @param {!Array<PredPrediction>} predPredictions
      * @param {ParserRuleContext} outerContext
      * @param {boolean} complete
      * @return {BitSet}
-	 */
-	evalSemanticContextToAlts(predPredictions, outerContext, complete) {
-		var predictions = new BitSet();
-		for (const pair of predPredictions) {
-			if (pair.pred === SemanticContext.NONE) {
-				predictions.set(pair.alt);
-				if (!complete) {
-					break;
-				}
-				continue;
-			}
+     */
+    evalSemanticContextToAlts(predPredictions, outerContext, complete) {
+        var predictions = new BitSet();
+        for (const pair of predPredictions) {
+            if (pair.pred === SemanticContext.NONE) {
+                predictions.set(pair.alt);
+                if (!complete) {
+                    break;
+                }
+                continue;
+            }
 
-			var fullCtx = false; // in dfa
-			var predicateEvaluationResult = this.evalSemanticContext(pair.pred, outerContext, pair.alt, fullCtx);
-			if (ParserATNSimulator.debug || ParserATNSimulator.dfa_debug) {
-				console.log("eval pred "+pair+"="+predicateEvaluationResult);
-			}
+            var fullCtx = false; // in dfa
+            var predicateEvaluationResult = this.evalSemanticContext(pair.pred, outerContext, pair.alt, fullCtx);
+            if (ParserATNSimulator.debug || ParserATNSimulator.dfa_debug) {
+                console.log("eval pred "+pair+"="+predicateEvaluationResult);
+            }
 
-			if (predicateEvaluationResult) {
-				if (ParserATNSimulator.debug || ParserATNSimulator.dfa_debug) console.log("PREDICT "+pair.alt);
-				predictions.set(pair.alt);
-				if (!complete) {
-					break;
-				}
-			}
-		}
+            if (predicateEvaluationResult) {
+                if (ParserATNSimulator.debug || ParserATNSimulator.dfa_debug) console.log("PREDICT "+pair.alt);
+                predictions.set(pair.alt);
+                if (!complete) {
+                    break;
+                }
+            }
+        }
 
-		return predictions;
+        return predictions;
     }
 
     /**
@@ -1552,55 +1552,55 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {void}
      */
     closureCheckingStopState(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon) {
-		if (ParserATNSimulator.debug) console.log("closure("+config.toString()+")");
+        if (ParserATNSimulator.debug) console.log("closure("+config.toString()+")");
 
-		if (config.state instanceof RuleStopState) {
-			// We hit rule end. If we have context info, use it
-			// run thru all possible stack tops in ctx
-			if (!config.context.isEmpty()) {
-				for (var i = 0; i < config.context.size(); i++) {
-					if (config.context.getReturnState(i) === PredictionContext.EMPTY_RETURN_STATE) {
-						if (fullCtx) {
-							configs.add(new ATNConfig(config, config.state, PredictionContext.EMPTY), this.mergeCache);
-							continue;
-						}
-						else {
-							// we have no context info, just chase follow links (if greedy)
-							if (ParserATNSimulator.debug) console.log("FALLING off rule "+
-															this.getRuleName(config.state.ruleIndex));
-							this.closure_(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon);
-						}
-						continue;
-					}
-					var returnState = this.atn.states[config.context.getReturnState(i)];
-					var newContext = config.context.getParent(i); // "pop" return state
-					var c = new ATNConfig(returnState, config.alt, newContext, config.semanticContext);
-					// While we have context to pop back from, we may have
-					// gotten that context AFTER having falling off a rule.
-					// Make sure we track that we are now out of context.
-					//
-					// This assignment also propagates the
-					// isPrecedenceFilterSuppressed() value to the new
-					// configuration.
-					c.reachesIntoOuterContext = config.reachesIntoOuterContext;
-					assert(depth > Number.MIN_VALUE);
-					this.closureCheckingStopState(c, configs, closureBusy, collectPredicates, fullCtx, depth - 1, treatEofAsEpsilon);
-				}
-				return;
-			}
-			else if (fullCtx) {
-				// reached end of start rule
-				configs.add(config, this.mergeCache);
-				return;
-			}
-			else {
-				// else if we have no context info, just chase follow links (if greedy)
-				if (ParserATNSimulator.debug) console.log("FALLING off rule "+
-												this.getRuleName(config.state.ruleIndex));
-			}
-		}
+        if (config.state instanceof RuleStopState) {
+            // We hit rule end. If we have context info, use it
+            // run thru all possible stack tops in ctx
+            if (!config.context.isEmpty()) {
+                for (var i = 0; i < config.context.size(); i++) {
+                    if (config.context.getReturnState(i) === PredictionContext.EMPTY_RETURN_STATE) {
+                        if (fullCtx) {
+                            configs.add(new ATNConfig(config, config.state, PredictionContext.EMPTY), this.mergeCache);
+                            continue;
+                        }
+                        else {
+                            // we have no context info, just chase follow links (if greedy)
+                            if (ParserATNSimulator.debug) console.log("FALLING off rule "+
+                                                            this.getRuleName(config.state.ruleIndex));
+                            this.closure_(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon);
+                        }
+                        continue;
+                    }
+                    var returnState = this.atn.states[config.context.getReturnState(i)];
+                    var newContext = config.context.getParent(i); // "pop" return state
+                    var c = new ATNConfig(returnState, config.alt, newContext, config.semanticContext);
+                    // While we have context to pop back from, we may have
+                    // gotten that context AFTER having falling off a rule.
+                    // Make sure we track that we are now out of context.
+                    //
+                    // This assignment also propagates the
+                    // isPrecedenceFilterSuppressed() value to the new
+                    // configuration.
+                    c.reachesIntoOuterContext = config.reachesIntoOuterContext;
+                    assert(depth > Number.MIN_VALUE);
+                    this.closureCheckingStopState(c, configs, closureBusy, collectPredicates, fullCtx, depth - 1, treatEofAsEpsilon);
+                }
+                return;
+            }
+            else if (fullCtx) {
+                // reached end of start rule
+                configs.add(config, this.mergeCache);
+                return;
+            }
+            else {
+                // else if we have no context info, just chase follow links (if greedy)
+                if (ParserATNSimulator.debug) console.log("FALLING off rule "+
+                                                this.getRuleName(config.state.ruleIndex));
+            }
+        }
 
-		this.closure_(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon);
+        this.closure_(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon);
     }
 
     /**
@@ -1616,69 +1616,69 @@ class ParserATNSimulator extends ATNSimulator {
      * @param {boolean} treatEofAsEpsilon
      * @return {void}
      */
-	closure_(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon) {
-		var p = config.state;
-		// optimization
-		if (!p.onlyHasEpsilonTransitions()) {
+    closure_(config, configs, closureBusy, collectPredicates, fullCtx, depth, treatEofAsEpsilon) {
+        var p = config.state;
+        // optimization
+        if (!p.onlyHasEpsilonTransitions()) {
             configs.add(config, this.mergeCache);
-			// make sure to not return here, because EOF transitions can act as
-			// both epsilon transitions and non-epsilon transitions.
+            // make sure to not return here, because EOF transitions can act as
+            // both epsilon transitions and non-epsilon transitions.
 //            if ( debug ) System.out.println("added config "+configs);
         }
 
-		for (var i = 0; i < p.getNumberOfTransitions(); i++) {
-			if (i === 0 && this.canDropLoopEntryEdgeInLeftRecursiveRule(config)) continue;
+        for (var i = 0; i < p.getNumberOfTransitions(); i++) {
+            if (i === 0 && this.canDropLoopEntryEdgeInLeftRecursiveRule(config)) continue;
 
-			var t = p.transition(i);
-			var continueCollecting = !(t instanceof ActionTransition) && collectPredicates;
-			var c = this.getEpsilonTarget(config, t, continueCollecting, depth === 0, fullCtx, treatEofAsEpsilon);
-			if (c != null) {
-				var newDepth = depth;
-				if (config.state instanceof RuleStopState) {
-					assert(!fullCtx);
-					// target fell off end of rule; mark resulting c as having dipped into outer context
-					// We can't get here if incoming config was rule stop and we had context
-					// track how far we dip into outer context.  Might
-					// come in handy and we avoid evaluating context dependent
-					// preds if this is > 0.
+            var t = p.transition(i);
+            var continueCollecting = !(t instanceof ActionTransition) && collectPredicates;
+            var c = this.getEpsilonTarget(config, t, continueCollecting, depth === 0, fullCtx, treatEofAsEpsilon);
+            if (c != null) {
+                var newDepth = depth;
+                if (config.state instanceof RuleStopState) {
+                    assert(!fullCtx);
+                    // target fell off end of rule; mark resulting c as having dipped into outer context
+                    // We can't get here if incoming config was rule stop and we had context
+                    // track how far we dip into outer context.  Might
+                    // come in handy and we avoid evaluating context dependent
+                    // preds if this is > 0.
 
-					if (this._dfa != null && this._dfa.isPrecedenceDfa()) {
+                    if (this._dfa != null && this._dfa.isPrecedenceDfa()) {
                         t = /** @type {org.antlr.v4.runtime.atn.EpsilonTransition} */ (t);
-						var outermostPrecedenceReturn = t.outermostPrecedenceReturn();
-						if (outermostPrecedenceReturn === this._dfa.atnStartState.ruleIndex) {
-							c.setPrecedenceFilterSuppressed(true);
-						}
-					}
+                        var outermostPrecedenceReturn = t.outermostPrecedenceReturn();
+                        if (outermostPrecedenceReturn === this._dfa.atnStartState.ruleIndex) {
+                            c.setPrecedenceFilterSuppressed(true);
+                        }
+                    }
 
-					c.reachesIntoOuterContext++;
+                    c.reachesIntoOuterContext++;
 
-					if (!closureBusy.add(c)) {
-						// avoid infinite recursion for right-recursive rules
-						continue;
-					}
+                    if (!closureBusy.add(c)) {
+                        // avoid infinite recursion for right-recursive rules
+                        continue;
+                    }
 
-					configs.dipsIntoOuterContext = true; // TODO: can remove? only care when we add to set per middle of this method
-					assert(newDepth > Number.MIN_VALUE);
-					newDepth--;
-					if (ParserATNSimulator.debug) console.log("dips into outer ctx: "+c);
-				}
-				else {
-					if (!t.isEpsilon() && !closureBusy.add(c)) {
-						// avoid infinite recursion for EOF* and EOF+
-						continue;
-					}
+                    configs.dipsIntoOuterContext = true; // TODO: can remove? only care when we add to set per middle of this method
+                    assert(newDepth > Number.MIN_VALUE);
+                    newDepth--;
+                    if (ParserATNSimulator.debug) console.log("dips into outer ctx: "+c);
+                }
+                else {
+                    if (!t.isEpsilon() && !closureBusy.add(c)) {
+                        // avoid infinite recursion for EOF* and EOF+
+                        continue;
+                    }
 
-					if (t instanceof RuleTransition) {
-						// latch when newDepth goes negative - once we step out of the entry context we can't return
-						if (newDepth >= 0) {
-							newDepth++;
-						}
-					}
-				}
+                    if (t instanceof RuleTransition) {
+                        // latch when newDepth goes negative - once we step out of the entry context we can't return
+                        if (newDepth >= 0) {
+                            newDepth++;
+                        }
+                    }
+                }
 
-				this.closureCheckingStopState(c, configs, closureBusy, continueCollecting, fullCtx, newDepth, treatEofAsEpsilon);
-			}
-		}
+                this.closureCheckingStopState(c, configs, closureBusy, continueCollecting, fullCtx, newDepth, treatEofAsEpsilon);
+            }
+        }
     }
 
     /** Implements first-edge (loop entry) elimination as an optimization
@@ -1863,38 +1863,38 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {ATNConfig}
      */
     getEpsilonTarget(config, t, collectPredicates, inContext, fullCtx, treatEofAsEpsilon) {
-		switch (t.getSerializationType()) {
-		case Transition.RULE:
-			return this.ruleTransition(config, /** @type {RuleTransition} */ (t));
+        switch (t.getSerializationType()) {
+        case Transition.RULE:
+            return this.ruleTransition(config, /** @type {RuleTransition} */ (t));
 
-		case Transition.PRECEDENCE:
-			return this.precedenceTransition(config, /** @type {PrecedencePredicateTransition} */ (t), collectPredicates, inContext, fullCtx);
+        case Transition.PRECEDENCE:
+            return this.precedenceTransition(config, /** @type {PrecedencePredicateTransition} */ (t), collectPredicates, inContext, fullCtx);
 
-		case Transition.PREDICATE:
-			return this.predTransition(config, /** @type {PredicateTransition} */ (t), collectPredicates, inContext, fullCtx);
+        case Transition.PREDICATE:
+            return this.predTransition(config, /** @type {PredicateTransition} */ (t), collectPredicates, inContext, fullCtx);
 
-		case Transition.ACTION:
-			return this.actionTransition(config, /** @type {ActionTransition} */ (t));
+        case Transition.ACTION:
+            return this.actionTransition(config, /** @type {ActionTransition} */ (t));
 
-		case Transition.EPSILON:
-			return new ATNConfig(config, t.target);
+        case Transition.EPSILON:
+            return new ATNConfig(config, t.target);
 
-		case Transition.ATOM:
-		case Transition.RANGE:
-		case Transition.SET:
-			// EOF transitions act like epsilon transitions after the first EOF
-			// transition is traversed
-			if (treatEofAsEpsilon) {
-				if (t.matches(Token.EOF, 0, 1)) {
-					return new ATNConfig(config, t.target);
-				}
-			}
+        case Transition.ATOM:
+        case Transition.RANGE:
+        case Transition.SET:
+            // EOF transitions act like epsilon transitions after the first EOF
+            // transition is traversed
+            if (treatEofAsEpsilon) {
+                if (t.matches(Token.EOF, 0, 1)) {
+                    return new ATNConfig(config, t.target);
+                }
+            }
 
-			return null;
+            return null;
 
-		default:
-			return null;
-		}
+        default:
+            return null;
+        }
     }
 
     /**
@@ -1917,44 +1917,44 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {ATNConfig}
      */
     precedenceTransition(config, pt, collectPredicates, inContext, fullCtx) {
-		if (ParserATNSimulator.debug) {
-			console.log("PRED (collectPredicates="+collectPredicates+") "+
+        if (ParserATNSimulator.debug) {
+            console.log("PRED (collectPredicates="+collectPredicates+") "+
                     pt.precedence+">=_p"+
-					", ctx dependent=true");
-			if (this.parser != null) {
+                    ", ctx dependent=true");
+            if (this.parser != null) {
                 console.log("context surrounding pred is "+
                                    this.parser.getRuleInvocationStack());
             }
-		}
+        }
 
         /**
          * @type {ATNConfig}
          */
         var c = null;
         if (collectPredicates && inContext) {
-			if (fullCtx) {
-				// In full context mode, we can evaluate predicates on-the-fly
-				// during closure, which dramatically reduces the size of
-				// the config sets. It also obviates the need to test predicates
-				// later during conflict resolution.
-				var currentPosition = this._input.index();
-				this._input.seek(this._startIndex);
-				var predSucceeds = this.evalSemanticContext(pt.getPredicate(), this._outerContext, config.alt, fullCtx);
-				this._input.seek(currentPosition);
-				if (predSucceeds) {
-					c = new ATNConfig(config, pt.target); // no pred context
-				}
-			}
-			else {
-				var newSemCtx = SemanticContext.and(config.semanticContext, pt.getPredicate());
-				c = new ATNConfig(config, pt.target, newSemCtx);
-			}
+            if (fullCtx) {
+                // In full context mode, we can evaluate predicates on-the-fly
+                // during closure, which dramatically reduces the size of
+                // the config sets. It also obviates the need to test predicates
+                // later during conflict resolution.
+                var currentPosition = this._input.index();
+                this._input.seek(this._startIndex);
+                var predSucceeds = this.evalSemanticContext(pt.getPredicate(), this._outerContext, config.alt, fullCtx);
+                this._input.seek(currentPosition);
+                if (predSucceeds) {
+                    c = new ATNConfig(config, pt.target); // no pred context
+                }
+            }
+            else {
+                var newSemCtx = SemanticContext.and(config.semanticContext, pt.getPredicate());
+                c = new ATNConfig(config, pt.target, newSemCtx);
+            }
         }
-		else {
-			c = new ATNConfig(config, pt.target);
-		}
+        else {
+            c = new ATNConfig(config, pt.target);
+        }
 
-		if (ParserATNSimulator.debug) console.log("config from pred transition="+c);
+        if (ParserATNSimulator.debug) console.log("config from pred transition="+c);
         return c;
     }
 
@@ -1968,45 +1968,45 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {ATNConfig}
      */
     predTransition(config, pt, collectPredicates, inContext, fullCtx) {
-		if (ParserATNSimulator.debug) {
-			console.log("PRED (collectPredicates="+collectPredicates+") "+
+        if (ParserATNSimulator.debug) {
+            console.log("PRED (collectPredicates="+collectPredicates+") "+
                     pt.ruleIndex+":"+pt.predIndex+
-					", ctx dependent="+pt.isCtxDependent);
-			if (this.parser != null) {
+                    ", ctx dependent="+pt.isCtxDependent);
+            if (this.parser != null) {
                 console.log("context surrounding pred is "+
                                    this.parser.getRuleInvocationStack());
             }
-		}
+        }
 
         /**
          * @type {ATNConfig}
          */
-		var c = null;
-		if (collectPredicates && (!pt.isCtxDependent || (pt.isCtxDependent && inContext))) {
-			if (fullCtx) {
-				// In full context mode, we can evaluate predicates on-the-fly
-				// during closure, which dramatically reduces the size of
-				// the config sets. It also obviates the need to test predicates
-				// later during conflict resolution.
-				var currentPosition = this._input.index();
-				this._input.seek(this._startIndex);
-				var predSucceeds = this.evalSemanticContext(pt.getPredicate(), this._outerContext, config.alt, fullCtx);
-				this._input.seek(currentPosition);
-				if (predSucceeds) {
-					c = new ATNConfig(config, pt.target); // no pred context
-				}
-			}
-			else {
-				var newSemCtx =
-					SemanticContext.and(config.semanticContext, pt.getPredicate());
-				c = new ATNConfig(config, pt.target, newSemCtx);
-			}
-		}
-		else {
-			c = new ATNConfig(config, pt.target);
-		}
+        var c = null;
+        if (collectPredicates && (!pt.isCtxDependent || (pt.isCtxDependent && inContext))) {
+            if (fullCtx) {
+                // In full context mode, we can evaluate predicates on-the-fly
+                // during closure, which dramatically reduces the size of
+                // the config sets. It also obviates the need to test predicates
+                // later during conflict resolution.
+                var currentPosition = this._input.index();
+                this._input.seek(this._startIndex);
+                var predSucceeds = this.evalSemanticContext(pt.getPredicate(), this._outerContext, config.alt, fullCtx);
+                this._input.seek(currentPosition);
+                if (predSucceeds) {
+                    c = new ATNConfig(config, pt.target); // no pred context
+                }
+            }
+            else {
+                var newSemCtx =
+                    SemanticContext.and(config.semanticContext, pt.getPredicate());
+                c = new ATNConfig(config, pt.target, newSemCtx);
+            }
+        }
+        else {
+            c = new ATNConfig(config, pt.target);
+        }
 
-		if (ParserATNSimulator.debug) console.log("config from pred transition="+c);
+        if (ParserATNSimulator.debug) console.log("config from pred transition="+c);
         return c;
     }
 
@@ -2133,50 +2133,50 @@ class ParserATNSimulator extends ATNSimulator {
     }
 
     /**
-	 * Add an edge to the DFA, if possible. This method calls
-	 * {@link #addDFAState} to ensure the {@code to} state is present in the
-	 * DFA. If {@code from} is {@code null}, or if {@code t} is outside the
-	 * range of edges that can be represented in the DFA tables, this method
-	 * returns without adding the edge to the DFA.
-	 *
-	 * <p>If {@code to} is {@code null}, this method returns {@code null}.
-	 * Otherwise, this method returns the {@link DFAState} returned by calling
-	 * {@link #addDFAState} for the {@code to} state.</p>
-	 *
+     * Add an edge to the DFA, if possible. This method calls
+     * {@link #addDFAState} to ensure the {@code to} state is present in the
+     * DFA. If {@code from} is {@code null}, or if {@code t} is outside the
+     * range of edges that can be represented in the DFA tables, this method
+     * returns without adding the edge to the DFA.
+     *
+     * <p>If {@code to} is {@code null}, this method returns {@code null}.
+     * Otherwise, this method returns the {@link DFAState} returned by calling
+     * {@link #addDFAState} for the {@code to} state.</p>
+     *
      * @protected
-	 * @param {DFA} dfa The DFA
-	 * @param {DFAState} from The source state for the edge
-	 * @param {number} t The input symbol
-	 * @param {DFAState} to The target state for the edge
-	 *
-	 * @return {DFAState} If {@code to} is {@code null}, this method returns {@code null};
-	 * otherwise this method returns the result of calling {@link #addDFAState}
-	 * on {@code to}
-	 */
-	addDFAEdge(dfa, from, t, to) {
-		if (ParserATNSimulator.debug) {
-			console.log("EDGE "+from+" -> "+to+" upon "+this.getTokenName(t));
-		}
+     * @param {DFA} dfa The DFA
+     * @param {DFAState} from The source state for the edge
+     * @param {number} t The input symbol
+     * @param {DFAState} to The target state for the edge
+     *
+     * @return {DFAState} If {@code to} is {@code null}, this method returns {@code null};
+     * otherwise this method returns the result of calling {@link #addDFAState}
+     * on {@code to}
+     */
+    addDFAEdge(dfa, from, t, to) {
+        if (ParserATNSimulator.debug) {
+            console.log("EDGE "+from+" -> "+to+" upon "+this.getTokenName(t));
+        }
 
-		if (to == null) {
-			return null;
-		}
+        if (to == null) {
+            return null;
+        }
 
-		to = this.addDFAState(dfa, to); // used existing if possible not incoming
-		if (from == null || t < -1 || t > this.atn.maxTokenType) {
-			return to;
-		}
+        to = this.addDFAState(dfa, to); // used existing if possible not incoming
+        if (from == null || t < -1 || t > this.atn.maxTokenType) {
+            return to;
+        }
         if (from.edges == null) {
             from.edges = [];
         }
 
         from.edges[t + 1] = to; // connect
 
-		if (ParserATNSimulator.debug) {
-			console.log("DFA=\n"+dfa.toString(this.parser != null ? this.parser.getVocabulary() : VocabularyImpl.EMPTY_VOCABULARY));
-		}
+        if (ParserATNSimulator.debug) {
+            console.log("DFA=\n"+dfa.toString(this.parser != null ? this.parser.getVocabulary() : VocabularyImpl.EMPTY_VOCABULARY));
+        }
 
-		return to;
+        return to;
     }
 
     /**
@@ -2263,10 +2263,10 @@ class ParserATNSimulator extends ATNSimulator {
      * @return {void}
      */
     reportAmbiguity(dfa, D, startIndex, stopIndex, exact, ambigAlts, configs)  {
-		if (ParserATNSimulator.debug || ParserATNSimulator.retry_debug) {
-			var interval = Interval.of(startIndex, stopIndex);
-			console.log("reportAmbiguity "+
-							   ambigAlts+":"+configs+
+        if (ParserATNSimulator.debug || ParserATNSimulator.retry_debug) {
+            var interval = Interval.of(startIndex, stopIndex);
+            console.log("reportAmbiguity "+
+                               ambigAlts+":"+configs+
                                ", input="+this.parser.getTokenStream().getText(interval));
         }
         if (this.parser != null) this.parser.getErrorListenerDispatch().reportAmbiguity(this.parser, dfa, startIndex, stopIndex, exact, ambigAlts, configs);

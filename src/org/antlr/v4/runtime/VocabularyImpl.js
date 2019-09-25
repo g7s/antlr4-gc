@@ -21,24 +21,24 @@ const {isEmptyOrWhitespace} = goog.require('goog.string');
  * @implements {Vocabulary}
  */
 class VocabularyImpl {
-	/**
-	 * Constructs a new instance of {@link VocabularyImpl} from the specified
-	 * literal, symbolic, and display token names.
-	 *
-	 * @param {Array<?string>=} literalNames The literal names assigned to tokens, or {@code null}
-	 * if no literal names are assigned.
-	 * @param {Array<?string>=} symbolicNames The symbolic names assigned to tokens, or
-	 * {@code null} if no symbolic names are assigned.
-	 * @param {Array<?string>=} displayNames The display names assigned to tokens, or {@code null}
-	 * to use the values in {@code literalNames} and {@code symbolicNames} as
-	 * the source of display names, as described in
-	 * {@link #getDisplayName(int)}.
-	 *
-	 * @see #getLiteralName(int)
-	 * @see #getSymbolicName(int)
-	 * @see #getDisplayName(int)
-	 */
-	constructor(literalNames, symbolicNames, displayNames) {
+    /**
+     * Constructs a new instance of {@link VocabularyImpl} from the specified
+     * literal, symbolic, and display token names.
+     *
+     * @param {Array<?string>=} literalNames The literal names assigned to tokens, or {@code null}
+     * if no literal names are assigned.
+     * @param {Array<?string>=} symbolicNames The symbolic names assigned to tokens, or
+     * {@code null} if no symbolic names are assigned.
+     * @param {Array<?string>=} displayNames The display names assigned to tokens, or {@code null}
+     * to use the values in {@code literalNames} and {@code symbolicNames} as
+     * the source of display names, as described in
+     * {@link #getDisplayName(int)}.
+     *
+     * @see #getLiteralName(int)
+     * @see #getSymbolicName(int)
+     * @see #getDisplayName(int)
+     */
+    constructor(literalNames, symbolicNames, displayNames) {
         /**
          * @private {!Array<?string>}
          */
@@ -50,53 +50,53 @@ class VocabularyImpl {
         /**
          * @private {!Array<?string>}
          */
-		this.displayNames = displayNames || VocabularyImpl.EMPTY_NAMES;
+        this.displayNames = displayNames || VocabularyImpl.EMPTY_NAMES;
         // See note here on -1 part: https://github.com/antlr/antlr4/pull/1146
         /**
          * @private {number}
          */
-		this.maxTokenType =
-			Math.max(this.displayNames.length,
-					 Math.max(this.literalNames.length, this.symbolicNames.length)) - 1;
-	}
+        this.maxTokenType =
+            Math.max(this.displayNames.length,
+                     Math.max(this.literalNames.length, this.symbolicNames.length)) - 1;
+    }
 
-	getMaxTokenType() {
-		return this.maxTokenType;
-	}
+    getMaxTokenType() {
+        return this.maxTokenType;
+    }
 
     getLiteralName(tokenType) {
-		if (tokenType >= 0 && tokenType < this.literalNames.length) {
-			return this.literalNames[tokenType];
-		}
-		return null;
-	}
+        if (tokenType >= 0 && tokenType < this.literalNames.length) {
+            return this.literalNames[tokenType];
+        }
+        return null;
+    }
 
-	getSymbolicName(tokenType) {
-		if (tokenType >= 0 && tokenType < this.symbolicNames.length) {
-			return this.symbolicNames[tokenType];
-		}
-		if (tokenType == Token.EOF) {
-			return "EOF";
-		}
-		return null;
-	}
+    getSymbolicName(tokenType) {
+        if (tokenType >= 0 && tokenType < this.symbolicNames.length) {
+            return this.symbolicNames[tokenType];
+        }
+        if (tokenType == Token.EOF) {
+            return "EOF";
+        }
+        return null;
+    }
 
-	getDisplayName(tokenType) {
-		if (tokenType >= 0 && tokenType < this.displayNames.length) {
-			var displayName = this.displayNames[tokenType];
-			if (displayName !== null) {
-				return displayName;
-			}
-		}
-		let literalName = this.getLiteralName(tokenType);
-		if (literalName !== null) {
-			return literalName;
-		}
-		let symbolicName = this.getSymbolicName(tokenType);
-		if (symbolicName !== null) {
-			return symbolicName;
-		}
-		return "" + tokenType;
+    getDisplayName(tokenType) {
+        if (tokenType >= 0 && tokenType < this.displayNames.length) {
+            var displayName = this.displayNames[tokenType];
+            if (displayName !== null) {
+                return displayName;
+            }
+        }
+        let literalName = this.getLiteralName(tokenType);
+        if (literalName !== null) {
+            return literalName;
+        }
+        let symbolicName = this.getSymbolicName(tokenType);
+        if (symbolicName !== null) {
+            return symbolicName;
+        }
+        return "" + tokenType;
     }
 
 

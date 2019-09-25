@@ -25,16 +25,16 @@ class RuleContextWithAltNum extends ParserRuleContext {
      * @param {org.antlr.v4.runtime.RuleContext=} parent
      * @param {number=} invokingStateNumber
      */
-	constructor(parent, invokingStateNumber) {
+    constructor(parent, invokingStateNumber) {
         super(parent, invokingStateNumber);
         this.altNum = ParserRuleContext.ATNINVALID_ALT_NUMBER;
     }
 
-	getAltNumber() {
+    getAltNumber() {
         return this.altNum;
     }
 
-	setAltNumber(altNum) {
+    setAltNumber(altNum) {
         this.altNum = altNum;
     }
 };

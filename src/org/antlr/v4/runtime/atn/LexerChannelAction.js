@@ -23,69 +23,69 @@ const {format} = goog.require('goog.string');
  * @implements {LexerAction}
  */
 class LexerChannelAction {
-	/**
-	 * Constructs a new {@code channel} action with the specified channel value.
-	 * @param {number} channel The channel value to pass to {@link Lexer#setChannel}.
-	 */
-	constructor(channel) {
+    /**
+     * Constructs a new {@code channel} action with the specified channel value.
+     * @param {number} channel The channel value to pass to {@link Lexer#setChannel}.
+     */
+    constructor(channel) {
         /**
          * @private {number}
          */
-		this.channel = channel;
-	}
+        this.channel = channel;
+    }
 
-	/**
-	 * Gets the channel to use for the {@link Token} created by the lexer.
-	 *
-	 * @return {number} The channel to use for the {@link Token} created by the lexer.
-	 */
-	getChannel() {
-		return this.channel;
-	}
+    /**
+     * Gets the channel to use for the {@link Token} created by the lexer.
+     *
+     * @return {number} The channel to use for the {@link Token} created by the lexer.
+     */
+    getChannel() {
+        return this.channel;
+    }
 
-	getActionType() {
-		return LexerActionType.CHANNEL;
-	}
+    getActionType() {
+        return LexerActionType.CHANNEL;
+    }
 
     isPositionDependent() {
-		return false;
-	}
+        return false;
+    }
 
-	execute(lexer) {
-		lexer.setChannel(this.channel);
-	}
+    execute(lexer) {
+        lexer.setChannel(this.channel);
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		var hash = MurmurHash.initialize();
-		hash = MurmurHash.update(hash, this.getActionType());
-		hash = MurmurHash.update(hash, this.channel);
-		return MurmurHash.finish(hash, 2);
-	}
+    hashCode() {
+        var hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, this.getActionType());
+        hash = MurmurHash.update(hash, this.channel);
+        return MurmurHash.finish(hash, 2);
+    }
 
     /**
      * @param {Object} obj
      * @return {boolean}
      */
-	equals(obj) {
-		if (obj === this) {
-			return true;
-		}
-		else if (!(obj instanceof LexerChannelAction)) {
-			return false;
-		}
+    equals(obj) {
+        if (obj === this) {
+            return true;
+        }
+        else if (!(obj instanceof LexerChannelAction)) {
+            return false;
+        }
 
-		return this.channel === obj.channel;
-	}
+        return this.channel === obj.channel;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return format("channel(%d)", this.channel);
-	}
+    toString() {
+        return format("channel(%d)", this.channel);
+    }
 }
 
 

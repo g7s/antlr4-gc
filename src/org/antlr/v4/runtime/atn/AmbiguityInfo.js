@@ -40,25 +40,25 @@ const DecisionEventInfo = goog.require('org.antlr.v4.runtime.atn.DecisionEventIn
  * @since 4.3
  */
 class AmbiguityInfo extends DecisionEventInfo {
-	/**
-	 * Constructs a new instance of the {@link AmbiguityInfo} class with the
-	 * specified detailed ambiguity information.
-	 *
-	 * @param {number} decision The decision number
-	 * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
+    /**
+     * Constructs a new instance of the {@link AmbiguityInfo} class with the
+     * specified detailed ambiguity information.
+     *
+     * @param {number} decision The decision number
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs The final
      * configuration set identifying the ambiguous alternatives for the current input
-	 * @param {org.antlr.v4.runtime.misc.BitSet} ambigAlts The set of
+     * @param {org.antlr.v4.runtime.misc.BitSet} ambigAlts The set of
      * alternatives in the decision that lead to a valid parse. The predicted
      * alt is the min(ambigAlts)
-	 * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
-	 * @param {number} startIndex The start index for the current prediction
-	 * @param {number} stopIndex The index at which the ambiguity was identified during
-	 * prediction
-	 * @param {boolean} fullCtx {@code true} if the ambiguity was identified during LL
-	 * prediction; otherwise, {@code false} if the ambiguity was identified
-	 * during SLL prediction
-	 */
-	constructor(decision, configs, ambigAlts, input, startIndex, stopIndex, fullCtx) {
+     * @param {org.antlr.v4.runtime.TokenStream} input The input token stream
+     * @param {number} startIndex The start index for the current prediction
+     * @param {number} stopIndex The index at which the ambiguity was identified during
+     * prediction
+     * @param {boolean} fullCtx {@code true} if the ambiguity was identified during LL
+     * prediction; otherwise, {@code false} if the ambiguity was identified
+     * during SLL prediction
+     */
+    constructor(decision, configs, ambigAlts, input, startIndex, stopIndex, fullCtx) {
         super(decision, configs, input, startIndex, stopIndex, fullCtx);
         /**
          * The set of alternative numbers for this decision event that lead to a valid parse.
@@ -66,8 +66,8 @@ class AmbiguityInfo extends DecisionEventInfo {
          * @type {org.antlr.v4.runtime.misc.BitSet}
          *
          */
-		this.ambigAlts = ambigAlts;
-	}
+        this.ambigAlts = ambigAlts;
+    }
 }
 
 

@@ -48,53 +48,53 @@ class LexerATNConfig extends ATNConfig {
         this.passedThroughNonGreedyDecision = goog.isDefAndNotNull(this.passedThroughNonGreedyDecision) ? this.passedThroughNonGreedyDecision : false;
     }
 
-	/**
-	 * Gets the {@link LexerActionExecutor} capable of executing the embedded
-	 * action(s) for the current configuration.
+    /**
+     * Gets the {@link LexerActionExecutor} capable of executing the embedded
+     * action(s) for the current configuration.
      *
      * @return {LexerActionExecutor}
-	 */
-	getLexerActionExecutor() {
-		return this.lexerActionExecutor;
-	}
+     */
+    getLexerActionExecutor() {
+        return this.lexerActionExecutor;
+    }
 
     /**
      * @return {boolean}
      */
-	hasPassedThroughNonGreedyDecision() {
-		return this.passedThroughNonGreedyDecision;
-	}
+    hasPassedThroughNonGreedyDecision() {
+        return this.passedThroughNonGreedyDecision;
+    }
 
-	hashCode() {
-		var hashCode = MurmurHash.initialize(7);
-		hashCode = MurmurHash.update(hashCode, this.state.stateNumber);
-		hashCode = MurmurHash.update(hashCode, this.alt);
-		hashCode = MurmurHash.update(hashCode, this.context);
-		hashCode = MurmurHash.update(hashCode, this.semanticContext);
-		hashCode = MurmurHash.update(hashCode, this.passedThroughNonGreedyDecision ? 1 : 0);
-		hashCode = MurmurHash.update(hashCode, this.lexerActionExecutor);
-		hashCode = MurmurHash.finish(hashCode, 6);
-		return hashCode;
-	}
+    hashCode() {
+        var hashCode = MurmurHash.initialize(7);
+        hashCode = MurmurHash.update(hashCode, this.state.stateNumber);
+        hashCode = MurmurHash.update(hashCode, this.alt);
+        hashCode = MurmurHash.update(hashCode, this.context);
+        hashCode = MurmurHash.update(hashCode, this.semanticContext);
+        hashCode = MurmurHash.update(hashCode, this.passedThroughNonGreedyDecision ? 1 : 0);
+        hashCode = MurmurHash.update(hashCode, this.lexerActionExecutor);
+        hashCode = MurmurHash.finish(hashCode, 6);
+        return hashCode;
+    }
 
-	equals(other) {
-		if (this === other) {
-			return true;
-		}
-		else if (!(other instanceof LexerATNConfig)) {
-			return false;
-		}
+    equals(other) {
+        if (this === other) {
+            return true;
+        }
+        else if (!(other instanceof LexerATNConfig)) {
+            return false;
+        }
 
-		if (this.passedThroughNonGreedyDecision !== other.passedThroughNonGreedyDecision) {
-			return false;
+        if (this.passedThroughNonGreedyDecision !== other.passedThroughNonGreedyDecision) {
+            return false;
         }
         var a = this.lexerActionExecutor == null ? other.lexerActionExecutor == null : this.lexerActionExecutor.equals(other.lexerActionExecutor);
         if (!a) {
             return false;
         }
 
-		return super.equals(other);
-	}
+        return super.equals(other);
+    }
 }
 
 /**

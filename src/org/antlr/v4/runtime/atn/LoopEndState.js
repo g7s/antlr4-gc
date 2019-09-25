@@ -23,9 +23,9 @@ class LoopEndState extends ATNState {
         this.loopBackState = null;
     }
 
-	getStateType() {
-		return ATNState.LOOP_END;
-	}
+    getStateType() {
+        return ATNState.LOOP_END;
+    }
 }
 
 

@@ -24,38 +24,38 @@ class PredictionContextCache {
         this.cache = new Map();
     }
 
-	/**
+    /**
      * Add a context to the cache and return it. If the context already exists,
-	 * return that one instead and do not add a new context to the cache.
-	 * Protect shared cache from unsafe thread access.
+     * return that one instead and do not add a new context to the cache.
+     * Protect shared cache from unsafe thread access.
      *
      * @param {PredictionContext} ctx
      * @return {PredictionContext}
-	 */
-	add(ctx) {
-		if (ctx === PredictionContext.EMPTY) return PredictionContext.EMPTY;
-		var existing = this.cache.get(ctx);
-		if (existing != null) {
-			return existing;
-		}
-		this.cache.put(ctx, ctx);
-		return ctx;
-	}
+     */
+    add(ctx) {
+        if (ctx === PredictionContext.EMPTY) return PredictionContext.EMPTY;
+        var existing = this.cache.get(ctx);
+        if (existing != null) {
+            return existing;
+        }
+        this.cache.put(ctx, ctx);
+        return ctx;
+    }
 
     /**
      * @param {PredictionContext} ctx
      * @return {PredictionContext}
      */
-	get(ctx) {
-		return this.cache.get(ctx);
-	}
+    get(ctx) {
+        return this.cache.get(ctx);
+    }
 
     /**
      * @return {number}
      */
-	size() {
-		return this.cache.size();
-	}
+    size() {
+        return this.cache.size();
+    }
 }
 
 

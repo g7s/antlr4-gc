@@ -16,9 +16,9 @@ const BlockStartState = goog.require('org.antlr.v4.runtime.atn.BlockStartState')
  * @author Sam Harwell
  */
 class BasicBlockStartState extends BlockStartState {
-	getStateType() {
-		return ATNState.BLOCK_START;
-	}
+    getStateType() {
+        return ATNState.BLOCK_START;
+    }
 }
 
 

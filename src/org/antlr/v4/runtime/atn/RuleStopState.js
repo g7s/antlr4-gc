@@ -17,9 +17,9 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
  * error handling.
  */
 class RuleStopState extends ATNState {
-	getStateType() {
-		return ATNState.RULE_STOP;
-	}
+    getStateType() {
+        return ATNState.RULE_STOP;
+    }
 }
 
 

@@ -109,7 +109,7 @@ class ATNState {
     /**
      * @return {number}
      */
-	hashCode() {
+    hashCode() {
         return this.stateNumber;
     }
 
@@ -117,80 +117,80 @@ class ATNState {
      * @param {Object} o
      * @return {boolean}
      */
-	equals(o) {
-		// are these states same object?
-		if (o instanceof ATNState) return this.stateNumber === o.stateNumber;
-		return false;
-	}
+    equals(o) {
+        // are these states same object?
+        if (o instanceof ATNState) return this.stateNumber === o.stateNumber;
+        return false;
+    }
 
     /**
      * @return {boolean}
      */
-	isNonGreedyExitState() {
-		return false;
-	}
+    isNonGreedyExitState() {
+        return false;
+    }
 
     /**
      * @return {string}
      */
-	toString() {
-		return "" + this.stateNumber;
-	}
+    toString() {
+        return "" + this.stateNumber;
+    }
 
     /**
      * @return {!Array<org.antlr.v4.runtime.atn.Transition>}
      */
-	getTransitions() {
-		return this.transitions;
-	}
+    getTransitions() {
+        return this.transitions;
+    }
 
     /**
      * @return {number}
      */
-	getNumberOfTransitions() {
-		return this.transitions.length;
-	}
+    getNumberOfTransitions() {
+        return this.transitions.length;
+    }
 
     /**
      * @param {org.antlr.v4.runtime.atn.Transition} e
      * @param {number=} index
      * @return {void}
      */
-	addTransition(e, index) {
+    addTransition(e, index) {
         if (!goog.isDef(index)) index = this.transitions.length;
-		if (this.transitions.length === 0) {
-			this.epsilonOnlyTransitions = e.isEpsilon();
-		}
-		else if (this.epsilonOnlyTransitions !== e.isEpsilon()) {
+        if (this.transitions.length === 0) {
+            this.epsilonOnlyTransitions = e.isEpsilon();
+        }
+        else if (this.epsilonOnlyTransitions !== e.isEpsilon()) {
             console.error(format("ATN state %d has both epsilon and non-epsilon transitions.\n", this.stateNumber));
-			this.epsilonOnlyTransitions = false;
-		}
+            this.epsilonOnlyTransitions = false;
+        }
 
-		var alreadyPresent = false;
-		for (const t of this.transitions) {
-			if (t.target.stateNumber === e.target.stateNumber) {
-				if (t.label() != null && e.label() != null && t.label().equals(e.label()) ) {
+        var alreadyPresent = false;
+        for (const t of this.transitions) {
+            if (t.target.stateNumber === e.target.stateNumber) {
+                if (t.label() != null && e.label() != null && t.label().equals(e.label()) ) {
 //					System.err.println("Repeated transition upon "+e.label()+" from "+stateNumber+"->"+t.target.stateNumber);
-					alreadyPresent = true;
-					break;
-				}
-				else if (t.isEpsilon() && e.isEpsilon()) {
+                    alreadyPresent = true;
+                    break;
+                }
+                else if (t.isEpsilon() && e.isEpsilon()) {
 //					System.err.println("Repeated epsilon transition from "+stateNumber+"->"+t.target.stateNumber);
-					alreadyPresent = true;
-					break;
-				}
-			}
-		}
-		if (!alreadyPresent) {
-			this.transitions.splice(index, 0, e);
-		}
-	}
+                    alreadyPresent = true;
+                    break;
+                }
+            }
+        }
+        if (!alreadyPresent) {
+            this.transitions.splice(index, 0, e);
+        }
+    }
 
     /**
      * @param {number} i
      * @return {org.antlr.v4.runtime.atn.Transition}
      */
-	transition(i) {
+    transition(i) {
         return this.transitions[i];
     }
 
@@ -199,38 +199,38 @@ class ATNState {
      * @param {org.antlr.v4.runtime.atn.Transition} e
      * @return {void}
      */
-	setTransition(i, e) {
-		this.transitions[i] = e;
-	}
+    setTransition(i, e) {
+        this.transitions[i] = e;
+    }
 
     /**
      * @param {number} index
      * @return {org.antlr.v4.runtime.atn.Transition}
      */
-	removeTransition(index) {
+    removeTransition(index) {
         var e = this.transitions[index];
         delete this.transitions[index];
         return e;
-	}
+    }
 
     /**
      * @abstract
      * @return {number}
      */
-	getStateType() {}
+    getStateType() {}
 
     /**
      * @return {boolean}
      */
-	onlyHasEpsilonTransitions() {
-		return this.epsilonOnlyTransitions;
-	}
+    onlyHasEpsilonTransitions() {
+        return this.epsilonOnlyTransitions;
+    }
 
     /**
      * @param {number} ruleIndex
      * @return {void}
      */
-	setRuleIndex(ruleIndex) {
+    setRuleIndex(ruleIndex) {
         this.ruleIndex = ruleIndex;
     }
 }

@@ -15,9 +15,9 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
  * The block that begins a closure loop.
  */
 class StarBlockStartState extends BlockStartState {
-	getStateType() {
-		return ATNState.STAR_BLOCK_START;
-	}
+    getStateType() {
+        return ATNState.STAR_BLOCK_START;
+    }
 }
 
 

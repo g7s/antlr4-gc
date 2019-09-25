@@ -16,8 +16,8 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
  */
 class TokensStartState extends DecisionState {
     getStateType() {
-		return ATNState.TOKEN_START;
-	}
+        return ATNState.TOKEN_START;
+    }
 }
 
 

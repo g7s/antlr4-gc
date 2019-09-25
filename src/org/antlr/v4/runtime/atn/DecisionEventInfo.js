@@ -80,7 +80,7 @@ class DecisionEventInfo {
          * @type {boolean}
          */
         this.fullCtx = fullCtx;
-	}
+    }
 }
 
 

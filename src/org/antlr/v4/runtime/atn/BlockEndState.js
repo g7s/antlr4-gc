@@ -22,9 +22,9 @@ class BlockEndState extends ATNState {
         this.startState = null;
     }
 
-	getStateType() {
-		return ATNState.BLOCK_END;
-	}
+    getStateType() {
+        return ATNState.BLOCK_END;
+    }
 }
 
 

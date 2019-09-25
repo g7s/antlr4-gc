@@ -16,8 +16,8 @@ const ATNState = goog.require('org.antlr.v4.runtime.atn.ATNState');
  */
 class BasicState extends ATNState {
     getStateType() {
-		return ATNState.BASIC;
-	}
+        return ATNState.BASIC;
+    }
 }
 
 

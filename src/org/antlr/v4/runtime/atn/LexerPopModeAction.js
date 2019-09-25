@@ -24,41 +24,41 @@ const MurmurHash = goog.require('org.antlr.v4.runtime.misc.MurmurHash');
  * @implements {LexerAction}
  */
 class LexerPopModeAction {
-	getActionType() {
-		return LexerActionType.POP_MODE;
-	}
+    getActionType() {
+        return LexerActionType.POP_MODE;
+    }
 
-	isPositionDependent() {
-		return false;
-	}
+    isPositionDependent() {
+        return false;
+    }
 
-	execute(lexer) {
-		lexer.popMode();
-	}
+    execute(lexer) {
+        lexer.popMode();
+    }
 
     /**
      * @return {number}
      */
-	hashCode() {
-		var hash = MurmurHash.initialize();
-		hash = MurmurHash.update(hash, this.getActionType());
-		return MurmurHash.finish(hash, 1);
-	}
+    hashCode() {
+        var hash = MurmurHash.initialize();
+        hash = MurmurHash.update(hash, this.getActionType());
+        return MurmurHash.finish(hash, 1);
+    }
 
     /**
      * @param {Object} obj
      * @return {boolean}
      */
     equals(obj) {
-		return obj === this;
-	}
+        return obj === this;
+    }
 
     /**
      * @return {string}
      */
     toString() {
-		return "popMode";
-	}
+        return "popMode";
+    }
 }
 
 /**
