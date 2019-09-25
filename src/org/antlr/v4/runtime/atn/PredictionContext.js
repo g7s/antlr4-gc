@@ -330,10 +330,6 @@ class ArrayPredictionContext extends PredictionContext {
 	}
 }
 
-PredictionContext.SingletonPredictionContext = SingletonPredictionContext;
-PredictionContext.EmptyPredictionContext = EmptyPredictionContext;
-PredictionContext.ArrayPredictionContext = ArrayPredictionContext;
-
 /**
  * Represents {@code $} in local context prediction, which means wildcard.
  * {@code *+x = *}.
@@ -903,3 +899,6 @@ PredictionContext.getAllContextNodes_ = function (context, nodes, visited) {
 
 
 exports = PredictionContext;
+exports.SingletonPredictionContext = SingletonPredictionContext;
+exports.EmptyPredictionContext = EmptyPredictionContext;
+exports.ArrayPredictionContext = ArrayPredictionContext;
