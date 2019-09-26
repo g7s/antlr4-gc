@@ -937,7 +937,7 @@ class Parser extends Recognizer {
     }
 
     /**
-     * @reutrn {void}
+     * @return {void}
      */
     dumpDFA() {
         var seenOne = false;
