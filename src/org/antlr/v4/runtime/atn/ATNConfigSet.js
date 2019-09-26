@@ -169,6 +169,7 @@ class ATNConfigSet {
         var existing = this.configLookup.get(config);
         if (goog.isNull(existing)) {
             this.configLookup.add(config);
+            existing = config;
         }
         if (existing === config) { // we added this new one
             this.cachedHashCode = -1;

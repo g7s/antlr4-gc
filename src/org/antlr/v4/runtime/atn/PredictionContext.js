@@ -107,6 +107,53 @@ class PredictionContext {
     equals(obj) {}
 }
 
+/**
+ * Represents {@code $} in an array in full context mode, when {@code $}
+ * doesn't mean wildcard: {@code $ + x = [$,x]}. Here,
+ * {@code $} = {@link #EMPTY_RETURN_STATE}.
+ *
+ * @type {number}
+ */
+PredictionContext.EMPTY_RETURN_STATE = Number.MAX_VALUE;
+
+/**
+ * @private {number}
+ */
+PredictionContext.INITIAL_HASH = 1;
+
+/**
+ * @type {number}
+ */
+PredictionContext.globalNodeCount = 0;
+
+/**
+ * @return {number}
+ */
+PredictionContext.calculateEmptyHashCode = function () {
+    var hash = MurmurHash.initialize(PredictionContext.INITIAL_HASH);
+    hash = MurmurHash.finish(hash, 0);
+    return hash;
+};
+
+/**
+ * @param {PredictionContext|Array<PredictionContext>} parents
+ * @param {number|Array<number>} returnStates
+ * @return {number}
+ */
+PredictionContext.calculateHashCode = function (parents, returnStates) {
+    parents = goog.isArray(parents) ? parents : [parents];
+    returnStates = goog.isArray(returnStates) ? returnStates : [returnStates];
+    var hash = MurmurHash.initialize(PredictionContext.INITIAL_HASH);
+    parents.forEach(parent => {
+        hash = MurmurHash.update(hash, parent);
+    });
+    returnStates.forEach(returnState => {
+        hash = MurmurHash.update(hash, returnState);
+    });
+    return MurmurHash.finish(hash, 2 * parents.length);
+};
+
+
 
 class SingletonPredictionContext extends PredictionContext {
     /**
@@ -339,26 +386,6 @@ class ArrayPredictionContext extends PredictionContext {
 PredictionContext.EMPTY = new EmptyPredictionContext();
 
 /**
- * Represents {@code $} in an array in full context mode, when {@code $}
- * doesn't mean wildcard: {@code $ + x = [$,x]}. Here,
- * {@code $} = {@link #EMPTY_RETURN_STATE}.
- *
- * @type {number}
- */
-PredictionContext.EMPTY_RETURN_STATE = Number.MAX_VALUE;
-
-/**
- * @private {number}
- */
-PredictionContext.INITIAL_HASH = 1;
-
-/**
- * @type {number}
- */
-PredictionContext.globalNodeCount = 0;
-
-
-/**
  * Convert a {@link RuleContext} tree to a {@link PredictionContext} graph.
  * Return {@link #EMPTY} if {@code outerContext} is empty or null.
  *
@@ -382,33 +409,6 @@ PredictionContext.fromRuleContext = function (atn, outerContext) {
     var state = atn.states[outerContext.invokingState];
     var transition = /** @type {org.antlr.v4.runtime.atn.RuleTransition} */ (state.transition(0));
     return SingletonPredictionContext.create(parent, transition.followState.stateNumber);
-};
-
-/**
- * @return {number}
- */
-PredictionContext.calculateEmptyHashCode = function () {
-    var hash = MurmurHash.initialize(PredictionContext.INITIAL_HASH);
-    hash = MurmurHash.finish(hash, 0);
-    return hash;
-};
-
-/**
- * @param {PredictionContext|Array<PredictionContext>} parents
- * @param {number|Array<number>} returnStates
- * @return {number}
- */
-PredictionContext.calculateHashCode = function (parents, returnStates) {
-    parents = goog.isArray(parents) ? parents : [parents];
-    returnStates = goog.isArray(returnStates) ? returnStates : [returnStates];
-    var hash = MurmurHash.initialize(PredictionContext.INITIAL_HASH);
-    parents.forEach(parent => {
-        hash = MurmurHash.update(hash, parent);
-    });
-    returnStates.forEach(returnState => {
-        hash = MurmurHash.update(hash, returnState);
-    });
-    return MurmurHash.finish(hash, 2 * parents.length);
 };
 
 /**
