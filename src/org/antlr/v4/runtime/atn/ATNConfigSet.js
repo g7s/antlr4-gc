@@ -337,7 +337,7 @@ class ATNConfigSet {
     }
 
     [Symbol.iterator]() {
-        return this.configs[Symbol.iterator];
+        return this.configs[Symbol.iterator]();
     }
 
     clear() {

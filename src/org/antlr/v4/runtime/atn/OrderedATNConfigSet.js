@@ -24,7 +24,7 @@ class OrderedATNConfigSet extends ATNConfigSet {
     }
 
     [Symbol.iterator]() {
-        return this.configs[Symbol.iterator];
+        return this.configs[Symbol.iterator]();
     }
 }
 
