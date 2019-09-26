@@ -123,6 +123,16 @@ class DFAState {
     }
 
     /**
+     * @return {number}
+     */
+    hashCode() {
+        var hash = MurmurHash.initialize(7);
+        hash = MurmurHash.update(hash, this.configs.hashCode());
+        hash = MurmurHash.finish(hash, 1);
+        return hash;
+    }
+
+    /**
      * Two {@link DFAState} instances are equal if their ATN configuration sets
      * are the same. This method is used to see if a state already exists.
      *
