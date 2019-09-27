@@ -30,7 +30,7 @@ class LexerATNConfig extends ATNConfig {
 
         var [a, b, c, d] = arguments;
         if (a instanceof LexerATNConfig) {
-            if (c instanceof LexerActionExecutor) {
+            if (c == null || c instanceof LexerActionExecutor) {
                 super(a, b, a.context, a.semanticContext);
                 lexerActionExecutor = c;
             } else {

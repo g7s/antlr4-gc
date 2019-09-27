@@ -86,7 +86,7 @@ class ATNConfig {
                 if (c instanceof SemanticContext) {
                     this.semanticContext = c;
                 } else {
-                    this.context = c;
+                    this.context = c || a.context;
                     this.semanticContext = d || a.semanticContext;
                 }
             } else {
