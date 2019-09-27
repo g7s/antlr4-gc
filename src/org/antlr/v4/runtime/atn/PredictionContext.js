@@ -419,7 +419,7 @@ PredictionContext.fromRuleContext = function (atn, outerContext) {
  * @return {PredictionContext}
  */
 PredictionContext.merge = function (a, b, rootIsWildcard, mergeCache) {
-    assert(a != null && b != null);
+    // assert(a != null && b != null);
 
     // share same graph if both same
     if (a === b || a.equals(b)) return a;

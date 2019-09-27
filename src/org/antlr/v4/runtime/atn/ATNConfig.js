@@ -77,7 +77,6 @@ class ATNConfig {
         this.semanticContext = null;
 
         var [a, b, c, d] = arguments;
-        var l = arguments.length;
         if (a instanceof ATNConfig) {
             this.alt = a.alt;
             this.context = a.context;

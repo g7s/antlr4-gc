@@ -19,33 +19,40 @@ class LexerATNConfig extends ATNConfig {
      * @param {...*} args
      */
     constructor(args) {
-        if (arguments.length < 4) {
-            var c = arguments[0];
-            var state = arguments[1];
-            var ae = arguments[2] || c.lexerActionExecutor;
-            if (ae instanceof LexerActionExecutor) {
-                super(c, state, c.context, c.semanticContext);
-                this.lexerActionExecutor = ae;
+        /**
+         * @type {LexerActionExecutor}
+         */
+        var lexerActionExecutor = null;
+        /**
+         * @type {boolean}
+         */
+        var passedThroughNonGreedyDecision = false;
+
+        var [a, b, c, d] = arguments;
+        if (a instanceof LexerATNConfig) {
+            if (c instanceof LexerActionExecutor) {
+                super(a, b, a.context, a.semanticContext);
+                lexerActionExecutor = c;
             } else {
-                super(c, state, ae, c.semanticContext);
-                this.lexerActionExecutor = c.lexerActionExecutor;
+                super(a, b, c, a.semanticContext);
+                lexerActionExecutor = a.lexerActionExecutor;
             }
-            this.passedThroughNonGreedyDecision = LexerATNConfig.checkNonGreedyDecision(c, state);
+            passedThroughNonGreedyDecision = LexerATNConfig.checkNonGreedyDecision(a, b);
         } else {
-            var [state, alt, context, lexerActionExecutor] = arguments;
-            super(state, alt, context, SemanticContext.NONE);
-            this.lexerActionExecutor = lexerActionExecutor;
+            super(a, b, c, SemanticContext.NONE);
+            lexerActionExecutor = d || null;
         }
+
         /**
          * This is the backing field for {@link #getLexerActionExecutor}.
          *
          * @private {LexerActionExecutor}
          */
-        this.lexerActionExecutor = goog.isDefAndNotNull(this.lexerActionExecutor) ? this.lexerActionExecutor : null;
+        this.lexerActionExecutor = lexerActionExecutor;
         /**
          * @private {boolean}
          */
-        this.passedThroughNonGreedyDecision = goog.isDefAndNotNull(this.passedThroughNonGreedyDecision) ? this.passedThroughNonGreedyDecision : false;
+        this.passedThroughNonGreedyDecision = passedThroughNonGreedyDecision;
     }
 
     /**
