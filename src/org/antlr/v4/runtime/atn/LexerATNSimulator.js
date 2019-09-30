@@ -335,7 +335,7 @@ class LexerATNSimulator extends ATNSimulator {
             if (!reach.hasSemanticContext) {
                 // we got nowhere on t, don't throw out this knowledge; it'd
                 // cause a failover from DFA later.
-                this.addDFAEdge(s, t, ATNSimulator.ERROR);
+                this.doAddDFAEdge(s, t, ATNSimulator.ERROR);
             }
 
             // stop when we can't match any more char
@@ -733,7 +733,7 @@ class LexerATNSimulator extends ATNSimulator {
 
         if (p.edges == null) {
             //  make room for tokens 1..n and -1 masquerading as index 0
-            p.edges = /** @type {!Array{DFAState}} */ (new Array(LexerATNSimulator.MAX_DFA_EDGE - LexerATNSimulator.MIN_DFA_EDGE + 1));
+            p.edges = /** @type {!Array<DFAState>} */ (new Array(LexerATNSimulator.MAX_DFA_EDGE - LexerATNSimulator.MIN_DFA_EDGE + 1));
         }
         p.edges[t - LexerATNSimulator.MIN_DFA_EDGE] = q; // connect
     }
