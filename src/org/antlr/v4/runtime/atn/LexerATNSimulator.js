@@ -718,36 +718,13 @@ class LexerATNSimulator extends ATNSimulator {
      * @protected
      * @param {DFAState} p
      * @param {number} t
-     * @param {!(org.antlr.v4.runtime.atn.ATNConfigSet|DFAState)} q
-     * @return {DFAState}
+     * @param {DFAState} q
+     * @return {void}
      */
-    addDFAEdge(p, t, q) {
-        if (!(q instanceof DFAState)) {
-            /* leading to this call, ATNConfigSet.hasSemanticContext is used as a
-             * marker indicating dynamic predicate evaluation makes this edge
-             * dependent on the specific input sequence, so the static edge in the
-             * DFA should be omitted. The target DFAState is still created since
-             * execATN has the ability to resynchronize with the DFA state cache
-             * following the predicate evaluation step.
-             *
-             * TJP notes: next time through the DFA, we see a pred again and eval.
-             * If that gets us to a previously created (but dangling) DFA
-             * state, we can continue in pure DFA mode from there.
-             */
-            q = /** @type {!org.antlr.v4.runtime.atn.ATNConfigSet} */ (q);
-            var suppressEdge = q.hasSemanticContext;
-            q.hasSemanticContext = false;
-
-            q = this.addDFAState(q);
-
-            if (suppressEdge) {
-                return q;
-            }
-        }
-
+    doAddDFAEdge(p, t, q) {
         if (t < LexerATNSimulator.MIN_DFA_EDGE || t > LexerATNSimulator.MAX_DFA_EDGE) {
             // Only track edges within the DFA bounds
-            return null;
+            return;
         }
 
         if (LexerATNSimulator.debug) {
@@ -756,20 +733,54 @@ class LexerATNSimulator extends ATNSimulator {
 
         if (p.edges == null) {
             //  make room for tokens 1..n and -1 masquerading as index 0
-            p.edges = [];
+            p.edges = /** @type {!Array{DFAState}} */ (new Array(LexerATNSimulator.MAX_DFA_EDGE - LexerATNSimulator.MIN_DFA_EDGE + 1));
         }
         p.edges[t - LexerATNSimulator.MIN_DFA_EDGE] = q; // connect
-
-        return q;
     }
 
-    /** Add a new DFA state if there isn't one with this set of
-        configurations already. This method also detects the first
-        configuration containing an ATN rule stop state. Later, when
-        traversing the DFA, we will know which rule to accept.
+    /**
+     * @protected
+     * @param {DFAState} from
+     * @param {number} t
+     * @param {org.antlr.v4.runtime.atn.ATNConfigSet} q
+     * @return {DFAState}
      */
+    addDFAEdge(from, t, q) {
+        /* leading to this call, ATNConfigSet.hasSemanticContext is used as a
+         * marker indicating dynamic predicate evaluation makes this edge
+         * dependent on the specific input sequence, so the static edge in the
+         * DFA should be omitted. The target DFAState is still created since
+         * execATN has the ability to resynchronize with the DFA state cache
+         * following the predicate evaluation step.
+         *
+         * TJP notes: next time through the DFA, we see a pred again and eval.
+         * If that gets us to a previously created (but dangling) DFA
+         * state, we can continue in pure DFA mode from there.
+         */
+        /**
+         * @type {boolean}
+         */
+        var suppressEdge = q.hasSemanticContext;
+        q.hasSemanticContext = false;
+
+        /**
+         * @type {!DFAState}
+         */
+        var to = this.addDFAState(q);
+
+        if (suppressEdge) {
+            return to;
+        }
+
+        this.doAddDFAEdge(from, t, to);
+        return to;
+    }
 
     /**
+     * Add a new DFA state if there isn't one with this set of
+     * configurations already. This method also detects the first
+     * configuration containing an ATN rule stop state. Later, when
+     * traversing the DFA, we will know which rule to accept.
      * @protected
      * @param {org.antlr.v4.runtime.atn.ATNConfigSet} configs
      * @return {!DFAState}
