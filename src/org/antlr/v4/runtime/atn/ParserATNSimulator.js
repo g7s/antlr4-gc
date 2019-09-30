@@ -1583,7 +1583,7 @@ class ParserATNSimulator extends ATNSimulator {
                     // isPrecedenceFilterSuppressed() value to the new
                     // configuration.
                     c.reachesIntoOuterContext = config.reachesIntoOuterContext;
-                    assert(depth > Number.MIN_VALUE);
+                    assert(depth > Number.MIN_SAFE_INTEGER);
                     this.closureCheckingStopState(c, configs, closureBusy, collectPredicates, fullCtx, depth - 1, treatEofAsEpsilon);
                 }
                 return;
@@ -1658,7 +1658,7 @@ class ParserATNSimulator extends ATNSimulator {
                     }
 
                     configs.dipsIntoOuterContext = true; // TODO: can remove? only care when we add to set per middle of this method
-                    assert(newDepth > Number.MIN_VALUE);
+                    assert(newDepth > Number.MIN_SAFE_INTEGER);
                     newDepth--;
                     if (ParserATNSimulator.debug) console.log("dips into outer ctx: "+c);
                 }

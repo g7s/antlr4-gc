@@ -101,7 +101,7 @@ class ATNDeserializer {
         // was implemented.
         for (var i = 1; i < str.length; i++) {
             var v = str.charCodeAt(i);
-            data[i] = v > 1  ? v - 2 : v + 65533;
+            data[i] = v > 1  ? v - 2 : v + 65534;
         }
         var p = 0;
         var version = ATNDeserializer.toInt(data[p++]);
@@ -246,7 +246,7 @@ class ATNDeserializer {
         var sets = [];
 
         // First, read all sets with 16-bit Unicode code points <= U+FFFF.
-        p = this.deserializeSets(data, p, sets, ATNDeserializer.toInt, 1);
+        p = this.deserializeSets(data, p, sets, ATNDeserializer.toInt8, 1);
 
         // Next, if the ATN was serialized with the Unicode SMP feature,
         // deserialize sets with 32-bit arguments <= U+10FFFF.
@@ -511,7 +511,7 @@ class ATNDeserializer {
      * @param {Array<number>} data
      * @param {number} p
      * @param {Array<IntervalSet>} sets
-     * @param {Function} reader
+     * @param {function(!Array<number>, number): number} reader
      * @param {number} size
      * @return {number}
      */
@@ -855,6 +855,16 @@ ATNDeserializer.isFeatureSupported = function (feature, actualUuid) {
  */
 ATNDeserializer.toInt = function (c) {
     return c;
+};
+
+/**
+ * @protected
+ * @param {Array<number>} data
+ * @param {number} offset
+ * @return {number}
+ */
+ATNDeserializer.toInt8 = function (data, offset) {
+    return data[offset];
 };
 
 /**

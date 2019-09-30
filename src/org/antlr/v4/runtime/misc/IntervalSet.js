@@ -272,7 +272,7 @@ class IntervalSet {
         // Binary search for the element in the (sorted,
         // disjoint) array of intervals.
         while (l <= r) {
-            var m = (l + r) / 2;
+            var m = Math.floor((l + r) / 2);
             var I = this.intervals[m];
             var a = I.a;
             var b = I.b;

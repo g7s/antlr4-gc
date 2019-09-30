@@ -796,7 +796,7 @@ class LexerATNSimulator extends ATNSimulator {
          */
         var firstConfigWithRuleStopState = null;
         for (const c of configs) {
-            if ( c.state instanceof RuleStopState )	{
+            if (c.state instanceof RuleStopState)	{
                 firstConfigWithRuleStopState = c;
                 break;
             }
