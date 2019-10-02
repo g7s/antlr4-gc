@@ -496,7 +496,7 @@ class ParserATNSimulator extends ATNSimulator {
                  * @type {BitSet}
                  */
                 var conflictingAlts = D.configs.conflictingAlts;
-                if (D.predicates != null) {
+                if (D.predicates.length == 0) {
                     if (ParserATNSimulator.debug) console.log("DFA state has preds in DFA sim LL failover");
                     var conflictIndex = input.index();
                     if (conflictIndex != startIndex) {
@@ -525,7 +525,7 @@ class ParserATNSimulator extends ATNSimulator {
             }
 
             if (D.isAcceptState) {
-                if (D.predicates == null) {
+                if (D.predicates.length == 0) {
                     return D.prediction;
                 }
 
@@ -637,7 +637,7 @@ class ParserATNSimulator extends ATNSimulator {
 
         if (D.isAcceptState && D.configs.hasSemanticContext) {
             this.predicateDFAState(D, this.atn.getDecisionState(dfa.decision));
-            if (D.predicates != null) {
+            if (D.predicates.length == 0) {
                 D.prediction = ATN.INVALID_ALT_NUMBER;
             }
         }

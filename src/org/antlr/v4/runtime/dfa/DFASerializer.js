@@ -68,7 +68,7 @@ class DFASerializer {
         var n = s.stateNumber;
         var baseStateStr = (s.isAcceptState ? ":" : "") + "s" + n + (s.requiresFullContext ? "^" : "");
         if (s.isAcceptState) {
-            if (s.predicates != null) {
+            if (s.predicates.length == 0) {
                 return baseStateStr + "=>" + "[" + s.predicates.map(p => p.toString()).join(", ") + "]";
             }
             else {

@@ -165,7 +165,7 @@ class DFAState {
         var str = "" + this.stateNumber + ":" + this.configs;
         if (this.isAcceptState) {
             str += "=>";
-            if (this.predicates != null) {
+            if (this.predicates.length == 0) {
                 str += ("[" + this.predicates.map(p => p.toString()).join(", ") + "]");
             }
             else {
