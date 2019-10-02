@@ -454,8 +454,8 @@ SemanticContext.NONE = new SemanticContext$Predicate();
  * @return {SemanticContext}
  */
 SemanticContext.and = function (a, b) {
-    if (a === null || a === SemanticContext.NONE) return b;
-    if (b === null || b === SemanticContext.NONE) return a;
+    if (a == null || a === SemanticContext.NONE) return b;
+    if (b == null || b === SemanticContext.NONE) return a;
     var result = new SemanticContext$AND(a, b);
     if (result.opnds.length === 1) {
         return result.opnds[0];
@@ -471,8 +471,9 @@ SemanticContext.and = function (a, b) {
  * @return {SemanticContext}
  */
 SemanticContext.or = function (a, b) {
-    if (a === null || a === SemanticContext.NONE) return b;
-    if (b === null || b === SemanticContext.NONE) return a;
+    if (a == null) return b;
+    if (b == null) return a;
+    if (a === SemanticContext.NONE || b === SemanticContext.NONE) return SemanticContext.NONE;
     var result = new SemanticContext$OR(a, b);
     if (result.opnds.length === 1) {
         return result.opnds[0];
