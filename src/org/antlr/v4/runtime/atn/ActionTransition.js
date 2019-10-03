@@ -11,6 +11,12 @@ goog.module.declareLegacyNamespace();
 const Transition = goog.require('org.antlr.v4.runtime.atn.Transition');
 
 class ActionTransition extends Transition {
+    /**
+     * @param {org.antlr.v4.runtime.atn.ATNState} target
+     * @param {number} ruleIndex
+     * @param {number=} actionIndex
+     * @param {boolean=} isCtxDependent
+     */
     constructor(target, ruleIndex, actionIndex, isCtxDependent) {
         super(target);
         /**

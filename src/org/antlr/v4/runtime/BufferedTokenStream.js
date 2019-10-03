@@ -448,7 +448,7 @@ class BufferedTokenStream {
      */
     filterForChannel(from, to, channel) {
         /**
-         * @type {Array<Token>}
+         * @type {!Array<Token>}
          */
         var hidden = [];
         for (var i = from; i <= to; i++) {
