@@ -86,14 +86,14 @@ class CommonToken {
          *
          * @protected {number}
          */
-        this.start = start || -1;
+        this.start = goog.isNumber(start) ? start : -1;
         /**
          * This is the backing field for {@link #getStopIndex} and
          * {@link #setStopIndex}.
          *
          * @protected {number}
          */
-        this.stop = stop || -1;
+        this.stop = goog.isNumber(stop) ? stop : -1;
 
         if (goog.isNumber(a)) {
             this.type = /** @type {number} */ (a);
