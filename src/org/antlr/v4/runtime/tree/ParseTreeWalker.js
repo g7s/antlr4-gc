@@ -9,7 +9,7 @@ goog.module.declareLegacyNamespace();
 
 
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
-const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
+const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 
 class ParseTreeWalker {
     /**
@@ -22,7 +22,7 @@ class ParseTreeWalker {
             listener.visitErrorNode(t);
             return;
         }
-        else if (t instanceof TerminalNode) {
+        else if (t instanceof TerminalNodeImpl) {
             listener.visitTerminal(t);
             return;
         }

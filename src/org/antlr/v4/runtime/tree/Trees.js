@@ -16,7 +16,6 @@ const CommonToken = goog.require('org.antlr.v4.runtime.CommonToken');
 const ParserRuleContext = goog.require('org.antlr.v4.runtime.ParserRuleContext');
 const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
-const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 const ATN = goog.require('org.antlr.v4.runtime.atn.ATN');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
@@ -127,7 +126,7 @@ function findAllNodes(t, index, findTokens) {
  */
 function _findAllNodes(t, index, findTokens, nodes) {
     // check this node (the root) first
-    if (findTokens && t instanceof TerminalNode) {
+    if (findTokens && t instanceof TerminalNodeImpl) {
         if (t.getSymbol().getType() === index) nodes.push(t);
     }
     else if (!findTokens && t instanceof ParserRuleContext) {

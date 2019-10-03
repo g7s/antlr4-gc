@@ -150,7 +150,7 @@ class ParserRuleContext extends RuleContext {
      * @return {RuleContext|TerminalNode}
      */
     addChild(child) {
-        if (child instanceof TerminalNode) {
+        if (child instanceof TerminalNodeImpl) {
             child.setParent(this);
         }
         return this.addAnyChild(child);
@@ -223,7 +223,7 @@ class ParserRuleContext extends RuleContext {
             return null;
         }
         var found = find(this.children, function (child) {
-            return child instanceof TerminalNode && /** @type {TerminalNode} */ (child).getSymbol().getType() === ttype && i-- === 0;
+            return child instanceof TerminalNodeImpl && /** @type {TerminalNode} */ (child).getSymbol().getType() === ttype && i-- === 0;
         }) || null;
         return /** @type {TerminalNode} */ (found);
     }
@@ -234,7 +234,7 @@ class ParserRuleContext extends RuleContext {
      */
     getTokens(ttype) {
         var filtered = filter(this.children, function (child) {
-            return child instanceof TerminalNode && /** @type {TerminalNode} */ (child).getSymbol().getType() === ttype;
+            return child instanceof TerminalNodeImpl && /** @type {TerminalNode} */ (child).getSymbol().getType() === ttype;
         });
         return /** @type {!Array<TerminalNode>} */ (filtered);
     }

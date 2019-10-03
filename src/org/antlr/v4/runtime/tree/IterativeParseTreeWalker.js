@@ -11,6 +11,7 @@ goog.module.declareLegacyNamespace();
 const ParseTreeWalker = goog.require('org.antlr.v4.runtime.tree.ParseTreeWalker');
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
 const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
+const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 const RuleNode = goog.require('org.antlr.v4.runtime.tree.RuleNode');
 
 /**
@@ -35,7 +36,7 @@ class IterativeParseTreeWalker extends ParseTreeWalker {
             if (currentNode instanceof ErrorNode) {
                 listener.visitErrorNode(/** @type {!ErrorNode} */ (currentNode));
             }
-            else if (currentNode instanceof TerminalNode) {
+            else if (currentNode instanceof TerminalNodeImpl) {
                 listener.visitTerminal(/** @type {!TerminalNode} */ (currentNode));
             }
             else {

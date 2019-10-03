@@ -13,7 +13,7 @@ const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const Utils = goog.require('org.antlr.v4.runtime.misc.Utils');
 const RuleNode = goog.require('org.antlr.v4.runtime.tree.RuleNode');
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
-const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
+const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 
 // Hack to resolve cyclic deps issue
 const ATNINVALID_ALT_NUMBER = 0; // See ATN.INVALID_ALT_NUMBER
@@ -299,7 +299,7 @@ function getNodeText(t, o) {
         else if (t instanceof ErrorNode) {
             return t.toString();
         }
-        else if (t instanceof TerminalNode) {
+        else if (t instanceof TerminalNodeImpl) {
             var symbol = t.getSymbol();
             if (symbol != null) {
                 return symbol.getText();
