@@ -106,7 +106,7 @@ class CommonToken {
                 this.line = this.source.a.getLine();
                 this.charPositionInLine = this.source.a.getCharPositionInLine();
             }
-        } else if (a instanceof Token) {
+        } else {
             var oldToken = /** @type {!Token} */ (a);
             this.type = oldToken.getType();
             this.line = oldToken.getLine();

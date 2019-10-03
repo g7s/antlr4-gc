@@ -8,11 +8,11 @@ goog.module('org.antlr.v4.runtime.RuleContext');
 goog.module.declareLegacyNamespace();
 
 
-const Token = goog.require('org.antlr.v4.runtime.Token');
+const CommonToken = goog.require('org.antlr.v4.runtime.CommonToken');
 const Interval = goog.require('org.antlr.v4.runtime.misc.Interval');
 const Utils = goog.require('org.antlr.v4.runtime.misc.Utils');
 const RuleNode = goog.require('org.antlr.v4.runtime.tree.RuleNode');
-const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
+const ErrorNodeImpl = goog.require('org.antlr.v4.runtime.tree.ErrorNodeImpl');
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 
 // Hack to resolve cyclic deps issue
@@ -296,7 +296,7 @@ function getNodeText(t, o) {
             }
             return ruleName;
         }
-        else if (t instanceof ErrorNode) {
+        else if (t instanceof ErrorNodeImpl) {
             return t.toString();
         }
         else if (t instanceof TerminalNodeImpl) {
@@ -308,7 +308,7 @@ function getNodeText(t, o) {
     }
     // no recog for rule names
     var payload = t.getPayload();
-    if (payload instanceof Token) {
+    if (payload instanceof CommonToken) {
         return payload.getText();
     }
     return payload.toString();

@@ -9,7 +9,7 @@ goog.module.declareLegacyNamespace();
 
 
 const Token = goog.require('org.antlr.v4.runtime.Token');
-const WritableToken = goog.require('org.antlr.v4.runtime.WritableToken');
+const CommonToken = goog.require('org.antlr.v4.runtime.CommonToken');
 const Lexer = goog.require('org.antlr.v4.runtime.Lexer');
 const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const TokenStream = goog.require('org.antlr.v4.runtime.TokenStream');
@@ -172,8 +172,8 @@ class BufferedTokenStream {
         }
         for (var i = 0; i < n; i++) {
             var t = this.tokenSource.nextToken();
-            if (t instanceof WritableToken) {
-                t.setTokenIndex(this.size());
+            if (t instanceof CommonToken) {
+                /** @type {CommonToken} */ (t).setTokenIndex(this.size());
             }
             this.tokens.push(t);
             if (t.getType() === Token.EOF) {
@@ -492,8 +492,8 @@ class BufferedTokenStream {
     getText(a, b) {
         if (a instanceof Interval) {
             return this.getTextInterval(a);
-        } else if (a instanceof Token) {
-            if (!(b instanceof Token)) throw new Error("Invalid arguments");
+        } else if (a instanceof CommonToken) {
+            if (!(b instanceof CommonToken)) throw new Error("Invalid arguments");
             return this.getTextInterval(Interval.of(a.getTokenIndex(), b.getTokenIndex()));
         } else if (a instanceof RuleContext) {
             return this.getTextInterval(a.getSourceInterval());

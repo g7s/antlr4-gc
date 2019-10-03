@@ -17,7 +17,6 @@ const {assert} = goog.require('goog.asserts');
  */
 class ANTLRInputStream {
     /**
-     *
      * @param {string} input
      */
     constructor(input) {

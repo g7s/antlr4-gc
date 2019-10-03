@@ -118,7 +118,7 @@ class ParserRuleContext extends RuleContext {
         this.children = [];
         // reset parent pointer for any error nodes
         ctx.children.forEach(function (child) {
-            if (child instanceof ErrorNode) {
+            if (child instanceof ErrorNodeImpl) {
                 this.children.push(child);
             }
         }, this);

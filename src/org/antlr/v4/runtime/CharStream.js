@@ -33,7 +33,7 @@ class CharStream extends IntStream {
      * getting the text of the specified interval
      */
     getText(interval) {}
-};
+}
 
 
 exports = CharStream;

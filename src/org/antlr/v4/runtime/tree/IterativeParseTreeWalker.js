@@ -8,8 +8,10 @@ goog.module('org.antlr.v4.runtime.tree.IterativeParseTreeWalker');
 goog.module.declareLegacyNamespace();
 
 
+const RuleContext = goog.require('org.antlr.v4.runtime.RuleContext');
 const ParseTreeWalker = goog.require('org.antlr.v4.runtime.tree.ParseTreeWalker');
 const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
+const ErrorNodeImpl = goog.require('org.antlr.v4.runtime.tree.ErrorNodeImpl');
 const TerminalNode = goog.require('org.antlr.v4.runtime.tree.TerminalNode');
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 const RuleNode = goog.require('org.antlr.v4.runtime.tree.RuleNode');
@@ -33,7 +35,7 @@ class IterativeParseTreeWalker extends ParseTreeWalker {
         var currentIndex = 0;
         while (currentNode != null) {
             // pre-order visit
-            if (currentNode instanceof ErrorNode) {
+            if (currentNode instanceof ErrorNodeImpl) {
                 listener.visitErrorNode(/** @type {!ErrorNode} */ (currentNode));
             }
             else if (currentNode instanceof TerminalNodeImpl) {
@@ -55,7 +57,7 @@ class IterativeParseTreeWalker extends ParseTreeWalker {
             // No child nodes, so walk tree
             do {
                 // post-order visit
-                if (currentNode instanceof RuleNode) {
+                if (currentNode instanceof RuleContext) {
                     this.exitRule(listener, /** @type {!RuleNode} */ (currentNode));
                 }
 

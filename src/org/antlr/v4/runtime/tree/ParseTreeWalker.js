@@ -8,7 +8,7 @@ goog.module('org.antlr.v4.runtime.tree.ParseTreeWalker');
 goog.module.declareLegacyNamespace();
 
 
-const ErrorNode = goog.require('org.antlr.v4.runtime.tree.ErrorNode');
+const ErrorNodeImpl = goog.require('org.antlr.v4.runtime.tree.ErrorNodeImpl');
 const TerminalNodeImpl = goog.require('org.antlr.v4.runtime.tree.TerminalNodeImpl');
 
 class ParseTreeWalker {
@@ -18,7 +18,7 @@ class ParseTreeWalker {
      * @return {void}
      */
     walk(listener, t) {
-        if (t instanceof ErrorNode) {
+        if (t instanceof ErrorNodeImpl) {
             listener.visitErrorNode(t);
             return;
         }
